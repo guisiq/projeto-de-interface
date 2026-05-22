@@ -239,96 +239,85 @@ Diante da ausência de um canal unificado para registro e busca de objetos, prop
 
 # 6. Mapa do Site
 
-O sistema é organizado em dois perfis de acesso distintos — Aluno e Funcionário — cada um com seu próprio conjunto de telas e fluxos de interação. Para facilitar a leitura e a análise, a documentação foi dividida em três diagramas complementares: o Mapa do Site apresenta a arquitetura de telas de forma hierárquica, sem decisões de negócio; o Fluxo do Aluno detalha as etapas de busca, solicitação de retirada e cadastro de objeto perdido; e o Fluxo do Funcionário descreve o processo de cadastro de objetos encontrados, validação de solicitações e encerramento de casos.
-
-## Diagrama 1 — Mapa do Site
-
-Representa a estrutura hierárquica de telas do sistema, organizada por perfil de acesso. Não inclui lógica de negócio nem decisões de fluxo.
+## Diagrama do fluxo de navegação
 
 ```mermaid
 flowchart TD
-  A[Tela de Boas-vindas] --> B[Login]
-  A --> C[Cadastro]
-  B --> D{Tipo de usuário}
+  A[Tela de Boas-vindas] --> B[Login institucional]
+  A --> C[Cadastro de usuário]
+  C --> B
+  B --> D{Perfil de acesso}
 
-  D -->|Aluno| E[Área do Aluno]
-  D -->|Funcionário| F[Área do Funcionário]
+  D -->|Aluno| E[Home do aluno]
+  D -->|Funcionário| F[Painel do funcionário]
 
-  E --> E1[Home]
-  E --> E2[Buscar Objetos]
-  E --> E3[Cadastrar Objeto Perdido]
-  E --> E4[Minhas Solicitações]
-  E --> E5[Notificações]
-  E --> E6[Perfil]
-  E --> E7[Ajuda / FAQ]
+  %% Navegação persistente do aluno
+  E --> G[Buscar objetos]
+  E --> H[Cadastrar objeto perdido]
+  E --> I[Minhas solicitações]
+  E --> J[Notificações]
+  E --> K[Perfil do usuário]
+  E --> L[Ajuda / FAQ]
 
-  F --> F1[Painel do Funcionário]
-  F --> F2[Cadastrar Objeto Encontrado]
-  F --> F3[Objetos Cadastrados]
-  F --> F4[Solicitações Pendentes]
-  F --> F5[Histórico de Casos]
-  F --> F6[Perfil]
+  %% Fluxo de busca e retirada
+  G --> M[Filtros rápidos]
+  M --> N[Filtros avançados]
+  N --> G
+  G --> O{Encontrou objeto provável?}
+  O -->|Sim| P[Detalhes do objeto]
+  O -->|Não| Q[Estado vazio / ajustar filtros]
+  Q --> G
+  P --> R{Status permite retirada?}
+  R -->|Encontrado| S[Solicitar retirada]
+  R -->|Aguardando / finalizado| I
+  S --> T{Formulário válido?}
+  T -->|Não| S
+  T -->|Sim| U[Confirmação da solicitação]
+  U --> I
+  U --> E
+
+  %% Fluxo de cadastro pelo aluno
+  H --> V{Campos obrigatórios preenchidos?}
+  V -->|Não| H
+  V -->|Sim| W[Confirmação de cadastro]
+  W --> E
+  W --> G
+
+  %% Acompanhamento do aluno
+  I --> P
+  J --> I
+  K --> J
+  K --> L
+  L --> E
+
+  %% Navegação persistente do funcionário
+  F --> X[Cadastrar objeto encontrado]
+  F --> Y[Lista de objetos cadastrados]
+  F --> Z[Solicitações pendentes]
+  F --> AA[Histórico de casos]
+  F --> J
+  F --> K
+
+  %% Cadastro e gestão administrativa
+  X --> AB{Cadastro válido?}
+  AB -->|Não| X
+  AB -->|Sim| AC[Confirmação de objeto publicado]
+  AC --> Y
+  Y --> AD[Detalhes / edição do objeto]
+  AD --> Y
+
+  %% Validação e encerramento
+  Z --> AE[Validar solicitação]
+  AE --> AF{Decisão do funcionário}
+  AF -->|Aprovar| AG[Retirada aprovada]
+  AF -->|Rejeitar| AH[Solicitação rejeitada]
+  AG --> AI[Encerramento do caso]
+  AH --> Z
+  AI --> AA
+  AI --> Y
 ```
 
----
-
-## Diagrama 2 — Fluxo do Aluno
-
-Representa as ações do aluno: busca de objetos, solicitação de retirada e cadastro de objeto perdido.
-
-```mermaid
-flowchart TD
-  A[Home do Aluno] --> B[Buscar Objeto]
-  B --> C[Aplicar Filtros]
-  C --> D[Ver Resultados]
-  D --> E{Encontrou objeto provável?}
-
-  E -->|Não| F[Ajustar filtros ou cadastrar objeto perdido]
-  F --> G[Cadastrar Objeto Perdido]
-  G --> A
-
-  E -->|Sim| H[Ver Detalhes do Objeto]
-  H --> I{Status permite retirada?}
-
-  I -->|Não| J[Ver status em Minhas Solicitações]
-
-  I -->|Sim| K[Solicitar Retirada]
-  K --> L[Preencher Formulário]
-  L --> M{Dados válidos?}
-  M -->|Não| L
-  M -->|Sim| N[Confirmação da Solicitação]
-  N --> O[Acompanhar em Minhas Solicitações]
-```
-
----
-
-## Diagrama 3 — Fluxo do Funcionário
-
-Representa as ações do funcionário: cadastro de objeto encontrado, validação de solicitações e encerramento de casos.
-
-```mermaid
-flowchart TD
-  A[Painel do Funcionário] --> B[Cadastrar Objeto Encontrado]
-  A --> C[Solicitações Pendentes]
-
-  B --> D[Preencher Dados do Objeto]
-  D --> E{Cadastro válido?}
-  E -->|Não| D
-  E -->|Sim| F[Objeto Publicado]
-
-  C --> G[Ver Solicitação]
-  G --> H[Validar Dados do Solicitante]
-  H --> I{Decisão}
-  I -->|Aprovar| J[Retirada Aprovada]
-  I -->|Rejeitar| K[Solicitação Rejeitada]
-  K --> C
-
-  J --> L[Confirmar Entrega]
-  L --> M[Encerrar Caso]
-  M --> N[Histórico de Casos]
-```
-
-
+**Observação:** O sistema possui dois fluxos principais separados por perfil de acesso: aluno e funcionário. O diagrama combina mapa do site e fluxo de navegação, conforme a orientação da aula, mostrando não apenas quais telas existem, mas também as decisões de uso, retornos, confirmações e estados de exceção. A navegação persistente aparece por meio da barra inferior no mobile, enquanto os fluxos administrativos concentram cadastro, validação, rejeição e encerramento de casos.
 
 **Critérios de IHC considerados no fluxo:**
 

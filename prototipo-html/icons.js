@@ -92,6 +92,7 @@ function initIcons() {
     svg.setAttribute('height', size);
     svg.setAttribute('fill', 'currentColor');
     svg.setAttribute('aria-hidden', 'true');
+    svg.setAttribute('data-icon', name);
     svg.style.display = 'inline-block';
     svg.style.verticalAlign = 'middle';
     svg.style.flexShrink = '0';

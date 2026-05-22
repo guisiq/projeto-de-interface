@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sugestões de Contraste — Texto Secundário · UniAchados</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #E8EDF2;
+      color: #1E293B;
+      padding: 40px 24px 64px;
+      min-height: 100vh;
+    }
+
+    .page-header {
+      max-width: 960px;
+      margin: 0 auto 36px;
+    }
+    .page-header h1 {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .page-header p {
+      font-size: 14px;
+      color: #475569;
+      line-height: 1.6;
+      max-width: 680px;
+    }
+
+    /* ── PROBLEMA ATUAL ── */
+    .problem-banner {
+      max-width: 960px;
+      margin: 0 auto 36px;
+      background: #FEF2F2;
+      border: 1.5px solid #FECACA;
+      border-left: 5px solid #B91C1C;
+      border-radius: 12px;
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .problem-swatch {
+      width: 80px;
+      height: 80px;
+      border-radius: 10px;
+      background: #F5F7FA;
+      border: 1.5px solid #E2E8F0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+    .problem-swatch .swatch-text  { font-size: 13px; font-weight: 600; color: #64748B; }
+    .problem-swatch .swatch-label { font-size: 9px;  color: #94A3B8; text-transform: uppercase; letter-spacing: .5px; }
+    .problem-info h2  { font-size: 16px; font-weight: 700; color: #B91C1C; margin-bottom: 4px; }
+    .problem-info p   { font-size: 13px; color: #64748B; line-height: 1.6; }
+    .badge-fail {
+      display: inline-block;
+      background: #FEE2E2; color: #B91C1C;
+      border-radius: 99px; font-size: 11px; font-weight: 700;
+      padding: 2px 10px; margin-left: 8px; vertical-align: middle;
+    }
+    .badge-lightest {
+      position: absolute; top: 14px; right: 14px;
+      background: #F59E0B; color: #fff;
+      font-size: 10px; font-weight: 700;
+      padding: 3px 10px; border-radius: 99px;
+      text-transform: uppercase; letter-spacing: .5px;
+    }
+
+    /* ── GRID DE CARDS ── */
+    .section-title {
+      max-width: 960px;
+      margin: 0 auto 16px;
+      font-size: 16px;
+      font-weight: 700;
+      color: #334155;
+    }
+    .cards-grid {
+      max-width: 960px;
+      margin: 0 auto 40px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      background: #FFFFFF;
+      border-radius: 16px;
+      border: 1.5px solid #E2E8F0;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,.07);
+      transition: box-shadow .2s;
+      position: relative;
+    }
+    .card:hover { box-shadow: 0 6px 20px rgba(0,0,0,.12); }
+    .card.recommended {
+      border-color: #2E7D8C;
+      box-shadow: 0 2px 8px rgba(46,125,140,.18);
+    }
+    .card.lightest {
+      border-color: #F59E0B;
+      box-shadow: 0 2px 8px rgba(245,158,11,.2);
+    }
+
+    .badge-recommended {
+      position: absolute; top: 14px; right: 14px;
+      background: #2E7D8C; color: #fff;
+      font-size: 10px; font-weight: 700;
+      padding: 3px 10px; border-radius: 99px;
+      text-transform: uppercase; letter-spacing: .5px;
+    }
+    .badge-option {
+      position: absolute; top: 14px; left: 14px;
+      background: #E2E8F0; color: #475569;
+      font-size: 10px; font-weight: 700;
+      padding: 3px 10px; border-radius: 99px;
+    }
+
+    /* ── PREVIEW DE COR ── */
+    .card-preview {
+      background: #F5F7FA;
+      padding: 20px 20px 16px;
+    }
+    .preview-label {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      color: #94A3B8;
+      margin-bottom: 12px;
+    }
+    .preview-demo {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .preview-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #1E293B;
+    }
+    .preview-meta {
+      font-size: 12px;
+    }
+    .preview-caption {
+      font-size: 11px;
+    }
+
+    /* ── CORPO DO CARD ── */
+    .card-body {
+      padding: 16px 20px 20px;
+    }
+    .card-hex {
+      font-size: 17px;
+      font-weight: 700;
+      font-family: 'Courier New', monospace;
+      color: #1E293B;
+      margin-bottom: 2px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .color-dot {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(0,0,0,.08);
+      flex-shrink: 0;
+    }
+    .card-name {
+      font-size: 12px;
+      color: #94A3B8;
+      margin-bottom: 14px;
+    }
+
+    /* ── RATIO BAR ── */
+    .ratios { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+    .ratio-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12px;
+    }
+    .ratio-bg-swatch {
+      width: 14px; height: 14px;
+      border-radius: 3px;
+      border: 1px solid rgba(0,0,0,.08);
+      flex-shrink: 0;
+    }
+    .ratio-label { color: #64748B; min-width: 90px; }
+    .ratio-bar-wrap {
+      flex: 1; background: #F1F5F9;
+      border-radius: 99px; height: 8px; overflow: hidden;
+    }
+    .ratio-bar { height: 100%; border-radius: 99px; transition: width .6s ease; }
+    .ratio-value {
+      font-weight: 700;
+      font-size: 13px;
+      min-width: 38px;
+      text-align: right;
+    }
+    .badge-pass {
+      font-size: 10px; font-weight: 700;
+      background: #DCFCE7; color: #15803D;
+      padding: 2px 8px; border-radius: 99px;
+    }
+
+    /* ── CSS SNIPPET ── */
+    .card-snippet {
+      background: #F8FAFC;
+      border: 1px solid #E2E8F0;
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-family: 'Courier New', monospace;
+      font-size: 11px;
+      color: #334155;
+      line-height: 1.7;
+    }
+    .card-snippet .kw  { color: #7C3AED; }
+    .card-snippet .val { color: #0369A1; }
+
+    /* ── NOTA FINAL ── */
+    .note {
+      max-width: 960px;
+      margin: 0 auto;
+      background: #ECFDF5;
+      border: 1.5px solid #A7F3D0;
+      border-left: 5px solid #15803D;
+      border-radius: 12px;
+      padding: 20px 24px;
+      font-size: 13px;
+      color: #334155;
+      line-height: 1.7;
+    }
+    .note strong { color: #15803D; }
+  </style>
+</head>
+<body>
+
+  <header class="page-header">
+    <h1>Sugestões de Substituição — Texto Secundário</h1>
+    <p>
+      O par <strong>#64748B sobre #F5F7FA</strong> obteve contraste de 4,43:1 — ligeiramente
+      abaixo do mínimo WCAG 2.1 AA de 4,5:1 para texto normal. Os cards abaixo apresentam
+      alternativas com visualização real sobre o fundo do protótipo.
+    </p>
+  </header>
+
+  <!-- PROBLEMA ATUAL -->
+  <div class="problem-banner">
+    <div class="problem-swatch">
+      <span class="swatch-text">Aa</span>
+      <span class="swatch-label">#64748B</span>
+    </div>
+    <div class="problem-info">
+      <h2>Cor atual &mdash; reprova<span class="badge-fail">4,43:1</span></h2>
+      <p>
+        <strong>#64748B</strong> sobre <strong>#F5F7FA</strong> (fundo geral do protótipo).
+        O limiar mínimo é 4,5:1 para texto normal pequeno (WCAG 2.1, Critério 1.4.3, Nível AA).
+        A diferença é de apenas 0,07 — uma pequena escurecida resolve o problema sem alterar
+        a identidade visual do projeto.
+      </p>
+    </div>
+  </div>
+
+  <!-- ALTERNATIVAS -->
+  <p class="section-title">Alternativas sugeridas</p>
+  <div class="cards-grid">
+
+    <!-- MAIS CLARA POSSÍVEL -->
+    <div class="card lightest">
+      <span class="badge-option">Limite</span>
+      <span class="badge-lightest">🌕 Mais clara possível</span>
+      <div class="card-preview">
+        <div class="preview-label">Texto sobre fundo do protótipo</div>
+        <div class="preview-demo">
+          <span class="preview-title">Relógio prata — Bloco B</span>
+          <span class="preview-meta" style="color:#637389">📍 Biblioteca Central · 22 mai 2026</span>
+          <span class="preview-caption" style="color:#637389">Aguardando retirada pelo proprietário</span>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-hex">
+          <span class="color-dot" style="background:#637389"></span>
+          #637389
+        </div>
+        <div class="card-name">Diferença mínima — 1 canal de distância de #64748B</div>
+        <div class="ratios">
+          <div class="ratio-row">
+            <span class="ratio-bg-swatch" style="background:#F5F7FA"></span>
+            <span class="ratio-label">em #F5F7FA</span>
+            <div class="ratio-bar-wrap">
+              <div class="ratio-bar" style="width:50%; background:#637389"></div>
+            </div>
+            <span class="ratio-value" style="color:#15803D">4,50</span>
+            <span class="badge-pass">AA</span>
+          </div>
+          <div class="ratio-row">
+            <span class="ratio-bg-swatch" style="background:#FFFFFF; border:1px solid #e2e8f0"></span>
+            <span class="ratio-label">em #FFFFFF</span>
+            <div class="ratio-bar-wrap">
+              <div class="ratio-bar" style="width:54%; background:#637389"></div>
+            </div>
+            <span class="ratio-value" style="color:#15803D">4,83</span>
+            <span class="badge-pass">AA</span>
+          </div>
+        </div>
+        <div class="card-snippet">
+          <span class="kw">--c-text-sec</span>: <span class="val">#637389</span>;
+        </div>
+      </div>
+    </div>
+
+    <!-- OPÇÃO A -->
+    <div class="card">
+      <span class="badge-option">Opção A</span>
+      <div class="card-preview">
+        <div class="preview-label">Texto sobre fundo do protótipo</div>
+        <div class="preview-demo">
+          <span class="preview-title">Relógio prata — Bloco B</span>
+          <span class="preview-meta" style="color:#5B6B80">📍 Biblioteca Central · 22 mai 2026</span>
+          <span class="preview-caption" style="color:#5B6B80">Aguardando retirada pelo proprietário</span>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-hex">
+          <span class="color-dot" style="background:#5B6B80"></span>
+          #5B6B80
+        </div>
+        <div class="card-name">Slate médio-claro</div>
+        <div class="ratios">
+          <div class="ratio-row">
+            <span class="ratio-bg-swatch" style="background:#F5F7FA"></span>
+            <span class="ratio-label">em #F5F7FA</span>
+            <div class="ratio-bar-wrap">
+              <div class="ratio-bar" style="width:56%; background:#5B6B80"></div>
+            </div>
+            <span class="ratio-value" style="color:#15803D">5,07</span>
+            <span class="badge-pass">AA</span>
+          </div>
+          <div class="ratio-row">
+            <span class="ratio-bg-swatch" style="background:#FFFFFF; border:1px solid #e2e8f0"></span>
+            <span class="ratio-label">em #FFFFFF</span>
+            <div class="ratio-bar-wrap">
+              <div class="ratio-bar" style="width:60%; background:#5B6B80"></div>
+            </div>
+            <span class="ratio-value" style="color:#15803D">5,44</span>
+            <span class="badge-pass">AA</span>
+          </div>
+        </div>
+        <div class="card-snippet">
+          <span class="kw">--c-text-sec</span>: <span class="val">#5B6B80</span>;
+        </div>
+      </div>
+    </div>
+
+    <!-- OPÇÃO B — RECOMENDADA -->
+    <div class="card recommended">
+      <span class="badge-option">Opção B</span>
+      <span class="badge-recommended">⭐ Recomendada</span>
+      <div class="card-preview">
+        <div class="preview-label">Texto sobre fundo do protótipo</div>
+        <div class="preview-demo">
+          <span class="preview-title">Relógio prata — Bloco B</span>
+          <span class="preview-meta" style="color:#526173">📍 Biblioteca Central · 22 mai 2026</span>
+          <span class="preview-caption" style="color:#526173">Aguardando retirada pelo proprietário</span>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-hex">
+          <span class="color-dot" style="background:#526173"></span>
+          #526173
+        </div>
+        <div class="card-name">Slate-azulado médio</div>
+        <div class="ratios">
+          <div class="ratio-row">
+            <span class="ratio-bg-swatch" style="background:#F5F7FA"></span>
+            <span class="ratio-label">em #F5F7FA</span>
+            <div class="ratio-bar-wrap">
+              <div class="ratio-bar" style="width:65%; background:#526173"></div>
+            </div>
+            <span class="ratio-value" style="color:#15803D">5,90</span>
+            <span class="badge-pass">AA</span>
+          </div>
+          <div class="ratio-row">
+            <span class="ratio-bg-swatch" style="background:#FFFFFF; border:1px solid #e2e8f0"></span>
+            <span class="ratio-label">em #FFFFFF</span>
+            <div class="ratio-bar-wrap">
+              <div class="ratio-bar" style="width:70%; background:#526173"></div>
+            </div>
+            <span class="ratio-value" style="color:#15803D">6,33</span>
+            <span class="badge-pass">AA</span>
+          </div>
+        </div>
+        <div class="card-snippet">
+          <span class="kw">--c-text-sec</span>: <span class="val">#526173</span>;
+        </div>
+      </div>
+    </div>
+
+    <!-- OPÇÃO C -->
+    <div class="card">
+      <span class="badge-option">Opção C</span>
+      <div class="card-preview">
+        <div class="preview-label">Texto sobre fundo do protótipo</div>
+        <div class="preview-demo">
+          <span class="preview-title">Relógio prata — Bloco B</span>
+          <span class="preview-meta" style="color:#475569">📍 Biblioteca Central · 22 mai 2026</span>
+          <span class="preview-caption" style="color:#475569">Aguardando retirada pelo proprietário</span>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-hex">
+          <span class="color-dot" style="background:#475569"></span>
+          #475569
+        </div>
+        <div class="card-name">Slate 600 (Tailwind)</div>
+        <div class="ratios">
+          <div class="ratio-row">
+            <span class="ratio-bg-swatch" style="background:#F5F7FA"></span>
+            <span class="ratio-label">em #F5F7FA</span>
+            <div class="ratio-bar-wrap">
+              <div class="ratio-bar" style="width:78%; background:#475569"></div>
+            </div>
+            <span class="ratio-value" style="color:#15803D">7,06</span>
+            <span class="badge-pass">AAA</span>
+          </div>
+          <div class="ratio-row">
+            <span class="ratio-bg-swatch" style="background:#FFFFFF; border:1px solid #e2e8f0"></span>
+            <span class="ratio-label">em #FFFFFF</span>
+            <div class="ratio-bar-wrap">
+              <div class="ratio-bar" style="width:84%; background:#475569"></div>
+            </div>
+            <span class="ratio-value" style="color:#15803D">7,58</span>
+            <span class="badge-pass">AAA</span>
+          </div>
+        </div>
+        <div class="card-snippet">
+          <span class="kw">--c-text-sec</span>: <span class="val">#475569</span>;
+        </div>
+      </div>
+    </div>
+
+    <!-- OPÇÃO D -->
+    <div class="card">
+      <span class="badge-option">Opção D</span>
+      <div class="card-preview">
+        <div class="preview-label">Texto sobre fundo do protótipo</div>
+        <div class="preview-demo">
+          <span class="preview-title">Relógio prata — Bloco B</span>
+          <span class="preview-meta" style="color:#4B5563">📍 Biblioteca Central · 22 mai 2026</span>
+          <span class="preview-caption" style="color:#4B5563">Aguardando retirada pelo proprietário</span>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-hex">
+          <span class="color-dot" style="background:#4B5563"></span>
+          #4B5563
+        </div>
+        <div class="card-name">Gray 600 (neutro)</div>
+        <div class="ratios">
+          <div class="ratio-row">
+            <span class="ratio-bg-swatch" style="background:#F5F7FA"></span>
+            <span class="ratio-label">em #F5F7FA</span>
+            <div class="ratio-bar-wrap">
+              <div class="ratio-bar" style="width:78%; background:#4B5563"></div>
+            </div>
+            <span class="ratio-value" style="color:#15803D">7,04</span>
+            <span class="badge-pass">AAA</span>
+          </div>
+          <div class="ratio-row">
+            <span class="ratio-bg-swatch" style="background:#FFFFFF; border:1px solid #e2e8f0"></span>
+            <span class="ratio-label">em #FFFFFF</span>
+            <div class="ratio-bar-wrap">
+              <div class="ratio-bar" style="width:84%; background:#4B5563"></div>
+            </div>
+            <span class="ratio-value" style="color:#15803D">7,56</span>
+            <span class="badge-pass">AAA</span>
+          </div>
+        </div>
+        <div class="card-snippet">
+          <span class="kw">--c-text-sec</span>: <span class="val">#4B5563</span>;
+        </div>
+      </div>
+    </div>
+
+    <!-- OPÇÃO E -->
+    <div class="card">
+      <span class="badge-option">Opção E</span>
+      <div class="card-preview">
+        <div class="preview-label">Texto sobre fundo do protótipo</div>
+        <div class="preview-demo">
+          <span class="preview-title">Relógio prata — Bloco B</span>
+          <span class="preview-meta" style="color:#334155">📍 Biblioteca Central · 22 mai 2026</span>
+          <span class="preview-caption" style="color:#334155">Aguardando retirada pelo proprietário</span>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-hex">
+          <span class="color-dot" style="background:#334155"></span>
+          #334155
+        </div>
+        <div class="card-name">Slate 700 (escuro)</div>
+        <div class="ratios">
+          <div class="ratio-row">
+            <span class="ratio-bg-swatch" style="background:#F5F7FA"></span>
+            <span class="ratio-label">em #F5F7FA</span>
+            <div class="ratio-bar-wrap">
+              <div class="ratio-bar" style="width:100%; background:#334155"></div>
+            </div>
+            <span class="ratio-value" style="color:#15803D">9,65</span>
+            <span class="badge-pass">AAA</span>
+          </div>
+          <div class="ratio-row">
+            <span class="ratio-bg-swatch" style="background:#FFFFFF; border:1px solid #e2e8f0"></span>
+            <span class="ratio-label">em #FFFFFF</span>
+            <div class="ratio-bar-wrap">
+              <div class="ratio-bar" style="width:100%; background:#334155"></div>
+            </div>
+            <span class="ratio-value" style="color:#15803D">10,35</span>
+            <span class="badge-pass">AAA</span>
+          </div>
+        </div>
+        <div class="card-snippet">
+          <span class="kw">--c-text-sec</span>: <span class="val">#334155</span>;
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /cards-grid -->
+
+  <div class="note">
+    <strong>Recomendação final:</strong> a Opção B (<strong>#526173</strong>) é a escolha mais equilibrada.
+    Ela resolve a reprovação com folga (5,90:1 &gt; 4,5:1) e mantém a diferença visual entre texto
+    principal e texto secundário, preservando a hierarquia da interface.
+    Para aplicar, basta alterar uma linha no arquivo <code>style.css</code>:
+    <code>--c-text-sec: #526173;</code>
+  </div>
+
+</body>
+</html>
