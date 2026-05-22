@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+<title>UniAchados — Ícones Material</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', system-ui, sans-serif; background: #F5F7FA; padding: 32px; color: #1E293B; max-width: 720px; }
+  h1 { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+  .subtitle { font-size: 13px; color: #64748B; margin-bottom: 28px; }
+  .section { margin-bottom: 24px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em;
+                   color: #94A3B8; margin-bottom: 14px; }
+  .icons-grid { display: flex; flex-wrap: wrap; gap: 12px; }
+  .icon-item { background: #fff; border-radius: 10px; padding: 14px 16px; text-align: center;
+               box-shadow: 0 1px 4px rgba(0,0,0,0.08); min-width: 80px; }
+  .material-icons-outlined { font-size: 28px; color: #1E3A5F; display: block; margin-bottom: 6px; }
+  .icon-label { font-size: 10px; color: #64748B; font-weight: 500; line-height: 1.3; }
+  .icon-item.secondary .material-icons-outlined { color: #2E7D8C; }
+  .icon-item.accent .material-icons-outlined { color: #4A90D9; }
+  .icon-item.danger .material-icons-outlined { color: #B91C1C; }
+  .icon-item.success .material-icons-outlined { color: #15803D; }
+  /* Badge de status inline demo */
+  .status-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
+  .badge { display: inline-flex; align-items: center; gap: 5px; border-radius: 20px; padding: 4px 12px; font-size: 12px; font-weight: 600; }
+  .badge .material-icons-outlined { font-size: 14px; }
+  .b-lost    { background:#FEE2E2; color:#B91C1C; }
+  .b-found   { background:#DCFCE7; color:#15803D; }
+  .b-pending { background:#FEF3C7; color:#B45309; }
+  .b-waiting { background:#DBEAFE; color:#1D4ED8; }
+  .b-done    { background:#D1FAE5; color:#065F46; }
+</style>
+</head>
+<body>
+<h1>UniAchados — Ícones e Badges de Status</h1>
+<p class="subtitle">Biblioteca: Material Icons Outlined (Google) · Integração com Figma</p>
+
+<div class="section">
+  <div class="section-title">Ícones Principais da Interface</div>
+  <div class="icons-grid">
+    <div class="icon-item"><span class="material-icons-outlined">search</span><div class="icon-label">Buscar</div></div>
+    <div class="icon-item secondary"><span class="material-icons-outlined">notifications</span><div class="icon-label">Notificações</div></div>
+    <div class="icon-item"><span class="material-icons-outlined">person</span><div class="icon-label">Perfil</div></div>
+    <div class="icon-item accent"><span class="material-icons-outlined">add_circle</span><div class="icon-label">Cadastrar</div></div>
+    <div class="icon-item"><span class="material-icons-outlined">place</span><div class="icon-label">Local</div></div>
+    <div class="icon-item secondary"><span class="material-icons-outlined">photo_camera</span><div class="icon-label">Foto</div></div>
+    <div class="icon-item accent"><span class="material-icons-outlined">filter_list</span><div class="icon-label">Filtros</div></div>
+    <div class="icon-item"><span class="material-icons-outlined">history</span><div class="icon-label">Histórico</div></div>
+    <div class="icon-item secondary"><span class="material-icons-outlined">inventory_2</span><div class="icon-label">Objetos</div></div>
+    <div class="icon-item success"><span class="material-icons-outlined">verified</span><div class="icon-label">Validado</div></div>
+    <div class="icon-item danger"><span class="material-icons-outlined">warning</span><div class="icon-label">Alerta</div></div>
+    <div class="icon-item"><span class="material-icons-outlined">help_outline</span><div class="icon-label">Ajuda</div></div>
+    <div class="icon-item accent"><span class="material-icons-outlined">home</span><div class="icon-label">Home</div></div>
+    <div class="icon-item"><span class="material-icons-outlined">list_alt</span><div class="icon-label">Solicitações</div></div>
+    <div class="icon-item success"><span class="material-icons-outlined">check_circle</span><div class="icon-label">Sucesso</div></div>
+    <div class="icon-item danger"><span class="material-icons-outlined">cancel</span><div class="icon-label">Rejeitar</div></div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">Badges de Status — Redundância Visual (cor + ícone + texto)</div>
+  <div class="status-row">
+    <span class="badge b-lost"><span class="material-icons-outlined">warning</span>Perdido</span>
+    <span class="badge b-found"><span class="material-icons-outlined">inventory_2</span>Encontrado</span>
+    <span class="badge b-pending"><span class="material-icons-outlined">hourglass_empty</span>Em análise</span>
+    <span class="badge b-waiting"><span class="material-icons-outlined">schedule</span>Aguardando retirada</span>
+    <span class="badge b-done"><span class="material-icons-outlined">check_circle</span>Finalizado</span>
+  </div>
+</div>
+</body>
+</html>

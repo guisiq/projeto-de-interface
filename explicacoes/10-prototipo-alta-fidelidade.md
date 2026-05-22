@@ -76,11 +76,13 @@
 ### Badges de Status
 | Status | Cor de fundo | Cor do texto | Ícone |
 |---|---|---|---|
-| Perdido | #FFCDD2 (vermelho claro) | #C62828 | warning |
-| Encontrado | #C8E6C9 (verde claro) | #2E7D32 | inventory |
-| Em análise | #FFF3E0 (laranja claro) | #E65100 | hourglass |
-| Aguardando retirada | #BBDEFB (azul claro) | #1565C0 | schedule |
-| Finalizado | #C8E6C9 (verde claro) | #2E7D32 | check_circle |
+| Perdido | #FEE2E2 (vermelho névoa) | #B91C1C | warning |
+| Encontrado | #DCFCE7 (verde névoa) | #15803D | inventory |
+| Em análise | #FEF3C7 (âmbar névoa) | #B45309 | hourglass |
+| Aguardando retirada | #DBEAFE (azul névoa) | #1D4ED8 | schedule |
+| Finalizado | #D1FAE5 (verde menta) | #065F46 | check_circle |
+
+> As cores de fundo dos badges são versões muito claras (névoa) das cores de status, garantindo legibilidade do texto escuro sobre elas. A combinação fundo-névoa + texto escuro mantém contraste WCAG AA sem o aspecto "neon" da paleta anterior.
 
 ### Inputs/Campos
 - Borda cinza (#BDBDBD), arredondamento 8px, altura 48px

@@ -16,32 +16,41 @@ A paleta de cores é o conjunto limitado de cores usado consistentemente em toda
 
 ---
 
-### Paleta Escolhida para o Projeto
+### Paleta Escolhida para o Projeto (Revisada)
+
+> Paleta original substituída por versão mais coesa e sóbria, baseada em pesquisa no Color Hunt e Coolors.
 
 | Cor | Código HEX | Nome | Uso na interface |
 |---|---|---|---|
-| Primária | #1565C0 | Azul Institucional | Botões principais, links, header |
-| Secundária | #26A69A | Verde-água | Ações secundárias, destaques positivos |
-| Fundo | #FAFAFA | Cinza muito claro | Background geral |
+| Primária | #1E3A5F | Azul Naval | Botões principais, links, header |
+| Secundária | #2E7D8C | Teal Médio | Ações secundárias, bordas de destaque |
+| Accent | #4A90D9 | Azul Claro | Ícones ativos, chips selecionados |
+| Fundo | #F5F7FA | Cinza Névoa | Background geral |
 | Superfície | #FFFFFF | Branco | Cards, modais, formulários |
-| Texto principal | #212121 | Cinza escuro | Corpo de texto |
-| Texto secundário | #757575 | Cinza médio | Labels, informações auxiliares |
-| Alerta/Erro | #E53935 | Vermelho | Erros, status "Perdido" |
-| Aviso | #FB8C00 | Laranja/Amarelo | Status "Em análise" |
-| Sucesso | #43A047 | Verde | Status "Finalizado", confirmações |
-| Status neutro | #1E88E5 | Azul claro | Status "Aguardando retirada" |
+| Texto principal | #1E293B | Azul-Carvão | Corpo de texto, labels |
+| Texto secundário | #64748B | Slate Médio | Informações auxiliares, placeholders |
+| Alerta/Erro | #B91C1C | Vermelho Escuro | Erros, status "Perdido" |
+| Aviso | #B45309 | Âmbar Escuro | Status "Em análise" |
+| Sucesso | #15803D | Verde Escuro | Status "Finalizado", confirmações |
+| Info | #1D4ED8 | Azul Profundo | Status "Aguardando retirada" |
 
 ---
 
 ### Lógica Cromática
 
-**Esquema:** Complementar dividida (azul como base + verde-água como complementar próximo).
+**Esquema:** Análogo azul (azul naval → azul claro → teal) — todas as cores base ocupam o mesmo arco do círculo cromático.
 
-**Justificativa:**
-- **Azul** transmite confiança, seriedade e organização — adequado para ambiente acadêmico/institucional.
-- **Verde-água** transmite acessibilidade, modernidade e calma.
-- **Fundo claro** reduz fadiga visual e aumenta legibilidade.
-- **Cores de status** seguem convenções universais (vermelho = problema, verde = ok, amarelo = atenção).
+**Por que mudar a paleta anterior?**
+- #1565C0 (azul Material Design primário) e #26A69A (teal Material Design) têm saturações díspares e criam contraste de croma excessivo.
+- As cores de status (#E53935, #FB8C00, #43A047) eram muito saturadas ("neon"), inadequadas para contexto institucional sério.
+- A nova paleta usa tons escurecidos e dessaturados que harmonizam entre si.
+
+**Justificativa da nova paleta:**
+- **Azul Naval (#1E3A5F)** — autoridade, confiança, seriedade acadêmica. Pesado o suficiente para ser primária sem saturação agressiva.
+- **Teal Médio (#2E7D8C)** — conecta-se ao azul por vizinhança no círculo; mais suave que o verde-água anterior.
+- **Azul Claro (#4A90D9)** — versão mais clara da primária, usada para estados ativos e ícones sem criar dissonância.
+- **Fundo Cinza Névoa (#F5F7FA)** — menos frio que #FAFAFA, mais agradável para uso prolongado.
+- **Status escuros** (vermelho, âmbar, verde) — melhor relação de contraste sobre fundo claro, aparência mais madura.
 
 ---
 
