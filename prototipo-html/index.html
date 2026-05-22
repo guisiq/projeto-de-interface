@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=375, initial-scale=1.0" />
+  <title>UniAchados — Protótipo</title>
+  <!-- Inter font — loaded from Google Fonts (works in any browser) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <!-- Icons are rendered as inline SVG via icons.js — no external icon font needed -->
+  <link rel="stylesheet" href="style.css" />
+  <script src="icons.js"></script>
+  <script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     SHELL — phone frame
+════════════════════════════════════════ -->
+<div class="phone-shell">
+  <div class="phone-status-bar">
+    <span class="status-time">09:41</span>
+    <span class="status-icons">
+      <span class="material-icons-outlined" style="font-size:14px">signal_cellular_4_bar</span>
+      <span class="material-icons-outlined" style="font-size:14px">wifi</span>
+      <span class="material-icons-outlined" style="font-size:14px">battery_full</span>
+    </span>
+  </div>
+
+  <!-- ── SCREEN CONTAINER ── -->
+  <div class="screen-container" id="screen-container">
+
+    <!-- ═══════════════════════════════════
+         SCREEN 1 — Boas-vindas
+    ════════════════════════════════════ -->
+    <div class="screen" id="screen-welcome" data-screen="welcome">
+      <div class="welcome-bg">
+        <div class="welcome-content">
+          <div class="welcome-logo">
+            <span class="material-icons-outlined welcome-icon">search</span>
+            <h1 class="welcome-title">UniAchados</h1>
+            <p class="welcome-sub">Achados e perdidos universitários</p>
+          </div>
+          <div class="welcome-illustration">
+            <div class="illus-circle"></div>
+            <span class="material-icons-outlined illus-icon">backpack</span>
+          </div>
+          <p class="welcome-desc">
+            Encontre seus objetos perdidos no campus ou cadastre o que você encontrou.
+          </p>
+          <div class="welcome-actions">
+            <button class="btn-primary" onclick="goTo('home')">Entrar</button>
+            <button class="btn-secondary" onclick="goTo('home')">Criar conta</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════
+         SCREEN 2 — Home do Aluno
+    ════════════════════════════════════ -->
+    <div class="screen hidden" id="screen-home" data-screen="home">
+      <div class="topbar">
+        <div class="topbar-left">
+          <span class="material-icons-outlined topbar-logo-icon">search</span>
+          <span class="topbar-brand">UniAchados</span>
+        </div>
+        <button class="icon-btn" onclick="goTo('notificacoes')">
+          <span class="material-icons-outlined">notifications</span>
+          <span class="badge-dot">3</span>
+        </button>
+      </div>
+
+      <div class="screen-body scroll">
+        <div class="search-bar-wrapper">
+          <span class="material-icons-outlined search-icon-inner">search</span>
+          <input class="search-bar" placeholder="Buscar objeto..." onclick="goTo('buscar')" readonly />
+        </div>
+
+        <div class="section-header">
+          <span class="section-title">Objetos recentes</span>
+          <button class="link-btn" onclick="goTo('buscar')">Ver todos</button>
+        </div>
+
+        <div class="cards-scroll">
+          <div class="card-item" onclick="goTo('detalhes')">
+            <div class="card-img card-img-blue"><span class="material-icons-outlined" style="font-size:32px;color:#4A90D9">headphones</span></div>
+            <div class="card-info">
+              <span class="card-title">Fone de ouvido preto</span>
+              <span class="card-meta"><span class="material-icons-outlined" style="font-size:12px">location_on</span> Biblioteca Central</span>
+              <span class="badge badge-found">Encontrado</span>
+            </div>
+          </div>
+
+          <div class="card-item" onclick="goTo('detalhes')">
+            <div class="card-img card-img-teal"><span class="material-icons-outlined" style="font-size:32px;color:#2E7D8C">watch</span></div>
+            <div class="card-info">
+              <span class="card-title">Relógio prata</span>
+              <span class="card-meta"><span class="material-icons-outlined" style="font-size:12px">location_on</span> Bloco B – Lab. 2</span>
+              <span class="badge badge-found">Encontrado</span>
+            </div>
+          </div>
+
+          <div class="card-item" onclick="goTo('detalhes')">
+            <div class="card-img card-img-gray"><span class="material-icons-outlined" style="font-size:32px;color:#64748B">charging_station</span></div>
+            <div class="card-info">
+              <span class="card-title">Carregador USB-C</span>
+              <span class="card-meta"><span class="material-icons-outlined" style="font-size:12px">location_on</span> Cantina</span>
+              <span class="badge badge-waiting">Ag. retirada</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-header" style="margin-top:16px">
+          <span class="section-title">Minhas solicitações</span>
+          <button class="link-btn" onclick="goTo('solicitacoes')">Ver todas</button>
+        </div>
+
+        <div class="request-row" onclick="goTo('solicitacoes')">
+          <span class="material-icons-outlined req-icon">inventory_2</span>
+          <div class="req-info">
+            <span class="req-title">Garrafa térmica verde</span>
+            <span class="req-meta">Solicitação enviada · 22 mai 2026</span>
+          </div>
+          <span class="badge badge-analysis">Em análise</span>
+        </div>
+
+        <div style="height:24px"></div>
+      </div>
+
+      <button class="fab" onclick="goTo('cadastrar-perdido')">
+        <span class="material-icons-outlined">add</span>
+      </button>
+
+      <div class="bottom-nav">
+        <button class="nav-btn active" onclick="goTo('home')">
+          <span class="material-icons-outlined">home</span><span>Home</span>
+        </button>
+        <button class="nav-btn" onclick="goTo('buscar')">
+          <span class="material-icons-outlined">search</span><span>Buscar</span>
+        </button>
+        <button class="nav-btn" onclick="goTo('cadastrar-perdido')">
+          <span class="material-icons-outlined">add_circle_outline</span><span>Cadastrar</span>
+        </button>
+        <button class="nav-btn" onclick="goTo('solicitacoes')">
+          <span class="material-icons-outlined">inbox</span><span>Solicitações</span>
+        </button>
+        <button class="nav-btn" onclick="goTo('perfil')">
+          <span class="material-icons-outlined">person_outline</span><span>Perfil</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════
+         SCREEN 3 — Buscar Objetos
+    ════════════════════════════════════ -->
+    <div class="screen hidden" id="screen-buscar" data-screen="buscar">
+      <div class="topbar topbar-back">
+        <button class="icon-btn" onclick="goTo('home')">
+          <span class="material-icons-outlined">arrow_back</span>
+        </button>
+        <span class="topbar-title">Buscar objetos</span>
+        <div style="width:40px"></div>
+      </div>
+
+      <div class="screen-body scroll">
+        <div class="search-bar-wrapper search-active">
+          <span class="material-icons-outlined search-icon-inner">search</span>
+          <input class="search-bar" placeholder="Buscar objeto..." value="carregador" />
+        </div>
+
+        <div class="filter-chips">
+          <button class="chip chip-active">Todos</button>
+          <button class="chip">Eletrônicos</button>
+          <button class="chip">Documentos</button>
+          <button class="chip">Roupas</button>
+          <button class="chip">Acessórios</button>
+        </div>
+
+        <div class="filter-row">
+          <button class="filter-btn"><span class="material-icons-outlined" style="font-size:16px">location_on</span> Local</button>
+          <button class="filter-btn"><span class="material-icons-outlined" style="font-size:16px">calendar_today</span> Data</button>
+          <button class="filter-btn filter-btn-active"><span class="material-icons-outlined" style="font-size:16px">label</span> Status: Encontrado ✕</button>
+        </div>
+
+        <p class="results-count">12 objetos encontrados</p>
+
+        <div class="card-list">
+          <div class="card-list-item" onclick="goTo('detalhes')">
+            <div class="card-img-sm card-img-blue"><span class="material-icons-outlined" style="font-size:24px;color:#4A90D9">charging_station</span></div>
+            <div class="card-info">
+              <span class="card-title">Carregador USB-C Branco</span>
+              <span class="card-meta"><span class="material-icons-outlined" style="font-size:12px">location_on</span> Biblioteca Central · 22 mai</span>
+              <span class="badge badge-found">Encontrado</span>
+            </div>
+            <span class="material-icons-outlined" style="color:#64748B;margin-left:auto">chevron_right</span>
+          </div>
+
+          <div class="card-list-item" onclick="goTo('detalhes')">
+            <div class="card-img-sm card-img-gray"><span class="material-icons-outlined" style="font-size:24px;color:#64748B">charging_station</span></div>
+            <div class="card-info">
+              <span class="card-title">Carregador Apple</span>
+              <span class="card-meta"><span class="material-icons-outlined" style="font-size:12px">location_on</span> Bloco A – Sala 12 · 20 mai</span>
+              <span class="badge badge-found">Encontrado</span>
+            </div>
+            <span class="material-icons-outlined" style="color:#64748B;margin-left:auto">chevron_right</span>
+          </div>
+
+          <div class="card-list-item" onclick="goTo('detalhes')">
+            <div class="card-img-sm card-img-teal"><span class="material-icons-outlined" style="font-size:24px;color:#2E7D8C">power</span></div>
+            <div class="card-info">
+              <span class="card-title">Carregador portátil</span>
+              <span class="card-meta"><span class="material-icons-outlined" style="font-size:12px">location_on</span> Cantina · 18 mai</span>
+              <span class="badge badge-waiting">Ag. retirada</span>
+            </div>
+            <span class="material-icons-outlined" style="color:#64748B;margin-left:auto">chevron_right</span>
+          </div>
+
+          <div class="card-list-item" onclick="goTo('detalhes')">
+            <div class="card-img-sm card-img-gray"><span class="material-icons-outlined" style="font-size:24px;color:#64748B">charging_station</span></div>
+            <div class="card-info">
+              <span class="card-title">Carregador USB-C Preto</span>
+              <span class="card-meta"><span class="material-icons-outlined" style="font-size:12px">location_on</span> Lab. Informática · 15 mai</span>
+              <span class="badge badge-done">Finalizado</span>
+            </div>
+            <span class="material-icons-outlined" style="color:#64748B;margin-left:auto">chevron_right</span>
+          </div>
+        </div>
+        <div style="height:24px"></div>
+      </div>
+
+      <div class="bottom-nav">
+        <button class="nav-btn" onclick="goTo('home')">
+          <span class="material-icons-outlined">home</span><span>Home</span>
+        </button>
+        <button class="nav-btn active" onclick="goTo('buscar')">
+          <span class="material-icons-outlined">search</span><span>Buscar</span>
+        </button>
+        <button class="nav-btn" onclick="goTo('cadastrar-perdido')">
+          <span class="material-icons-outlined">add_circle_outline</span><span>Cadastrar</span>
+        </button>
+        <button class="nav-btn" onclick="goTo('solicitacoes')">
+          <span class="material-icons-outlined">inbox</span><span>Solicitações</span>
+        </button>
+        <button class="nav-btn" onclick="goTo('perfil')">
+          <span class="material-icons-outlined">person_outline</span><span>Perfil</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════
+         SCREEN 4 — Detalhes do Objeto
+    ════════════════════════════════════ -->
+    <div class="screen hidden" id="screen-detalhes" data-screen="detalhes">
+      <div class="topbar topbar-back">
+        <button class="icon-btn" onclick="goTo('buscar')">
+          <span class="material-icons-outlined">arrow_back</span>
+        </button>
+        <span class="topbar-title">Detalhes</span>
+        <button class="icon-btn"><span class="material-icons-outlined">share</span></button>
+      </div>
+
+      <div class="screen-body scroll">
+        <div class="detail-img-hero">
+          <span class="material-icons-outlined" style="font-size:72px;color:#4A90D9">charging_station</span>
+        </div>
+
+        <div class="detail-body">
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <h2 class="detail-title">Carregador USB-C Branco</h2>
+            <span class="badge badge-found">Encontrado</span>
+          </div>
+
+          <div class="detail-rows">
+            <div class="detail-row">
+              <span class="material-icons-outlined detail-row-icon">category</span>
+              <div>
+                <span class="detail-label">Categoria</span>
+                <span class="detail-value">Eletrônicos</span>
+              </div>
+            </div>
+            <div class="detail-row">
+              <span class="material-icons-outlined detail-row-icon">location_on</span>
+              <div>
+                <span class="detail-label">Local encontrado</span>
+                <span class="detail-value">Biblioteca Central — 1º andar</span>
+              </div>
+            </div>
+            <div class="detail-row">
+              <span class="material-icons-outlined detail-row-icon">calendar_today</span>
+              <div>
+                <span class="detail-label">Data e hora</span>
+                <span class="detail-value">22 mai 2026, 10:30</span>
+              </div>
+            </div>
+            <div class="detail-row">
+              <span class="material-icons-outlined detail-row-icon">description</span>
+              <div>
+                <span class="detail-label">Descrição</span>
+                <span class="detail-value">Carregador USB-C branco, cabo comprido, sem marca visível. Encontrado próximo às mesas de estudo.</span>
+              </div>
+            </div>
+            <div class="detail-row">
+              <span class="material-icons-outlined detail-row-icon">storefront</span>
+              <div>
+                <span class="detail-label">Onde retirar</span>
+                <span class="detail-value">Secretaria Acadêmica — Bloco A</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="height:80px"></div>
+        </div>
+      </div>
+
+      <div class="bottom-action-bar">
+        <button class="btn-primary btn-full" onclick="goTo('solicitar-retirada')">Solicitar Retirada</button>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════
+         SCREEN 5 — Solicitar Retirada
+    ════════════════════════════════════ -->
+    <div class="screen hidden" id="screen-solicitar-retirada" data-screen="solicitar-retirada">
+      <div class="topbar topbar-back">
+        <button class="icon-btn" onclick="goTo('detalhes')">
+          <span class="material-icons-outlined">arrow_back</span>
+        </button>
+        <span class="topbar-title">Solicitar retirada</span>
+        <div style="width:40px"></div>
+      </div>
+
+      <div class="screen-body scroll">
+        <div class="info-box">
+          <span class="material-icons-outlined" style="color:#1D4ED8">info</span>
+          <p>Para validar que o objeto é seu, descreva características específicas e envie um documento de identificação.</p>
+        </div>
+
+        <div class="form-section">
+          <label class="form-label">Objeto solicitado</label>
+          <div class="field-readonly">Carregador USB-C Branco</div>
+        </div>
+
+        <div class="form-section">
+          <label class="form-label">Descreva características do objeto <span class="req">*</span></label>
+          <textarea class="form-textarea" placeholder="Ex.: tem um adesivo azul perto do pino, o cabo é mais longo que os normais...">Tem um adesivo azul perto do pino, cabo 2 metros.</textarea>
+        </div>
+
+        <div class="form-section">
+          <label class="form-label">Documento de identificação <span class="req">*</span></label>
+          <button class="upload-btn">
+            <span class="material-icons-outlined">upload_file</span>
+            Anexar RG ou Carteira de Estudante
+          </button>
+        </div>
+
+        <div class="form-section">
+          <label class="form-label">Observações (opcional)</label>
+          <textarea class="form-textarea" placeholder="Informações adicionais para o responsável..."></textarea>
+        </div>
+
+        <div style="height:24px"></div>
+      </div>
+
+      <div class="bottom-action-bar">
+        <button class="btn-secondary btn-full" onclick="goTo('detalhes')" style="margin-bottom:8px">Cancelar</button>
+        <button class="btn-primary btn-full" onclick="goTo('confirmacao-solicitacao')">Enviar Solicitação</button>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════
+         SCREEN 6 — Confirmação Solicitação
+    ════════════════════════════════════ -->
+    <div class="screen hidden" id="screen-confirmacao-solicitacao" data-screen="confirmacao-solicitacao">
+      <div class="screen-body center-content">
+        <div class="confirm-icon confirm-icon-success">
+          <span class="material-icons-outlined" style="font-size:48px;color:#15803D">check_circle</span>
+        </div>
+        <h2 class="confirm-title">Solicitação enviada!</h2>
+        <p class="confirm-desc">Seu pedido foi registrado. O responsável irá analisar e entrar em contato.</p>
+
+        <div class="confirm-summary">
+          <div class="summary-row">
+            <span class="summary-label">Objeto</span>
+            <span class="summary-value">Carregador USB-C Branco</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Status</span>
+            <span class="badge badge-analysis">Em análise</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Próx. passo</span>
+            <span class="summary-value">Aguardar validação — até 2 dias úteis</span>
+          </div>
+        </div>
+
+        <div class="confirm-steps">
+          <div class="step step-done">
+            <span class="step-dot step-dot-done"><span class="material-icons-outlined" style="font-size:14px">check</span></span>
+            <span class="step-text">Solicitação enviada</span>
+          </div>
+          <div class="step-line"></div>
+          <div class="step step-current">
+            <span class="step-dot step-dot-current">2</span>
+            <span class="step-text">Validação pelo responsável</span>
+          </div>
+          <div class="step-line"></div>
+          <div class="step">
+            <span class="step-dot">3</span>
+            <span class="step-text">Retirada na secretaria</span>
+          </div>
+        </div>
+
+        <button class="btn-primary btn-full" onclick="goTo('solicitacoes')" style="margin-top:24px">Ver minhas solicitações</button>
+        <button class="link-btn" onclick="goTo('home')" style="margin-top:12px;display:block;text-align:center">Voltar ao início</button>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════
+         SCREEN 7 — Cadastrar Objeto Perdido
+    ════════════════════════════════════ -->
+    <div class="screen hidden" id="screen-cadastrar-perdido" data-screen="cadastrar-perdido">
+      <div class="topbar topbar-back">
+        <button class="icon-btn" onclick="goTo('home')">
+          <span class="material-icons-outlined">arrow_back</span>
+        </button>
+        <span class="topbar-title">Cadastrar objeto perdido</span>
+        <div style="width:40px"></div>
+      </div>
+
+      <div class="screen-body scroll">
+        <div class="form-section">
+          <label class="form-label">Nome do objeto <span class="req">*</span></label>
+          <input class="form-input" placeholder="Ex.: Carregador, Guarda-chuva, RG..." value="Garrafa térmica verde" />
+        </div>
+
+        <div class="form-section">
+          <label class="form-label">Categoria <span class="req">*</span></label>
+          <select class="form-select">
+            <option>Eletrônicos</option>
+            <option>Documentos</option>
+            <option selected>Acessórios</option>
+            <option>Roupas</option>
+            <option>Outros</option>
+          </select>
+        </div>
+
+        <div class="form-section">
+          <label class="form-label">Descrição</label>
+          <textarea class="form-textarea" placeholder="Cor, marca, detalhes que identifiquem o objeto...">Verde escura, tampa preta, marca Termolar. Tem meu nome escrito na lateral.</textarea>
+        </div>
+
+        <div class="form-section">
+          <label class="form-label">Local onde perdeu <span class="req">*</span></label>
+          <select class="form-select">
+            <option>Selecione o local...</option>
+            <option>Biblioteca Central</option>
+            <option selected>Cantina</option>
+            <option>Bloco A</option>
+            <option>Bloco B</option>
+            <option>Lab. Informática</option>
+            <option>Pátio</option>
+            <option>Outro</option>
+          </select>
+        </div>
+
+        <div class="form-section">
+          <label class="form-label">Data aproximada <span class="req">*</span></label>
+          <input class="form-input" type="date" value="2026-05-22" />
+        </div>
+
+        <div class="form-section">
+          <label class="form-label">Foto (opcional)</label>
+          <button class="upload-btn">
+            <span class="material-icons-outlined">add_a_photo</span>
+            Tirar foto ou escolher da galeria
+          </button>
+        </div>
+
+        <p class="req-note"><span class="req">*</span> Campos obrigatórios</p>
+        <div style="height:24px"></div>
+      </div>
+
+      <div class="bottom-action-bar">
+        <button class="btn-secondary btn-full" onclick="goTo('home')" style="margin-bottom:8px">Cancelar</button>
+        <button class="btn-primary btn-full" onclick="goTo('confirmacao-cadastro')">Enviar Cadastro</button>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════
+         SCREEN 8 — Confirmação de Cadastro
+    ════════════════════════════════════ -->
+    <div class="screen hidden" id="screen-confirmacao-cadastro" data-screen="confirmacao-cadastro">
+      <div class="screen-body center-content">
+        <div class="confirm-icon confirm-icon-success">
+          <span class="material-icons-outlined" style="font-size:48px;color:#15803D">inventory_2</span>
+        </div>
+        <h2 class="confirm-title">Objeto cadastrado!</h2>
+        <p class="confirm-desc">Seu objeto perdido foi registrado. Você receberá uma notificação quando for encontrado.</p>
+
+        <div class="confirm-summary">
+          <div class="summary-row">
+            <span class="summary-label">Objeto</span>
+            <span class="summary-value">Garrafa térmica verde</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Local</span>
+            <span class="summary-value">Cantina</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Status</span>
+            <span class="badge badge-lost">Perdido</span>
+          </div>
+        </div>
+
+        <button class="btn-primary btn-full" onclick="goTo('home')" style="margin-top:24px">Voltar ao início</button>
+        <button class="link-btn" onclick="goTo('buscar')" style="margin-top:12px;display:block;text-align:center">Buscar meu objeto</button>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════
+         SCREEN 9 — Solicitações do Aluno
+    ════════════════════════════════════ -->
+    <div class="screen hidden" id="screen-solicitacoes" data-screen="solicitacoes">
+      <div class="topbar">
+        <span class="topbar-title" style="margin-left:0">Minhas solicitações</span>
+        <div style="width:40px"></div>
+      </div>
+
+      <div class="screen-body scroll">
+        <div class="card-list">
+          <div class="card-list-item" onclick="goTo('detalhes')">
+            <div class="card-img-sm card-img-gray"><span class="material-icons-outlined" style="font-size:24px;color:#64748B">water_drop</span></div>
+            <div class="card-info">
+              <span class="card-title">Garrafa térmica verde</span>
+              <span class="card-meta">Solicitado em 22 mai 2026</span>
+              <span class="badge badge-analysis">Em análise</span>
+            </div>
+            <span class="material-icons-outlined" style="color:#64748B;margin-left:auto">chevron_right</span>
+          </div>
+
+          <div class="card-list-item" onclick="goTo('detalhes')">
+            <div class="card-img-sm card-img-blue"><span class="material-icons-outlined" style="font-size:24px;color:#4A90D9">book</span></div>
+            <div class="card-info">
+              <span class="card-title">Caderno azul</span>
+              <span class="card-meta">Solicitado em 10 mai 2026</span>
+              <span class="badge badge-done">Finalizado</span>
+            </div>
+            <span class="material-icons-outlined" style="color:#64748B;margin-left:auto">chevron_right</span>
+          </div>
+        </div>
+        <div style="height:24px"></div>
+      </div>
+
+      <div class="bottom-nav">
+        <button class="nav-btn" onclick="goTo('home')">
+          <span class="material-icons-outlined">home</span><span>Home</span>
+        </button>
+        <button class="nav-btn" onclick="goTo('buscar')">
+          <span class="material-icons-outlined">search</span><span>Buscar</span>
+        </button>
+        <button class="nav-btn" onclick="goTo('cadastrar-perdido')">
+          <span class="material-icons-outlined">add_circle_outline</span><span>Cadastrar</span>
+        </button>
+        <button class="nav-btn active" onclick="goTo('solicitacoes')">
+          <span class="material-icons-outlined">inbox</span><span>Solicitações</span>
+        </button>
+        <button class="nav-btn" onclick="goTo('perfil')">
+          <span class="material-icons-outlined">person_outline</span><span>Perfil</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════
+         SCREEN 10 — Painel do Funcionário
+    ════════════════════════════════════ -->
+    <div class="screen hidden" id="screen-painel-admin" data-screen="painel-admin">
+      <div class="topbar topbar-admin">
+        <div class="topbar-left">
+          <span class="material-icons-outlined topbar-logo-icon">admin_panel_settings</span>
+          <span class="topbar-brand">Painel Admin</span>
+        </div>
+        <button class="icon-btn" onclick="goTo('notificacoes')">
+          <span class="material-icons-outlined">notifications</span>
+          <span class="badge-dot">5</span>
+        </button>
+      </div>
+
+      <div class="screen-body scroll">
+        <div class="admin-greeting">Olá, Carlos Mendes 👋</div>
+
+        <div class="metrics-row">
+          <div class="metric-card metric-blue">
+            <span class="metric-value">5</span>
+            <span class="metric-label">Pendentes</span>
+            <span class="material-icons-outlined metric-icon">pending_actions</span>
+          </div>
+          <div class="metric-card metric-teal">
+            <span class="metric-value">23</span>
+            <span class="metric-label">Cadastrados</span>
+            <span class="material-icons-outlined metric-icon">inventory_2</span>
+          </div>
+          <div class="metric-card metric-green">
+            <span class="metric-value">18</span>
+            <span class="metric-label">Encerrados</span>
+            <span class="material-icons-outlined metric-icon">task_alt</span>
+          </div>
+        </div>
+
+        <button class="btn-primary btn-full" onclick="goTo('cadastrar-encontrado')" style="margin-bottom:16px">
+          <span class="material-icons-outlined" style="vertical-align:middle;margin-right:6px">add_circle</span>
+          Cadastrar objeto encontrado
+        </button>
+
+        <div class="section-header">
+          <span class="section-title">Solicitações pendentes</span>
+          <button class="link-btn">Ver todas</button>
+        </div>
+
+        <div class="admin-request-card" onclick="">
+          <div class="admin-req-info">
+            <span class="admin-req-title">Carregador USB-C Branco</span>
+            <span class="admin-req-meta">Ana Silva · Solicitado 22 mai</span>
+          </div>
+          <div class="admin-req-actions">
+            <button class="btn-validate" onclick="goTo('validar-solicitacao')">Validar</button>
+            <button class="btn-reject">Rejeitar</button>
+          </div>
+        </div>
+
+        <div class="admin-request-card">
+          <div class="admin-req-info">
+            <span class="admin-req-title">Fone de ouvido preto</span>
+            <span class="admin-req-meta">Pedro Costa · Solicitado 21 mai</span>
+          </div>
+          <div class="admin-req-actions">
+            <button class="btn-validate">Validar</button>
+            <button class="btn-reject">Rejeitar</button>
+          </div>
+        </div>
+
+        <div style="height:24px"></div>
+      </div>
+
+      <div class="bottom-nav bottom-nav-admin">
+        <button class="nav-btn active">
+          <span class="material-icons-outlined">dashboard</span><span>Painel</span>
+        </button>
+        <button class="nav-btn">
+          <span class="material-icons-outlined">inventory_2</span><span>Objetos</span>
+        </button>
+        <button class="nav-btn">
+          <span class="material-icons-outlined">pending_actions</span><span>Solicitações</span>
+        </button>
+        <button class="nav-btn">
+          <span class="material-icons-outlined">history</span><span>Histórico</span>
+        </button>
+        <button class="nav-btn" onclick="goTo('perfil')">
+          <span class="material-icons-outlined">person_outline</span><span>Perfil</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════
+         SCREEN 11 — Cadastrar Obj. Encontrado (Admin)
+    ════════════════════════════════════ -->
+    <div class="screen hidden" id="screen-cadastrar-encontrado" data-screen="cadastrar-encontrado">
+      <div class="topbar topbar-back topbar-admin">
+        <button class="icon-btn" onclick="goTo('painel-admin')">
+          <span class="material-icons-outlined">arrow_back</span>
+        </button>
+        <span class="topbar-title">Cadastrar objeto encontrado</span>
+        <div style="width:40px"></div>
+      </div>
+
+      <div class="screen-body scroll">
+        <div class="form-section">
+          <label class="form-label">Nome do objeto <span class="req">*</span></label>
+          <input class="form-input" placeholder="Ex.: Óculos, Carteira, Celular..." />
+        </div>
+
+        <div class="form-section">
+          <label class="form-label">Categoria <span class="req">*</span></label>
+          <select class="form-select">
+            <option>Selecione...</option>
+            <option selected>Eletrônicos</option>
+            <option>Documentos</option>
+            <option>Acessórios</option>
+            <option>Roupas</option>
+            <option>Outros</option>
+          </select>
+        </div>
+
+        <div class="form-section">
+          <label class="form-label">Descrição <span class="req">*</span></label>
+          <textarea class="form-textarea" placeholder="Cor, características, estado de conservação..."></textarea>
+        </div>
+
+        <div class="form-section">
+          <label class="form-label">Local encontrado <span class="req">*</span></label>
+          <select class="form-select">
+            <option selected>Biblioteca Central</option>
+            <option>Cantina</option>
+            <option>Bloco A</option>
+            <option>Bloco B</option>
+            <option>Lab. Informática</option>
+            <option>Outro</option>
+          </select>
+        </div>
+
+        <div class="form-section">
+          <label class="form-label">Data e hora <span class="req">*</span></label>
+          <input class="form-input" type="datetime-local" value="2026-05-22T09:30" />
+        </div>
+
+        <div class="form-section">
+          <label class="form-label">Foto do objeto <span class="req">*</span></label>
+          <button class="upload-btn">
+            <span class="material-icons-outlined">add_a_photo</span>
+            Tirar foto ou escolher da galeria
+          </button>
+        </div>
+
+        <p class="req-note"><span class="req">*</span> Campos obrigatórios</p>
+        <div style="height:24px"></div>
+      </div>
+
+      <div class="bottom-action-bar">
+        <button class="btn-secondary btn-full" onclick="goTo('painel-admin')" style="margin-bottom:8px">Cancelar</button>
+        <button class="btn-primary btn-full" onclick="goTo('painel-admin')">Publicar Objeto</button>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════
+         SCREEN 12 — Validar Solicitação (Admin)
+    ════════════════════════════════════ -->
+    <div class="screen hidden" id="screen-validar-solicitacao" data-screen="validar-solicitacao">
+      <div class="topbar topbar-back topbar-admin">
+        <button class="icon-btn" onclick="goTo('painel-admin')">
+          <span class="material-icons-outlined">arrow_back</span>
+        </button>
+        <span class="topbar-title">Validar solicitação</span>
+        <div style="width:40px"></div>
+      </div>
+
+      <div class="screen-body scroll">
+        <div class="info-box info-box-warn">
+          <span class="material-icons-outlined" style="color:#B45309">warning</span>
+          <p>Verifique os dados do solicitante antes de aprovar a retirada.</p>
+        </div>
+
+        <div class="section-card">
+          <span class="section-card-title">Objeto</span>
+          <div class="detail-rows" style="margin-top:8px">
+            <div class="detail-row">
+              <span class="material-icons-outlined detail-row-icon">inventory_2</span>
+              <div>
+                <span class="detail-label">Nome</span>
+                <span class="detail-value">Carregador USB-C Branco</span>
+              </div>
+            </div>
+            <div class="detail-row">
+              <span class="material-icons-outlined detail-row-icon">location_on</span>
+              <div>
+                <span class="detail-label">Local</span>
+                <span class="detail-value">Biblioteca Central</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-card">
+          <span class="section-card-title">Solicitante</span>
+          <div class="detail-rows" style="margin-top:8px">
+            <div class="detail-row">
+              <span class="material-icons-outlined detail-row-icon">person</span>
+              <div>
+                <span class="detail-label">Nome</span>
+                <span class="detail-value">Ana Silva</span>
+              </div>
+            </div>
+            <div class="detail-row">
+              <span class="material-icons-outlined detail-row-icon">badge</span>
+              <div>
+                <span class="detail-label">Matrícula</span>
+                <span class="detail-value">2024001234</span>
+              </div>
+            </div>
+            <div class="detail-row">
+              <span class="material-icons-outlined detail-row-icon">notes</span>
+              <div>
+                <span class="detail-label">Descrição fornecida</span>
+                <span class="detail-value">Tem um adesivo azul perto do pino, cabo 2 metros.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="height:24px"></div>
+      </div>
+
+      <div class="bottom-action-bar">
+        <button class="btn-reject-full" onclick="goTo('painel-admin')" style="margin-bottom:8px">
+          <span class="material-icons-outlined" style="vertical-align:middle;margin-right:4px">cancel</span>
+          Rejeitar solicitação
+        </button>
+        <button class="btn-primary btn-full" onclick="goTo('painel-admin')">
+          <span class="material-icons-outlined" style="vertical-align:middle;margin-right:4px">check_circle</span>
+          Aprovar retirada
+        </button>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════
+         SCREEN 13 — Notificações
+    ════════════════════════════════════ -->
+    <div class="screen hidden" id="screen-notificacoes" data-screen="notificacoes">
+      <div class="topbar topbar-back">
+        <button class="icon-btn" onclick="history.back(); goBack()">
+          <span class="material-icons-outlined">arrow_back</span>
+        </button>
+        <span class="topbar-title">Notificações</span>
+        <div style="width:40px"></div>
+      </div>
+
+      <div class="screen-body scroll">
+        <div class="notif-item notif-unread">
+          <div class="notif-dot"></div>
+          <div class="notif-body">
+            <span class="notif-title">Solicitação aprovada!</span>
+            <span class="notif-desc">Sua solicitação do Caderno azul foi aprovada. Retire na Secretaria.</span>
+            <span class="notif-time">Hoje, 08:45</span>
+          </div>
+        </div>
+        <div class="notif-item notif-unread">
+          <div class="notif-dot"></div>
+          <div class="notif-body">
+            <span class="notif-title">Novo objeto encontrado</span>
+            <span class="notif-desc">Um carregador USB-C foi cadastrado na Biblioteca Central.</span>
+            <span class="notif-time">Ontem, 15:20</span>
+          </div>
+        </div>
+        <div class="notif-item">
+          <div class="notif-dot notif-dot-read"></div>
+          <div class="notif-body">
+            <span class="notif-title">Objeto disponível para retirada</span>
+            <span class="notif-desc">Sua garrafa térmica foi localizada. Compareça à Secretaria.</span>
+            <span class="notif-time">20 mai, 10:00</span>
+          </div>
+        </div>
+        <div style="height:24px"></div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════
+         SCREEN 14 — Perfil do Usuário
+    ════════════════════════════════════ -->
+    <div class="screen hidden" id="screen-perfil" data-screen="perfil">
+      <div class="topbar">
+        <span class="topbar-title" style="margin-left:0">Meu perfil</span>
+        <button class="icon-btn"><span class="material-icons-outlined">settings</span></button>
+      </div>
+
+      <div class="screen-body scroll">
+        <div class="profile-header">
+          <div class="avatar">AS</div>
+          <div class="profile-info">
+            <span class="profile-name">Ana Silva</span>
+            <span class="profile-role">Estudante · Sistemas de Informação</span>
+            <span class="profile-mat">Matrícula: 2024001234</span>
+          </div>
+        </div>
+
+        <div class="profile-stats">
+          <div class="stat-box">
+            <span class="stat-val">3</span>
+            <span class="stat-lbl">Solicitações</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-val">1</span>
+            <span class="stat-lbl">Cadastros</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-val">2</span>
+            <span class="stat-lbl">Devoluções</span>
+          </div>
+        </div>
+
+        <div class="menu-list">
+          <button class="menu-item">
+            <span class="material-icons-outlined menu-item-icon">inbox</span>
+            <span>Minhas solicitações</span>
+            <span class="material-icons-outlined" style="margin-left:auto;color:#64748B">chevron_right</span>
+          </button>
+          <button class="menu-item">
+            <span class="material-icons-outlined menu-item-icon">inventory_2</span>
+            <span>Meus cadastros</span>
+            <span class="material-icons-outlined" style="margin-left:auto;color:#64748B">chevron_right</span>
+          </button>
+          <button class="menu-item">
+            <span class="material-icons-outlined menu-item-icon">notifications</span>
+            <span>Preferências de notificação</span>
+            <span class="material-icons-outlined" style="margin-left:auto;color:#64748B">chevron_right</span>
+          </button>
+          <button class="menu-item">
+            <span class="material-icons-outlined menu-item-icon">accessibility</span>
+            <span>Acessibilidade</span>
+            <span class="material-icons-outlined" style="margin-left:auto;color:#64748B">chevron_right</span>
+          </button>
+          <button class="menu-item menu-item-danger">
+            <span class="material-icons-outlined menu-item-icon" style="color:#B91C1C">logout</span>
+            <span style="color:#B91C1C">Sair</span>
+          </button>
+        </div>
+
+        <div style="height:24px"></div>
+      </div>
+
+      <div class="bottom-nav">
+        <button class="nav-btn" onclick="goTo('home')">
+          <span class="material-icons-outlined">home</span><span>Home</span>
+        </button>
+        <button class="nav-btn" onclick="goTo('buscar')">
+          <span class="material-icons-outlined">search</span><span>Buscar</span>
+        </button>
+        <button class="nav-btn" onclick="goTo('cadastrar-perdido')">
+          <span class="material-icons-outlined">add_circle_outline</span><span>Cadastrar</span>
+        </button>
+        <button class="nav-btn" onclick="goTo('solicitacoes')">
+          <span class="material-icons-outlined">inbox</span><span>Solicitações</span>
+        </button>
+        <button class="nav-btn active" onclick="goTo('perfil')">
+          <span class="material-icons-outlined">person_outline</span><span>Perfil</span>
+        </button>
+      </div>
+    </div>
+
+  </div><!-- /.screen-container -->
+</div><!-- /.phone-shell -->
+
+<!-- ── NAV LEGEND (fora do phone) ── -->
+<div class="nav-legend">
+  <strong>Telas:</strong>
+  <button onclick="goTo('welcome')">1. Boas-vindas</button>
+  <button onclick="goTo('home')">2. Home Aluno</button>
+  <button onclick="goTo('buscar')">3. Buscar</button>
+  <button onclick="goTo('detalhes')">4. Detalhes</button>
+  <button onclick="goTo('solicitar-retirada')">5. Solicitar Retirada</button>
+  <button onclick="goTo('confirmacao-solicitacao')">6. Confirm. Solicitação</button>
+  <button onclick="goTo('cadastrar-perdido')">7. Cadastrar Perdido</button>
+  <button onclick="goTo('confirmacao-cadastro')">8. Confirm. Cadastro</button>
+  <button onclick="goTo('solicitacoes')">9. Solicitações</button>
+  <button onclick="goTo('painel-admin')">10. Painel Admin</button>
+  <button onclick="goTo('cadastrar-encontrado')">11. Cadastrar Encontrado</button>
+  <button onclick="goTo('validar-solicitacao')">12. Validar Solicitação</button>
+  <button onclick="goTo('notificacoes')">13. Notificações</button>
+  <button onclick="goTo('perfil')">14. Perfil</button>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

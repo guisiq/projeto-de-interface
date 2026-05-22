@@ -16,6 +16,7 @@
 | 10 | Paleta de cores, tipografia, ícones e affordances | ✅ | Seções 8.1 e 8.2 |
 | 11 | 4 heurísticas de Nielsen aplicadas | ✅ | Seção 8.3 |
 | 12 | Pelo menos 15 telas finais (sem login) | ✅ | Seção 8.4 (18 telas) |
+| 13 | Protótipo conforme eMAG v3.1 (contraste ≥ 4,5:1, redundância cor+ícone+texto, navegação por teclado, alternativas textuais) | ✅ | Seção 8 (Protótipo) — fundamentado em Seção 10 (eMAG, WCAG 2.1) |
 
 ## Itens Pendentes (requerem ação manual)
 

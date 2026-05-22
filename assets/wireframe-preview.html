@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UniAchados — Wireframe Home</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+<style>
+/* ── Reset ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── Page ── */
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: #CBD5E1;
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 40px;
+  padding: 40px 24px 60px;
+  flex-wrap: wrap;
+}
+
+/* ── Phone shell ── */
+.phone {
+  width: 375px;
+  background: #F5F7FA;
+  border-radius: 40px;
+  box-shadow: 0 24px 64px rgba(0,0,0,.22), 0 0 0 8px #1E293B;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+/* Status bar */
+.status-bar {
+  background: #1E3A5F;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 12px 24px 8px;
+  color: #fff; font-size: 12px; font-weight: 600;
+}
+.status-bar .time { font-size: 14px; font-weight: 700; }
+.status-icons { display: flex; gap: 5px; align-items: center; }
+.status-icons .material-icons-outlined { font-size: 16px; }
+
+/* Header */
+.header {
+  background: #1E3A5F;
+  padding: 14px 20px 18px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.header-left .greeting { font-size: 12px; color: #93C5FD; font-weight: 500; }
+.header-left .name    { font-size: 18px; color: #fff; font-weight: 700; margin-top: 1px; }
+.header-right { display: flex; gap: 10px; align-items: center; }
+.icon-btn {
+  width: 38px; height: 38px; border-radius: 50%;
+  background: rgba(255,255,255,.12);
+  display: flex; align-items: center; justify-content: center; position: relative;
+}
+.icon-btn .material-icons-outlined { font-size: 20px; color: #fff; }
+.badge-dot {
+  position: absolute; top: 6px; right: 6px;
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #4A90D9; border: 2px solid #1E3A5F;
+}
+.avatar {
+  width: 38px; height: 38px; border-radius: 50%;
+  background: #4A90D9; border: 2px solid rgba(255,255,255,.3);
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 14px; font-weight: 700;
+}
+
+/* Search bar */
+.search-wrap {
+  background: #1E3A5F;
+  padding: 0 20px 20px;
+}
+.search-bar {
+  background: #fff;
+  border-radius: 12px;
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.12);
+}
+.search-bar .material-icons-outlined { font-size: 20px; color: #64748B; }
+.search-bar span { font-size: 14px; color: #94A3B8; font-weight: 400; }
+.search-bar .filter-btn {
+  margin-left: auto; display: flex; align-items: center; justify-content: center;
+  width: 30px; height: 30px; border-radius: 8px; background: #F5F7FA;
+}
+.search-bar .filter-btn .material-icons-outlined { font-size: 18px; color: #64748B; }
+
+/* Body scroll */
+.body { padding: 20px; display: flex; flex-direction: column; gap: 20px; }
+
+/* Section header */
+.section-head {
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;
+}
+.section-head h2 { font-size: 15px; font-weight: 700; color: #1E293B; }
+.section-head a  { font-size: 12px; font-weight: 600; color: #4A90D9; }
+
+/* Stats row */
+.stats { display: flex; gap: 10px; }
+.stat-card {
+  flex: 1; background: #fff; border-radius: 14px; padding: 14px 12px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.07);
+  display: flex; flex-direction: column; gap: 4px;
+}
+.stat-card .num { font-size: 22px; font-weight: 700; }
+.stat-card .lbl { font-size: 10px; font-weight: 500; color: #64748B; line-height: 1.3; }
+.stat-card.blue  .num { color: #1E3A5F; }
+.stat-card.teal  .num { color: #2E7D8C; }
+.stat-card.accent .num { color: #1D4ED8; }
+.stat-card .stat-icon { align-self: flex-end; margin-bottom: 2px; }
+.stat-card .stat-icon .material-icons-outlined { font-size: 18px; }
+.stat-card.blue  .stat-icon .material-icons-outlined { color: #DBEAFE; }
+.stat-card.teal  .stat-icon .material-icons-outlined { color: #CCFBF1; }
+.stat-card.accent .stat-icon .material-icons-outlined { color: #EFF6FF; }
+
+/* Object cards horizontal scroll */
+.cards-scroll { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 4px; }
+.cards-scroll::-webkit-scrollbar { display: none; }
+.obj-card {
+  flex-shrink: 0; width: 150px; background: #fff; border-radius: 14px;
+  box-shadow: 0 1px 6px rgba(0,0,0,.09); overflow: hidden;
+}
+.obj-card .img-slot {
+  height: 90px; display: flex; align-items: center; justify-content: center;
+}
+.obj-card .img-slot .material-icons-outlined { font-size: 36px; }
+.img-blue  { background: #EFF6FF; }
+.img-blue  .material-icons-outlined { color: #1E3A5F; }
+.img-teal  { background: #F0FDFA; }
+.img-teal  .material-icons-outlined { color: #2E7D8C; }
+.img-acc   { background: #DBEAFE; }
+.img-acc   .material-icons-outlined { color: #1D4ED8; }
+.img-warm  { background: #FEF9C3; }
+.img-warm  .material-icons-outlined { color: #B45309; }
+
+.obj-card .card-body { padding: 10px 10px 12px; }
+.obj-card .card-title { font-size: 12px; font-weight: 600; color: #1E293B; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.obj-card .card-meta  { font-size: 10px; color: #64748B; margin-top: 3px; display: flex; align-items: center; gap: 3px; }
+.obj-card .card-meta .material-icons-outlined { font-size: 11px; }
+
+/* Badges */
+.badge {
+  display: inline-flex; align-items: center; gap: 3px;
+  border-radius: 20px; padding: 3px 8px; font-size: 10px; font-weight: 600; margin-top: 6px;
+}
+.badge .material-icons-outlined { font-size: 10px; }
+.b-found   { background: #DCFCE7; color: #15803D; }
+.b-pending { background: #FEF3C7; color: #B45309; }
+.b-waiting { background: #DBEAFE; color: #1D4ED8; }
+.b-lost    { background: #FEE2E2; color: #B91C1C; }
+
+/* Recent list */
+.list-item {
+  background: #fff; border-radius: 14px; padding: 12px 14px;
+  display: flex; gap: 12px; align-items: center;
+  box-shadow: 0 1px 4px rgba(0,0,0,.07); margin-bottom: 10px;
+}
+.list-icon {
+  width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.list-icon .material-icons-outlined { font-size: 22px; }
+.li-blue  { background: #EFF6FF; }
+.li-blue  .material-icons-outlined { color: #1E3A5F; }
+.li-teal  { background: #F0FDFA; }
+.li-teal  .material-icons-outlined { color: #2E7D8C; }
+.li-warn  { background: #FEF9C3; }
+.li-warn  .material-icons-outlined { color: #B45309; }
+.list-text { flex: 1; min-width: 0; }
+.list-text .lt { font-size: 13px; font-weight: 600; color: #1E293B; }
+.list-text .ls { font-size: 11px; color: #64748B; margin-top: 2px; display: flex; align-items: center; gap: 3px; }
+.list-text .ls .material-icons-outlined { font-size: 11px; }
+.list-chevron .material-icons-outlined { font-size: 18px; color: #CBD5E1; }
+
+/* FAB */
+.fab-wrap { position: relative; height: 0; }
+.fab {
+  position: absolute; bottom: 0; right: 0;
+  width: 52px; height: 52px; border-radius: 16px;
+  background: #1E3A5F; box-shadow: 0 4px 16px rgba(30,58,95,.4);
+  display: flex; align-items: center; justify-content: center;
+  margin-right: 20px; margin-top: -26px;
+}
+.fab .material-icons-outlined { font-size: 24px; color: #fff; }
+
+/* Bottom nav */
+.bottom-nav {
+  background: #fff; border-top: 1px solid #F1F5F9;
+  display: flex; padding: 8px 0 16px;
+}
+.nav-item {
+  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer;
+}
+.nav-item .material-icons-outlined { font-size: 22px; color: #94A3B8; }
+.nav-item span { font-size: 10px; font-weight: 500; color: #94A3B8; }
+.nav-item.active .material-icons-outlined { color: #1E3A5F; }
+.nav-item.active span { color: #1E3A5F; font-weight: 700; }
+.nav-dot {
+  width: 4px; height: 4px; border-radius: 50%; background: #1E3A5F; margin-top: -2px;
+}
+
+/* ── Screen 2 label ── */
+.screen-label {
+  width: 375px; text-align: center;
+  font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600;
+  color: #475569; margin-bottom: -30px;
+  letter-spacing: .03em; text-transform: uppercase;
+}
+
+/* ── Phone 2: Detalhes ── */
+.detail-header {
+  background: #1E3A5F; padding: 12px 20px 20px;
+  display: flex; align-items: center; gap: 12px;
+}
+.back-btn { width: 36px; height: 36px; border-radius: 10px; background: rgba(255,255,255,.12);
+  display: flex; align-items: center; justify-content: center; }
+.back-btn .material-icons-outlined { font-size: 20px; color: #fff; }
+.detail-header h2 { font-size: 17px; font-weight: 700; color: #fff; flex: 1; }
+
+.detail-img {
+  height: 180px; background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+  display: flex; align-items: center; justify-content: center;
+}
+.detail-img .material-icons-outlined { font-size: 72px; color: #4A90D9; }
+
+.detail-body { padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 16px; }
+.detail-title { font-size: 20px; font-weight: 700; color: #1E293B; }
+.detail-badge { display: inline-flex; }
+
+.detail-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+}
+.detail-info {
+  background: #fff; border-radius: 12px; padding: 12px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.06);
+}
+.detail-info .di-label {
+  font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em;
+  color: #94A3B8; margin-bottom: 4px;
+}
+.detail-info .di-val {
+  font-size: 13px; font-weight: 600; color: #1E293B;
+  display: flex; align-items: center; gap: 4px;
+}
+.detail-info .di-val .material-icons-outlined { font-size: 14px; color: #64748B; }
+
+.divider { height: 1px; background: #F1F5F9; }
+
+.detail-desc-label { font-size: 13px; font-weight: 700; color: #1E293B; }
+.detail-desc-text  { font-size: 13px; color: #64748B; line-height: 1.6; margin-top: 6px; }
+
+.cta-btn {
+  background: #1E3A5F; border-radius: 14px; padding: 16px;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  box-shadow: 0 4px 14px rgba(30,58,95,.30);
+}
+.cta-btn .material-icons-outlined { font-size: 20px; color: #fff; }
+.cta-btn span { font-size: 15px; font-weight: 700; color: #fff; }
+
+/* Phone 3: Painel admin */
+.admin-header {
+  background: linear-gradient(135deg, #1E3A5F 0%, #2E7D8C 100%);
+  padding: 14px 20px 22px;
+}
+.admin-header .top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+.admin-header .top h2 { font-size: 17px; font-weight: 700; color: #fff; }
+.admin-header .greeting { font-size: 12px; color: rgba(255,255,255,.7); margin-bottom: 2px; }
+.admin-header .admin-name { font-size: 16px; font-weight: 700; color: #fff; }
+.metrics { display: flex; gap: 8px; margin-top: 16px; }
+.metric-card {
+  flex: 1; background: rgba(255,255,255,.15); border-radius: 12px; padding: 10px 10px 12px;
+  backdrop-filter: blur(4px);
+}
+.metric-card .mc-num { font-size: 24px; font-weight: 700; color: #fff; }
+.metric-card .mc-lbl { font-size: 9px; font-weight: 600; color: rgba(255,255,255,.75); text-transform: uppercase; letter-spacing: .05em; line-height: 1.3; margin-top: 2px; }
+.metric-card .mc-icon .material-icons-outlined { font-size: 14px; color: rgba(255,255,255,.5); margin-bottom: 4px; }
+
+.admin-body { padding: 18px 20px; display: flex; flex-direction: column; gap: 16px; }
+.admin-action-btn {
+  background: #1E3A5F; border-radius: 12px; padding: 14px 16px;
+  display: flex; align-items: center; gap: 10px;
+  box-shadow: 0 2px 8px rgba(30,58,95,.25);
+}
+.admin-action-btn .material-icons-outlined { font-size: 22px; color: #93C5FD; }
+.admin-action-btn .btn-text .bt { font-size: 13px; font-weight: 700; color: #fff; }
+.admin-action-btn .btn-text .bs { font-size: 11px; color: rgba(255,255,255,.6); margin-top: 1px; }
+.admin-action-btn .arrow { margin-left: auto; }
+.admin-action-btn .arrow .material-icons-outlined { font-size: 18px; color: rgba(255,255,255,.4); }
+
+.pending-item {
+  background: #fff; border-radius: 14px; padding: 12px 14px;
+  display: flex; gap: 12px; align-items: flex-start;
+  box-shadow: 0 1px 4px rgba(0,0,0,.07); margin-bottom: 10px;
+}
+.pending-dot { width: 8px; height: 8px; border-radius: 50%; background: #B45309; margin-top: 5px; flex-shrink: 0; }
+.pending-text { flex: 1; }
+.pending-text .pt { font-size: 13px; font-weight: 600; color: #1E293B; }
+.pending-text .pm { font-size: 11px; color: #64748B; margin-top: 2px; display: flex; align-items: center; gap: 3px; }
+.pending-text .pm .material-icons-outlined { font-size: 11px; }
+.pending-actions { display: flex; gap: 6px; margin-top: 8px; }
+.btn-approve { background: #DCFCE7; border-radius: 8px; padding: 5px 10px; font-size: 11px; font-weight: 700; color: #15803D; display: flex; align-items: center; gap: 3px; }
+.btn-approve .material-icons-outlined { font-size: 12px; }
+.btn-reject  { background: #FEE2E2; border-radius: 8px; padding: 5px 10px; font-size: 11px; font-weight: 700; color: #B91C1C; display: flex; align-items: center; gap: 3px; }
+.btn-reject  .material-icons-outlined { font-size: 12px; }
+
+/* Page labels */
+.page-title {
+  font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 700; color: #475569;
+  text-transform: uppercase; letter-spacing: .08em; text-align: center; margin-bottom: 12px;
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════ PHONE 1 — HOME DO ALUNO ═══════ -->
+<div>
+<div class="page-title">Tela 1 — Home do Aluno</div>
+<div class="phone">
+  <!-- Status bar -->
+  <div class="status-bar">
+    <span class="time">09:41</span>
+    <div class="status-icons">
+      <span class="material-icons-outlined">signal_cellular_alt</span>
+      <span class="material-icons-outlined">wifi</span>
+      <span class="material-icons-outlined">battery_std</span>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-left">
+      <div class="greeting">Bom dia 👋</div>
+      <div class="name">Ana Silva</div>
+    </div>
+    <div class="header-right">
+      <div class="icon-btn">
+        <span class="material-icons-outlined">notifications</span>
+        <div class="badge-dot"></div>
+      </div>
+      <div class="avatar">AS</div>
+    </div>
+  </div>
+
+  <!-- Search -->
+  <div class="search-wrap">
+    <div class="search-bar">
+      <span class="material-icons-outlined">search</span>
+      <span>Buscar objeto perdido...</span>
+      <div class="filter-btn"><span class="material-icons-outlined">filter_list</span></div>
+    </div>
+  </div>
+
+  <!-- Body -->
+  <div class="body">
+
+    <!-- Stats -->
+    <div>
+      <div class="stats">
+        <div class="stat-card blue">
+          <div class="stat-icon"><span class="material-icons-outlined">inventory_2</span></div>
+          <div class="num">47</div>
+          <div class="lbl">Objetos<br>cadastrados</div>
+        </div>
+        <div class="stat-card teal">
+          <div class="stat-icon"><span class="material-icons-outlined">check_circle</span></div>
+          <div class="num">12</div>
+          <div class="lbl">Devolvidos<br>este mês</div>
+        </div>
+        <div class="stat-card accent">
+          <div class="stat-icon"><span class="material-icons-outlined">schedule</span></div>
+          <div class="num">8</div>
+          <div class="lbl">Aguardando<br>retirada</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent objects -->
+    <div>
+      <div class="section-head">
+        <h2>Adicionados recentemente</h2>
+        <a>Ver todos</a>
+      </div>
+      <div class="cards-scroll">
+        <div class="obj-card">
+          <div class="img-slot img-blue"><span class="material-icons-outlined">laptop</span></div>
+          <div class="card-body">
+            <div class="card-title">Carregador USB-C</div>
+            <div class="card-meta"><span class="material-icons-outlined">place</span>Biblioteca</div>
+            <div class="badge b-found"><span class="material-icons-outlined">inventory_2</span>Encontrado</div>
+          </div>
+        </div>
+        <div class="obj-card">
+          <div class="img-slot img-teal"><span class="material-icons-outlined">backpack</span></div>
+          <div class="card-body">
+            <div class="card-title">Mochila preta</div>
+            <div class="card-meta"><span class="material-icons-outlined">place</span>Sala 204</div>
+            <div class="badge b-waiting"><span class="material-icons-outlined">schedule</span>Aguardando</div>
+          </div>
+        </div>
+        <div class="obj-card">
+          <div class="img-slot img-warm"><span class="material-icons-outlined">badge</span></div>
+          <div class="card-body">
+            <div class="card-title">Carteira cinza</div>
+            <div class="card-meta"><span class="material-icons-outlined">place</span>Cantina</div>
+            <div class="badge b-pending"><span class="material-icons-outlined">hourglass_empty</span>Em análise</div>
+          </div>
+        </div>
+        <div class="obj-card">
+          <div class="img-slot img-acc"><span class="material-icons-outlined">headphones</span></div>
+          <div class="card-body">
+            <div class="card-title">Fone de ouvido</div>
+            <div class="card-meta"><span class="material-icons-outlined">place</span>Lab. Info.</div>
+            <div class="badge b-found"><span class="material-icons-outlined">inventory_2</span>Encontrado</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Activity list -->
+    <div>
+      <div class="section-head">
+        <h2>Minhas solicitações</h2>
+        <a>Ver todas</a>
+      </div>
+      <div class="list-item">
+        <div class="list-icon li-blue"><span class="material-icons-outlined">laptop</span></div>
+        <div class="list-text">
+          <div class="lt">Carregador USB-C branco</div>
+          <div class="ls"><span class="material-icons-outlined">schedule</span>Aguardando validação · hoje</div>
+          <div class="badge b-waiting" style="margin-top:5px"><span class="material-icons-outlined">schedule</span>Aguardando retirada</div>
+        </div>
+        <div class="list-chevron"><span class="material-icons-outlined">chevron_right</span></div>
+      </div>
+      <div class="list-item">
+        <div class="list-icon li-teal"><span class="material-icons-outlined">badge</span></div>
+        <div class="list-text">
+          <div class="lt">Crachá de acesso</div>
+          <div class="ls"><span class="material-icons-outlined">check_circle</span>Devolvido · 20 mai</div>
+          <div class="badge b-found" style="margin-top:5px"><span class="material-icons-outlined">check_circle</span>Finalizado</div>
+        </div>
+        <div class="list-chevron"><span class="material-icons-outlined">chevron_right</span></div>
+      </div>
+    </div>
+
+  </div><!-- /body -->
+
+  <!-- Bottom nav -->
+  <div class="bottom-nav">
+    <div class="nav-item active">
+      <span class="material-icons-outlined">home</span>
+      <span>Home</span>
+      <div class="nav-dot"></div>
+    </div>
+    <div class="nav-item">
+      <span class="material-icons-outlined">search</span>
+      <span>Buscar</span>
+    </div>
+    <div class="nav-item">
+      <span class="material-icons-outlined">add_circle</span>
+      <span>Cadastrar</span>
+    </div>
+    <div class="nav-item">
+      <span class="material-icons-outlined">list_alt</span>
+      <span>Pedidos</span>
+    </div>
+    <div class="nav-item">
+      <span class="material-icons-outlined">person</span>
+      <span>Perfil</span>
+    </div>
+  </div>
+
+</div><!-- /phone -->
+</div>
+
+<!-- ═══════ PHONE 2 — DETALHES DO OBJETO ═══════ -->
+<div>
+<div class="page-title">Tela 2 — Detalhes do Objeto</div>
+<div class="phone">
+  <div class="status-bar">
+    <span class="time">09:43</span>
+    <div class="status-icons">
+      <span class="material-icons-outlined">signal_cellular_alt</span>
+      <span class="material-icons-outlined">wifi</span>
+      <span class="material-icons-outlined">battery_std</span>
+    </div>
+  </div>
+
+  <div class="detail-header">
+    <div class="back-btn"><span class="material-icons-outlined">arrow_back</span></div>
+    <h2>Detalhes do objeto</h2>
+    <div class="icon-btn"><span class="material-icons-outlined">share</span></div>
+  </div>
+
+  <div class="detail-img">
+    <span class="material-icons-outlined">laptop</span>
+  </div>
+
+  <div class="detail-body">
+    <div>
+      <div class="detail-title">Carregador USB-C Branco</div>
+      <div class="badge b-found" style="margin-top:8px"><span class="material-icons-outlined">inventory_2</span>Encontrado</div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="detail-grid">
+      <div class="detail-info">
+        <div class="di-label">Categoria</div>
+        <div class="di-val"><span class="material-icons-outlined">laptop</span>Eletrônicos</div>
+      </div>
+      <div class="detail-info">
+        <div class="di-label">Local</div>
+        <div class="di-val"><span class="material-icons-outlined">place</span>Biblioteca</div>
+      </div>
+      <div class="detail-info">
+        <div class="di-label">Data</div>
+        <div class="di-val"><span class="material-icons-outlined">calendar_today</span>22/05/2026</div>
+      </div>
+      <div class="detail-info">
+        <div class="di-label">Retirar em</div>
+        <div class="di-val"><span class="material-icons-outlined">domain</span>Secretaria</div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div>
+      <div class="detail-desc-label">Descrição</div>
+      <div class="detail-desc-text">Carregador branco com cabo USB-C. Encontrado na mesa próxima à janela, seção de periódicos. Sem identificação do dono.</div>
+    </div>
+
+    <div class="cta-btn">
+      <span class="material-icons-outlined">verified</span>
+      <span>Solicitar Retirada</span>
+    </div>
+  </div>
+
+  <div class="bottom-nav">
+    <div class="nav-item">
+      <span class="material-icons-outlined">home</span>
+      <span>Home</span>
+    </div>
+    <div class="nav-item active">
+      <span class="material-icons-outlined">search</span>
+      <span>Buscar</span>
+      <div class="nav-dot"></div>
+    </div>
+    <div class="nav-item">
+      <span class="material-icons-outlined">add_circle</span>
+      <span>Cadastrar</span>
+    </div>
+    <div class="nav-item">
+      <span class="material-icons-outlined">list_alt</span>
+      <span>Pedidos</span>
+    </div>
+    <div class="nav-item">
+      <span class="material-icons-outlined">person</span>
+      <span>Perfil</span>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ═══════ PHONE 3 — PAINEL ADMIN ═══════ -->
+<div>
+<div class="page-title">Tela 3 — Painel do Funcionário</div>
+<div class="phone">
+  <div class="status-bar" style="background: linear-gradient(135deg, #1E3A5F 0%, #2E7D8C 100%);">
+    <span class="time">09:45</span>
+    <div class="status-icons">
+      <span class="material-icons-outlined">signal_cellular_alt</span>
+      <span class="material-icons-outlined">wifi</span>
+      <span class="material-icons-outlined">battery_std</span>
+    </div>
+  </div>
+
+  <div class="admin-header">
+    <div class="top">
+      <div>
+        <div class="greeting">Painel administrativo</div>
+        <div class="admin-name">Carlos Mendes</div>
+      </div>
+      <div class="icon-btn">
+        <span class="material-icons-outlined">notifications</span>
+        <div class="badge-dot" style="background:#4A90D9"></div>
+      </div>
+    </div>
+    <div class="metrics">
+      <div class="metric-card">
+        <div class="mc-icon"><span class="material-icons-outlined">hourglass_empty</span></div>
+        <div class="mc-num">5</div>
+        <div class="mc-lbl">Solicitações<br>pendentes</div>
+      </div>
+      <div class="metric-card">
+        <div class="mc-icon"><span class="material-icons-outlined">inventory_2</span></div>
+        <div class="mc-num">23</div>
+        <div class="mc-lbl">Objetos<br>cadastrados</div>
+      </div>
+      <div class="metric-card">
+        <div class="mc-icon"><span class="material-icons-outlined">check_circle</span></div>
+        <div class="mc-num">18</div>
+        <div class="mc-lbl">Casos<br>encerrados</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="admin-body">
+    <div class="admin-action-btn">
+      <span class="material-icons-outlined">add_circle</span>
+      <div class="btn-text">
+        <div class="bt">Cadastrar objeto encontrado</div>
+        <div class="bs">Registrar novo item recebido</div>
+      </div>
+      <div class="arrow"><span class="material-icons-outlined">chevron_right</span></div>
+    </div>
+
+    <div>
+      <div class="section-head">
+        <h2>Solicitações pendentes</h2>
+        <a>Ver todas</a>
+      </div>
+      <div class="pending-item">
+        <div class="pending-dot"></div>
+        <div class="pending-text">
+          <div class="pt">Carregador USB-C — Ana Silva</div>
+          <div class="pm"><span class="material-icons-outlined">schedule</span>Solicitado há 25 min · Biblioteca</div>
+          <div class="pending-actions">
+            <div class="btn-approve"><span class="material-icons-outlined">check</span>Aprovar</div>
+            <div class="btn-reject"><span class="material-icons-outlined">close</span>Rejeitar</div>
+          </div>
+        </div>
+      </div>
+      <div class="pending-item">
+        <div class="pending-dot" style="background:#B91C1C"></div>
+        <div class="pending-text">
+          <div class="pt">Mochila preta — João Pereira</div>
+          <div class="pm"><span class="material-icons-outlined">schedule</span>Solicitado há 2 h · Sala 204</div>
+          <div class="pending-actions">
+            <div class="btn-approve"><span class="material-icons-outlined">check</span>Aprovar</div>
+            <div class="btn-reject"><span class="material-icons-outlined">close</span>Rejeitar</div>
+          </div>
+        </div>
+      </div>
+      <div class="pending-item">
+        <div class="pending-dot"></div>
+        <div class="pending-text">
+          <div class="pt">Fone de ouvido — Maria Souza</div>
+          <div class="pm"><span class="material-icons-outlined">schedule</span>Solicitado ontem · Lab. Info.</div>
+          <div class="pending-actions">
+            <div class="btn-approve"><span class="material-icons-outlined">check</span>Aprovar</div>
+            <div class="btn-reject"><span class="material-icons-outlined">close</span>Rejeitar</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-nav">
+    <div class="nav-item active">
+      <span class="material-icons-outlined">dashboard</span>
+      <span>Painel</span>
+      <div class="nav-dot"></div>
+    </div>
+    <div class="nav-item">
+      <span class="material-icons-outlined">inventory_2</span>
+      <span>Objetos</span>
+    </div>
+    <div class="nav-item">
+      <span class="material-icons-outlined">list_alt</span>
+      <span>Pedidos</span>
+    </div>
+    <div class="nav-item">
+      <span class="material-icons-outlined">history</span>
+      <span>Histórico</span>
+    </div>
+    <div class="nav-item">
+      <span class="material-icons-outlined">person</span>
+      <span>Perfil</span>
+    </div>
+  </div>
+</div>
+</div>
+
+</body>
+</html>

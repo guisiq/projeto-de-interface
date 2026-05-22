@@ -90,59 +90,62 @@ Diante da ausência de um canal unificado para registro e busca de objetos, prop
 
 ## Sistema/App 1
 
-**Nome:** Achados e Perdidos USP  
-**Link:** https://portalservicos.usp.br (seção de achados e perdidos)  
-**Print de tela:** *Inserir captura de tela do portal com legenda.*  
+**Nome:** Achusp — Achados e Perdidos da USP  
+**Link:** https://ccsl.ime.usp.br/pt-br/projeto/achusp/  
+**Print de tela:** *Inserir captura de tela da página do Achusp/CCSL-USP com legenda.*  
 
-**Descrição breve:** Sistema web da Universidade de São Paulo para registro de objetos perdidos e encontrados pela comunidade universitária. Integrado ao portal de serviços institucionais.
+**Descrição breve:** Projeto do Centro de Competência em Software Livre (CCSL/IME-USP) descrito como um site de achados e perdidos para a Universidade de São Paulo. A própria página informa que o sistema web permite cadastrar e buscar itens achados ou perdidos e que o projeto foi pensado para gerenciar departamentos de achados e perdidos.
 
 **Pontos fortes:**
 
 - Voltado especificamente para o contexto universitário.
-- Permite busca por categoria e localização no campus.
+- Permite cadastrar e buscar itens achados ou perdidos.
+- Projeto de código aberto, permitindo estudo de funcionamento e adaptação.
 
 **Pontos fracos:**
 
 - Interface visual desatualizada e pouco responsiva.
-- Não possui upload de fotos dos objetos, dificultando a identificação.
-- Processo de retirada burocrático e pouco intuitivo.
+- Pouca evidência pública de fluxo mobile-first ou interface atualizada.
+- Documentação pública limitada sobre validação de retirada e notificação ao usuário.
 
-**Aprendizado para o projeto:** A necessidade de incluir fotos como elemento central na identificação de objetos; a importância de uma interface mobile-first que acompanhe o comportamento real dos usuários (uso predominante pelo celular); e a simplificação do fluxo de retirada.
+**Aprendizado para o projeto:** O UniAchados deve manter o foco universitário e a separação clara entre cadastro e busca, mas evoluir com interface mobile-first, uso de fotos nos cards, filtros visuais e fluxo de retirada mais guiado.
 
 ## Sistema/App 2
 
-**Nome:** TrackIF — Sistema de Chamados Internos (IFSP)  
-**Link:** Sistema interno do Instituto Federal de São Paulo (acesso restrito à comunidade)  
-**Print de tela:** *Inserir captura de tela da interface de chamados com legenda.*  
+**Nome:** GLPI — Sistema de Chamados do IFSP São João da Boa Vista  
+**Link:** https://docs-cti.sbv.ifsp.edu.br/books/manual-de-servi%C3%A7os-digitais/page/%F0%9F%94%84-como-acompanhar-e-atualizar-um-chamado  
+**Print de tela:** *Inserir captura de tela do manual público do GLPI/IFSP com legenda.*  
 
-**Descrição breve:** Sistema de abertura e acompanhamento de chamados utilizado por institutos federais. Algumas unidades adaptaram o módulo de chamados para gerenciar achados e perdidos, funcionando como um sistema de tickets com status definidos.
+**Descrição breve:** Manual público do IFSP que demonstra o uso do GLPI para abertura, acompanhamento e atualização de chamados. Embora seja voltado a serviços digitais e suporte, a lógica de ticket, status, anexos, respostas e validação é relevante para o fluxo administrativo de um sistema de achados e perdidos.
 
 **Pontos fortes:**
 
-- Sistema de status bem definido (aberto, em andamento, resolvido) que dá visibilidade ao progresso.
-- Histórico completo de cada chamado e notificações por e-mail.
+- Permite acompanhar o andamento de uma solicitação em "Meus chamados".
+- Aceita complementos no chamado com novos detalhes, links, imagens e arquivos.
+- Possui registro de validação por outra pessoa, útil para processos que exigem aprovação.
 
 **Pontos fracos:**
 
 - Interface genérica, não otimizada para achados e perdidos.
-- Excesso de campos obrigatórios para registros simples.
+- Fluxo pensado para suporte/manutenção, não para identificação visual de objetos.
 - Visual pouco amigável e sem recursos visuais como fotos.
 
-**Aprendizado para o projeto:** O modelo de status (aberto → em análise → resolvido → finalizado) é eficaz e será adaptado para o UniAchados. Notificações de mudança de status são essenciais para manter o usuário informado. A interface deve ser específica e contextualizada, não genérica.
+**Aprendizado para o projeto:** O modelo de acompanhamento por solicitação é útil para o UniAchados, principalmente no fluxo de retirada e validação pelo funcionário. O projeto deve aproveitar a ideia de histórico e status, mas simplificar a interface, reduzir campos desnecessários e priorizar foto, categoria, local e data do objeto.
 
 ## Sistema/App 3
 
 **Nome:** FoundIt (Aplicativo Mobile)  
-**Link:** Disponível na Google Play Store e App Store  
-**Print de tela:** *Inserir captura de tela do aplicativo com legenda.*  
+**Link:** https://play.google.com/store/apps/details?id=za.co.founditapp&hl=en-US | https://founditproject.com/  
+**Print de tela:** *Inserir captura de tela da página do Google Play ou da versão web do FoundIt com legenda.*  
 
-**Descrição breve:** Aplicativo mobile para comunidades (universidades, condomínios, eventos) reportarem objetos perdidos e encontrados. Utiliza cards visuais com fotos, filtros por localização e permite comunicação entre usuários.
+**Descrição breve:** Aplicativo real de achados e perdidos disponível no Google Play, voltado ao registro de itens perdidos e encontrados em comunidades. A página pública descreve funções como postar itens perdidos com fotos, detalhes e local, registrar itens encontrados, navegar por categorias, pesquisar por tipo/local/palavra-chave e conectar pessoas para devolução. Também há uma versão/projeto universitário público do FoundIt voltado ao campus da University of Maryland.
 
 **Pontos fortes:**
 
 - Interface moderna, visual e mobile-first.
 - Uso de fotos como elemento principal dos cards.
-- Filtros intuitivos por localização e data.
+- Organização por categorias, localização e palavra-chave.
+- Foco em reconectar quem perdeu com quem encontrou.
 
 **Pontos fracos:**
 
@@ -240,49 +243,89 @@ Diante da ausência de um canal unificado para registro e busca de objetos, prop
 
 ```mermaid
 flowchart TD
-    A[Tela de Boas-vindas] --> B[Login]
-    A --> C[Cadastro de Usuário]
-    B --> D{Perfil de Acesso}
-    C --> B
-    
-    D -->|Aluno| E[Home do Aluno]
-    D -->|Funcionário| F[Painel do Funcionário]
-    
-    %% Fluxo do Aluno
-    E --> G[Buscar Objetos]
-    E --> H[Cadastrar Objeto Perdido]
-    E --> I[Minhas Solicitações]
-    E --> J[Notificações]
-    E --> K[Perfil do Usuário]
-    E --> L[Ajuda / FAQ]
-    
-    G --> M[Filtros Avançados]
-    G --> N[Resultado da Busca]
-    N --> O[Detalhes do Objeto]
-    O --> P[Solicitar Retirada]
-    P --> Q[Confirmação da Solicitação]
-    
-    H --> R[Formulário de Cadastro]
-    R --> S[Confirmação de Cadastro]
-    
-    %% Fluxo do Funcionário
-    F --> T[Cadastrar Objeto Encontrado]
-    F --> U[Lista de Objetos Cadastrados]
-    F --> V[Solicitações Pendentes]
-    F --> W[Histórico de Casos]
-    F --> K
-    F --> J
-    
-    T --> X[Formulário de Cadastro - Admin]
-    X --> Y[Confirmação de Cadastro - Admin]
-    
-    V --> Z[Validação de Solicitação]
-    Z --> AA[Aprovar Retirada]
-    Z --> AB[Rejeitar Solicitação]
-    AA --> AC[Encerramento do Caso]
+  A[Tela de Boas-vindas] --> B[Login institucional]
+  A --> C[Cadastro de usuário]
+  C --> B
+  B --> D{Perfil de acesso}
+
+  D -->|Aluno| E[Home do aluno]
+  D -->|Funcionário| F[Painel do funcionário]
+
+  %% Navegação persistente do aluno
+  E --> G[Buscar objetos]
+  E --> H[Cadastrar objeto perdido]
+  E --> I[Minhas solicitações]
+  E --> J[Notificações]
+  E --> K[Perfil do usuário]
+  E --> L[Ajuda / FAQ]
+
+  %% Fluxo de busca e retirada
+  G --> M[Filtros rápidos]
+  M --> N[Filtros avançados]
+  N --> G
+  G --> O{Encontrou objeto provável?}
+  O -->|Sim| P[Detalhes do objeto]
+  O -->|Não| Q[Estado vazio / ajustar filtros]
+  Q --> G
+  P --> R{Status permite retirada?}
+  R -->|Encontrado| S[Solicitar retirada]
+  R -->|Aguardando / finalizado| I
+  S --> T{Formulário válido?}
+  T -->|Não| S
+  T -->|Sim| U[Confirmação da solicitação]
+  U --> I
+  U --> E
+
+  %% Fluxo de cadastro pelo aluno
+  H --> V{Campos obrigatórios preenchidos?}
+  V -->|Não| H
+  V -->|Sim| W[Confirmação de cadastro]
+  W --> E
+  W --> G
+
+  %% Acompanhamento do aluno
+  I --> P
+  J --> I
+  K --> J
+  K --> L
+  L --> E
+
+  %% Navegação persistente do funcionário
+  F --> X[Cadastrar objeto encontrado]
+  F --> Y[Lista de objetos cadastrados]
+  F --> Z[Solicitações pendentes]
+  F --> AA[Histórico de casos]
+  F --> J
+  F --> K
+
+  %% Cadastro e gestão administrativa
+  X --> AB{Cadastro válido?}
+  AB -->|Não| X
+  AB -->|Sim| AC[Confirmação de objeto publicado]
+  AC --> Y
+  Y --> AD[Detalhes / edição do objeto]
+  AD --> Y
+
+  %% Validação e encerramento
+  Z --> AE[Validar solicitação]
+  AE --> AF{Decisão do funcionário}
+  AF -->|Aprovar| AG[Retirada aprovada]
+  AF -->|Rejeitar| AH[Solicitação rejeitada]
+  AG --> AI[Encerramento do caso]
+  AH --> Z
+  AI --> AA
+  AI --> Y
 ```
 
-**Observação:** O sistema possui dois fluxos principais separados por perfil de acesso. A navegação é persistente por meio de barra inferior (mobile) ou menu lateral (desktop), garantindo acesso rápido às funcionalidades mais utilizadas.
+**Observação:** O sistema possui dois fluxos principais separados por perfil de acesso: aluno e funcionário. O diagrama combina mapa do site e fluxo de navegação, conforme a orientação da aula, mostrando não apenas quais telas existem, mas também as decisões de uso, retornos, confirmações e estados de exceção. A navegação persistente aparece por meio da barra inferior no mobile, enquanto os fluxos administrativos concentram cadastro, validação, rejeição e encerramento de casos.
+
+**Critérios de IHC considerados no fluxo:**
+
+- **Visibilidade do estado do sistema:** toda ação importante termina em confirmação ou atualização de status.
+- **Prevenção de erros:** formulários passam por etapa de validação antes de cadastro, solicitação ou publicação.
+- **Controle e liberdade do usuário:** há caminhos de retorno para home, busca, solicitações e painel administrativo.
+- **Reconhecimento em vez de memorização:** as telas principais permanecem acessíveis pela navegação persistente.
+- **Acessibilidade:** notificações, validações e status são representados visualmente, sem dependência de áudio.
 
 ---
 
@@ -414,7 +457,7 @@ O protótipo de alta fidelidade foi desenvolvido no Figma com visual limpo, mode
 Esquema análogo azul — o trio primária (#1E3A5F), accent (#4A90D9) e secundária (#2E7D8C) ocupa um mesmo arco do círculo cromático (azul naval → azul claro → azul-esverdeado), garantindo coesão visual natural. As cores de status são versões dessaturadas e escurecidas das convenções semáforo (vermelho/âmbar/verde), evitando vibrância excessiva e mantendo legibilidade.
 
 **Ferramenta utilizada:**  
-Coolors (coolors.co) para exploração de harmonias; Color Hunt (colorhunt.co) para referências de paletas institucionais; WebAIM Contrast Checker para validação WCAG AA.
+Coolors (coolors.co) para exploração de harmonias e geração da paleta; WebAIM Contrast Checker para validação de contraste conforme WCAG AA.
 
 **Justificativa das escolhas:**  
 A paleta anterior apresentava cores primárias e secundárias com saturação elevada (#1565C0 e #26A69A), gerando contraste excessivo e desconexão entre os elementos. A revisão adota um esquema análogo coeso: o azul naval (#1E3A5F) remete a ambientes acadêmicos e institucionais sérios; o teal médio (#2E7D8C) conecta-se ao azul sem dissonância; o fundo cinza-névoa (#F5F7FA) é mais suave que o branco puro, reduzindo fadiga visual em sessões longas. As cores de status foram escurecidas (ex.: vermelho #B91C1C em vez de #E53935) para melhor contraste sobre fundos claros e eliminação da aparência de "semáforo neon". A persona Beatriz (PCD auditiva) se beneficia do alto contraste azul-carvão sobre cinza-névoa (ratio > 12:1) e da redundância de status por cor + ícone + texto.
@@ -614,13 +657,18 @@ Esta experiência demonstrou que o desenvolvimento de software não se limita à
 - NORMAN, D. **The Design of Everyday Things**. Revised and expanded edition. Basic Books, 2013.
 - BARBOSA, S. D. J.; SILVA, B. S. **Interação Humano-Computador**. Elsevier, 2010.
 - W3C. **Web Content Accessibility Guidelines (WCAG) 2.1**. 2018. Disponível em: https://www.w3.org/TR/WCAG21/
+- BRASIL. Departamento de Governo Eletrônico. **eMAG — Modelo de Acessibilidade em Governo Eletrônico**, v. 3.1. Brasília: SLTI/MP, 2014. Disponível em: https://emag.governoeletronico.gov.br/
 - PREECE, J.; ROGERS, Y.; SHARP, H. **Design de Interação: Além da Interação Humano-Computador**. 3ª ed. Bookman, 2013.
 
 ## Fontes práticas
 
-- Achados e Perdidos USP — Portal de Serviços da Universidade de São Paulo.
-- TrackIF — Sistema de chamados internos do IFSP.
-- FoundIt — Aplicativo de achados e perdidos para comunidades (Google Play/App Store).
+- CCSL/IME-USP. **Achusp — Site de achados e perdidos para a Universidade de São Paulo**. Disponível em: https://ccsl.ime.usp.br/pt-br/projeto/achusp/
+- Bibliotecas EEL/USP. **Achados & Perdidos**. Disponível em: https://www.bibliotecas.eel.usp.br/servicos/achados-perdidos
+- IFSP São João da Boa Vista. **Manual de Serviços Digitais — Como acompanhar e atualizar um chamado (GLPI)**. Disponível em: https://docs-cti.sbv.ifsp.edu.br/books/manual-de-servi%C3%A7os-digitais/page/%F0%9F%94%84-como-acompanhar-e-atualizar-um-chamado
+- FoundIt. **FoundIt (Lost and Found)**. Google Play. Disponível em: https://play.google.com/store/apps/details?id=za.co.founditapp&hl=en-US
+- FoundIt Project. **Lost & Found for Students — University of Maryland beta**. Disponível em: https://founditproject.com/
+- MissingX. **Lost and Found Solution**. Disponível em: https://www.missingx.com/
+- Pixit. **Lost and Found Management Made Simple**. Disponível em: https://pixithq.com/
 
 ## Ferramentas utilizadas
 
