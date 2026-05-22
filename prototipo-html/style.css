@@ -213,6 +213,10 @@ body {
   font-size: 15px; font-weight: 600; padding: 14px 20px;
   cursor: pointer; font-family: 'Inter', sans-serif;
 }
+.btn-secondary-light {
+  background: var(--c-surface); color: var(--c-primary);
+  border-color: #CBD5E1;
+}
 .btn-full { width: 100%; display: block; }
 
 .link-btn {
@@ -357,6 +361,23 @@ body {
 .filter-btn-active { background: #EFF6FF; border-color: var(--c-accent); color: var(--c-accent); }
 
 .results-count { font-size: 12px; color: var(--c-text-sec); margin-bottom: 10px; }
+
+/* ── ADVANCED FILTERS ── */
+.filter-panel {
+  background: var(--c-surface); border-radius: var(--radius-md);
+  padding: 14px; box-shadow: var(--shadow-sm); margin-bottom: 16px;
+}
+.option-grid {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px; margin-top: 10px;
+}
+.date-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.status-options { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+.radio-row, .check-row {
+  display: flex; align-items: flex-start; gap: 8px;
+  font-size: 13px; color: var(--c-text); line-height: 1.4;
+}
+.radio-row input, .check-row input { margin-top: 2px; accent-color: var(--c-accent); }
 
 /* ══════════════════════════════════════════
    DETAIL SCREEN
@@ -547,6 +568,28 @@ body {
 }
 .menu-item:last-child { border-bottom: none; }
 .menu-item-icon { color: var(--c-accent); font-size: 20px !important; }
+
+/* ══════════════════════════════════════════
+   TIMELINE / FAQ
+══════════════════════════════════════════ */
+.timeline-item {
+  background: var(--c-surface); border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm); padding: 14px;
+  display: flex; gap: 12px; align-items: flex-start; margin-bottom: 10px;
+}
+.timeline-dot {
+  width: 12px; height: 12px; border-radius: 50%;
+  background: var(--c-success); margin-top: 4px; flex-shrink: 0;
+  box-shadow: 0 0 0 4px #DCFCE7;
+}
+.timeline-dot-warn { background: var(--c-warning); box-shadow: 0 0 0 4px #FEF3C7; }
+.faq-item {
+  background: var(--c-surface); border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm); padding: 14px 16px; margin-bottom: 10px;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.faq-q { font-size: 14px; font-weight: 700; color: var(--c-text); }
+.faq-a { font-size: 13px; color: var(--c-text-sec); line-height: 1.45; }
 
 /* ══════════════════════════════════════════
    EXTERNAL NAV LEGEND

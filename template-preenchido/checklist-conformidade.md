@@ -10,13 +10,13 @@
 | 4 | 2 perfis de acesso distintos (aluno e funcionário) | ✅ | Seções 4 e 6 |
 | 5 | Uma persona PCD (Beatriz — deficiência auditiva) | ✅ | Seção 4, Persona 3 |
 | 6 | Jornada do usuário para 2 personas (5 etapas cada) | ✅ | Seção 5 |
-| 7 | Mapa do site / diagrama de fluxo de navegação | ✅ | Seção 6 (Mermaid) |
+| 7 | Mapa do site / diagrama de fluxo de navegação | ✅ | Seção 6 (Mermaid expandido com decisões, retornos e exceções) |
 | 8 | Pelo menos 5 wireframes de baixa fidelidade | ✅ | Seção 7 (5 wireframes) |
 | 9 | Protótipo de alta fidelidade | ✅ | Seção 8 |
 | 10 | Paleta de cores, tipografia, ícones e affordances | ✅ | Seções 8.1 e 8.2 |
 | 11 | 4 heurísticas de Nielsen aplicadas | ✅ | Seção 8.3 |
-| 12 | Pelo menos 15 telas finais (sem login) | ✅ | Seção 8.4 (18 telas) |
-| 13 | Protótipo conforme eMAG v3.1 (contraste ≥ 4,5:1, redundância cor+ícone+texto, navegação por teclado, alternativas textuais) | ✅ | Seção 8 (Protótipo) — fundamentado em Seção 10 (eMAG, WCAG 2.1) |
+| 12 | Pelo menos 15 telas finais (sem login) | ✅ | Seção 8.4 (18 telas finais documentadas) e protótipo HTML expandido com 22 telas navegáveis |
+| 13 | Protótipo conforme eMAG v3.1 (contraste ≥ 4,5:1, redundância cor+ícone+texto, navegação por teclado, alternativas textuais) | ✅ | Seção 8 — fundamentado em Seção 10 (eMAG, WCAG 2.1) |
 
 ## Itens Pendentes (requerem ação manual)
 

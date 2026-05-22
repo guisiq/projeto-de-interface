@@ -49,10 +49,89 @@
             Encontre seus objetos perdidos no campus ou cadastre o que você encontrou.
           </p>
           <div class="welcome-actions">
-            <button class="btn-primary" onclick="goTo('home')">Entrar</button>
-            <button class="btn-secondary" onclick="goTo('home')">Criar conta</button>
+            <button class="btn-primary" onclick="goTo('login')">Entrar</button>
+            <button class="btn-secondary" onclick="goTo('cadastro-usuario')">Criar conta</button>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════
+         SCREEN 2 — Login institucional
+    ════════════════════════════════════ -->
+    <div class="screen hidden" id="screen-login" data-screen="login">
+      <div class="topbar topbar-back">
+        <button class="icon-btn" onclick="goTo('welcome')">
+          <span class="material-icons-outlined">arrow_back</span>
+        </button>
+        <span class="topbar-title">Login institucional</span>
+        <div style="width:40px"></div>
+      </div>
+
+      <div class="screen-body scroll">
+        <div class="info-box">
+          <span class="material-icons-outlined" style="color:#1D4ED8">info</span>
+          <p>Use seu e-mail institucional para acessar as telas de aluno ou funcionário.</p>
+        </div>
+
+        <div class="form-section">
+          <label class="form-label">E-mail institucional <span class="req">*</span></label>
+          <input class="form-input" type="email" value="ana.silva@unitins.br" />
+        </div>
+
+        <div class="form-section">
+          <label class="form-label">Senha <span class="req">*</span></label>
+          <input class="form-input" type="password" value="unitins2026" />
+        </div>
+
+        <button class="btn-primary btn-full" onclick="goTo('home')">Entrar como aluno</button>
+        <button class="btn-secondary btn-full btn-secondary-light" onclick="goTo('painel-admin')" style="margin-top:10px">Entrar como funcionário</button>
+        <button class="link-btn" style="margin-top:14px;display:block;text-align:center">Esqueci minha senha</button>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════
+         SCREEN 3 — Cadastro de usuário
+    ════════════════════════════════════ -->
+    <div class="screen hidden" id="screen-cadastro-usuario" data-screen="cadastro-usuario">
+      <div class="topbar topbar-back">
+        <button class="icon-btn" onclick="goTo('welcome')">
+          <span class="material-icons-outlined">arrow_back</span>
+        </button>
+        <span class="topbar-title">Criar conta</span>
+        <div style="width:40px"></div>
+      </div>
+
+      <div class="screen-body scroll">
+        <div class="form-section">
+          <label class="form-label">Nome completo <span class="req">*</span></label>
+          <input class="form-input" value="Beatriz Oliveira" />
+        </div>
+        <div class="form-section">
+          <label class="form-label">E-mail institucional <span class="req">*</span></label>
+          <input class="form-input" type="email" value="beatriz.oliveira@unitins.br" />
+        </div>
+        <div class="form-section">
+          <label class="form-label">Perfil de acesso <span class="req">*</span></label>
+          <select class="form-select">
+            <option selected>Aluno</option>
+            <option>Funcionário</option>
+          </select>
+        </div>
+        <div class="form-section">
+          <label class="form-label">Matrícula ou SIAPE <span class="req">*</span></label>
+          <input class="form-input" value="2024005678" />
+        </div>
+        <div class="form-section">
+          <label class="form-label">Senha <span class="req">*</span></label>
+          <input class="form-input" type="password" value="unitins2026" />
+        </div>
+        <p class="req-note"><span class="req">*</span> Campos obrigatórios</p>
+      </div>
+
+      <div class="bottom-action-bar">
+        <button class="btn-secondary btn-full" onclick="goTo('welcome')" style="margin-bottom:8px">Cancelar</button>
+        <button class="btn-primary btn-full" onclick="goTo('login')">Criar conta</button>
       </div>
     </div>
 
@@ -178,9 +257,9 @@
         </div>
 
         <div class="filter-row">
-          <button class="filter-btn"><span class="material-icons-outlined" style="font-size:16px">location_on</span> Local</button>
-          <button class="filter-btn"><span class="material-icons-outlined" style="font-size:16px">calendar_today</span> Data</button>
-          <button class="filter-btn filter-btn-active"><span class="material-icons-outlined" style="font-size:16px">label</span> Status: Encontrado ✕</button>
+          <button class="filter-btn" onclick="goTo('filtros-avancados')"><span class="material-icons-outlined" style="font-size:16px">location_on</span> Local</button>
+          <button class="filter-btn" onclick="goTo('filtros-avancados')"><span class="material-icons-outlined" style="font-size:16px">calendar_today</span> Data</button>
+          <button class="filter-btn filter-btn-active" onclick="goTo('filtros-avancados')"><span class="material-icons-outlined" style="font-size:16px">label</span> Status: Encontrado x</button>
         </div>
 
         <p class="results-count">12 objetos encontrados</p>
@@ -245,6 +324,64 @@
         <button class="nav-btn" onclick="goTo('perfil')">
           <span class="material-icons-outlined">person_outline</span><span>Perfil</span>
         </button>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════
+         SCREEN 3B — Filtros Avançados
+    ════════════════════════════════════ -->
+    <div class="screen hidden" id="screen-filtros-avancados" data-screen="filtros-avancados">
+      <div class="topbar topbar-back">
+        <button class="icon-btn" onclick="goTo('buscar')">
+          <span class="material-icons-outlined">arrow_back</span>
+        </button>
+        <span class="topbar-title">Filtros avançados</span>
+        <div style="width:40px"></div>
+      </div>
+
+      <div class="screen-body scroll">
+        <div class="filter-panel">
+          <span class="section-card-title">Categoria</span>
+          <div class="option-grid">
+            <button class="chip chip-active">Eletrônicos</button>
+            <button class="chip">Documentos</button>
+            <button class="chip">Roupas</button>
+            <button class="chip">Acessórios</button>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <label class="form-label">Local</label>
+          <select class="form-select">
+            <option selected>Biblioteca Central</option>
+            <option>Cantina</option>
+            <option>Bloco A</option>
+            <option>Bloco B</option>
+            <option>Lab. Informática</option>
+          </select>
+        </div>
+
+        <div class="form-section">
+          <label class="form-label">Período</label>
+          <div class="date-row">
+            <input class="form-input" type="date" value="2026-05-15" />
+            <input class="form-input" type="date" value="2026-05-22" />
+          </div>
+        </div>
+
+        <div class="filter-panel">
+          <span class="section-card-title">Status</span>
+          <div class="status-options">
+            <label class="radio-row"><input type="radio" name="status" checked /> Encontrado</label>
+            <label class="radio-row"><input type="radio" name="status" /> Aguardando retirada</label>
+            <label class="radio-row"><input type="radio" name="status" /> Finalizado</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="bottom-action-bar">
+        <button class="btn-secondary btn-full" onclick="goTo('buscar')" style="margin-bottom:8px">Limpar filtros</button>
+        <button class="btn-primary btn-full" onclick="goTo('buscar')">Aplicar filtros</button>
       </div>
     </div>
 
@@ -614,7 +751,7 @@
 
         <div class="section-header">
           <span class="section-title">Solicitações pendentes</span>
-          <button class="link-btn">Ver todas</button>
+          <button class="link-btn" onclick="goTo('lista-objetos')">Ver todas</button>
         </div>
 
         <div class="admin-request-card" onclick="">
@@ -624,7 +761,7 @@
           </div>
           <div class="admin-req-actions">
             <button class="btn-validate" onclick="goTo('validar-solicitacao')">Validar</button>
-            <button class="btn-reject">Rejeitar</button>
+            <button class="btn-reject" onclick="goTo('painel-admin')">Rejeitar</button>
           </div>
         </div>
 
@@ -634,8 +771,8 @@
             <span class="admin-req-meta">Pedro Costa · Solicitado 21 mai</span>
           </div>
           <div class="admin-req-actions">
-            <button class="btn-validate">Validar</button>
-            <button class="btn-reject">Rejeitar</button>
+            <button class="btn-validate" onclick="goTo('validar-solicitacao')">Validar</button>
+            <button class="btn-reject" onclick="goTo('painel-admin')">Rejeitar</button>
           </div>
         </div>
 
@@ -646,18 +783,122 @@
         <button class="nav-btn active">
           <span class="material-icons-outlined">dashboard</span><span>Painel</span>
         </button>
-        <button class="nav-btn">
+        <button class="nav-btn" onclick="goTo('lista-objetos')">
           <span class="material-icons-outlined">inventory_2</span><span>Objetos</span>
         </button>
-        <button class="nav-btn">
+        <button class="nav-btn" onclick="goTo('validar-solicitacao')">
           <span class="material-icons-outlined">pending_actions</span><span>Solicitações</span>
         </button>
-        <button class="nav-btn">
+        <button class="nav-btn" onclick="goTo('historico')">
           <span class="material-icons-outlined">history</span><span>Histórico</span>
         </button>
         <button class="nav-btn" onclick="goTo('perfil')">
           <span class="material-icons-outlined">person_outline</span><span>Perfil</span>
         </button>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════
+         SCREEN 10B — Lista de Objetos (Admin)
+    ════════════════════════════════════ -->
+    <div class="screen hidden" id="screen-lista-objetos" data-screen="lista-objetos">
+      <div class="topbar topbar-back topbar-admin">
+        <button class="icon-btn" onclick="goTo('painel-admin')">
+          <span class="material-icons-outlined">arrow_back</span>
+        </button>
+        <span class="topbar-title">Objetos cadastrados</span>
+        <button class="icon-btn" onclick="goTo('cadastrar-encontrado')"><span class="material-icons-outlined">add</span></button>
+      </div>
+
+      <div class="screen-body scroll">
+        <div class="search-bar-wrapper">
+          <span class="material-icons-outlined search-icon-inner">search</span>
+          <input class="search-bar" placeholder="Buscar no estoque..." value="carregador" />
+        </div>
+        <div class="card-list">
+          <div class="card-list-item" onclick="goTo('detalhes')">
+            <div class="card-img-sm card-img-blue"><span class="material-icons-outlined" style="font-size:24px;color:#4A90D9">charging_station</span></div>
+            <div class="card-info">
+              <span class="card-title">Carregador USB-C Branco</span>
+              <span class="card-meta">Biblioteca Central · Prateleira A2</span>
+              <span class="badge badge-found">Encontrado</span>
+            </div>
+            <span class="material-icons-outlined" style="color:#64748B;margin-left:auto">chevron_right</span>
+          </div>
+          <div class="card-list-item" onclick="goTo('encerramento-caso')">
+            <div class="card-img-sm card-img-teal"><span class="material-icons-outlined" style="font-size:24px;color:#2E7D8C">headphones</span></div>
+            <div class="card-info">
+              <span class="card-title">Fone de ouvido preto</span>
+              <span class="card-meta">Secretaria · Aguardando Ana</span>
+              <span class="badge badge-waiting">Ag. retirada</span>
+            </div>
+            <span class="material-icons-outlined" style="color:#64748B;margin-left:auto">chevron_right</span>
+          </div>
+          <div class="card-list-item">
+            <div class="card-img-sm card-img-gray"><span class="material-icons-outlined" style="font-size:24px;color:#64748B">book</span></div>
+            <div class="card-info">
+              <span class="card-title">Caderno azul</span>
+              <span class="card-meta">Entregue em 20 mai 2026</span>
+              <span class="badge badge-done">Finalizado</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bottom-nav bottom-nav-admin">
+        <button class="nav-btn" onclick="goTo('painel-admin')"><span class="material-icons-outlined">dashboard</span><span>Painel</span></button>
+        <button class="nav-btn active"><span class="material-icons-outlined">inventory_2</span><span>Objetos</span></button>
+        <button class="nav-btn" onclick="goTo('validar-solicitacao')"><span class="material-icons-outlined">pending_actions</span><span>Solicitações</span></button>
+        <button class="nav-btn" onclick="goTo('historico')"><span class="material-icons-outlined">history</span><span>Histórico</span></button>
+        <button class="nav-btn" onclick="goTo('perfil')"><span class="material-icons-outlined">person_outline</span><span>Perfil</span></button>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════
+         SCREEN 10C — Histórico de Casos (Admin)
+    ════════════════════════════════════ -->
+    <div class="screen hidden" id="screen-historico" data-screen="historico">
+      <div class="topbar topbar-back topbar-admin">
+        <button class="icon-btn" onclick="goTo('painel-admin')">
+          <span class="material-icons-outlined">arrow_back</span>
+        </button>
+        <span class="topbar-title">Histórico de casos</span>
+        <div style="width:40px"></div>
+      </div>
+
+      <div class="screen-body scroll">
+        <div class="timeline-item">
+          <span class="timeline-dot"></span>
+          <div>
+            <span class="card-title">Caderno azul entregue</span>
+            <span class="card-meta">Retirado por Ana Silva · 20 mai 2026</span>
+            <span class="badge badge-done">Finalizado</span>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <span class="timeline-dot"></span>
+          <div>
+            <span class="card-title">RG encontrado na biblioteca</span>
+            <span class="card-meta">Publicado por Carlos Mendes · 18 mai 2026</span>
+            <span class="badge badge-found">Encontrado</span>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <span class="timeline-dot timeline-dot-warn"></span>
+          <div>
+            <span class="card-title">Solicitação rejeitada</span>
+            <span class="card-meta">Dados insuficientes · 17 mai 2026</span>
+            <span class="badge badge-analysis">Revisado</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="bottom-nav bottom-nav-admin">
+        <button class="nav-btn" onclick="goTo('painel-admin')"><span class="material-icons-outlined">dashboard</span><span>Painel</span></button>
+        <button class="nav-btn" onclick="goTo('lista-objetos')"><span class="material-icons-outlined">inventory_2</span><span>Objetos</span></button>
+        <button class="nav-btn" onclick="goTo('validar-solicitacao')"><span class="material-icons-outlined">pending_actions</span><span>Solicitações</span></button>
+        <button class="nav-btn active"><span class="material-icons-outlined">history</span><span>Histórico</span></button>
+        <button class="nav-btn" onclick="goTo('perfil')"><span class="material-icons-outlined">person_outline</span><span>Perfil</span></button>
       </div>
     </div>
 
@@ -727,7 +968,27 @@
 
       <div class="bottom-action-bar">
         <button class="btn-secondary btn-full" onclick="goTo('painel-admin')" style="margin-bottom:8px">Cancelar</button>
-        <button class="btn-primary btn-full" onclick="goTo('painel-admin')">Publicar Objeto</button>
+        <button class="btn-primary btn-full" onclick="goTo('confirmacao-encontrado')">Publicar Objeto</button>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════
+         SCREEN 11B — Confirmação Admin
+    ════════════════════════════════════ -->
+    <div class="screen hidden" id="screen-confirmacao-encontrado" data-screen="confirmacao-encontrado">
+      <div class="screen-body center-content">
+        <div class="confirm-icon confirm-icon-success">
+          <span class="material-icons-outlined" style="font-size:48px;color:#15803D">check_circle</span>
+        </div>
+        <h2 class="confirm-title">Objeto publicado!</h2>
+        <p class="confirm-desc">O item encontrado já aparece na busca dos alunos e ficará disponível para solicitação de retirada.</p>
+        <div class="confirm-summary">
+          <div class="summary-row"><span class="summary-label">Status</span><span class="badge badge-found">Encontrado</span></div>
+          <div class="summary-row"><span class="summary-label">Local de guarda</span><span class="summary-value">Secretaria Acadêmica</span></div>
+          <div class="summary-row"><span class="summary-label">Responsável</span><span class="summary-value">Carlos Mendes</span></div>
+        </div>
+        <button class="btn-primary btn-full" onclick="goTo('lista-objetos')" style="margin-top:24px">Ver objetos cadastrados</button>
+        <button class="link-btn" onclick="goTo('painel-admin')" style="margin-top:12px;display:block;text-align:center">Voltar ao painel</button>
       </div>
     </div>
 
@@ -804,10 +1065,80 @@
           <span class="material-icons-outlined" style="vertical-align:middle;margin-right:4px">cancel</span>
           Rejeitar solicitação
         </button>
-        <button class="btn-primary btn-full" onclick="goTo('painel-admin')">
+        <button class="btn-primary btn-full" onclick="goTo('encerramento-caso')">
           <span class="material-icons-outlined" style="vertical-align:middle;margin-right:4px">check_circle</span>
           Aprovar retirada
         </button>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════
+         SCREEN 12B — Encerramento do Caso
+    ════════════════════════════════════ -->
+    <div class="screen hidden" id="screen-encerramento-caso" data-screen="encerramento-caso">
+      <div class="topbar topbar-back topbar-admin">
+        <button class="icon-btn" onclick="goTo('validar-solicitacao')">
+          <span class="material-icons-outlined">arrow_back</span>
+        </button>
+        <span class="topbar-title">Encerrar caso</span>
+        <div style="width:40px"></div>
+      </div>
+
+      <div class="screen-body scroll">
+        <div class="section-card">
+          <span class="section-card-title">Resumo da entrega</span>
+          <div class="summary-row"><span class="summary-label">Objeto</span><span class="summary-value">Carregador USB-C Branco</span></div>
+          <div class="summary-row"><span class="summary-label">Solicitante</span><span class="summary-value">Ana Silva</span></div>
+          <div class="summary-row"><span class="summary-label">Documento</span><span class="summary-value">Conferido</span></div>
+          <div class="summary-row"><span class="summary-label">Novo status</span><span class="badge badge-done">Finalizado</span></div>
+        </div>
+
+        <div class="form-section">
+          <label class="form-label">Observações finais</label>
+          <textarea class="form-textarea" placeholder="Registre detalhes da entrega...">Objeto entregue presencialmente na Secretaria Acadêmica.</textarea>
+        </div>
+
+        <label class="check-row">
+          <input type="checkbox" checked />
+          Confirmo que o objeto foi entregue ao solicitante identificado.
+        </label>
+      </div>
+
+      <div class="bottom-action-bar">
+        <button class="btn-secondary btn-full" onclick="goTo('validar-solicitacao')" style="margin-bottom:8px">Voltar</button>
+        <button class="btn-primary btn-full" onclick="goTo('historico')">Encerrar caso</button>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════
+         SCREEN 12C — Ajuda / FAQ
+    ════════════════════════════════════ -->
+    <div class="screen hidden" id="screen-ajuda" data-screen="ajuda">
+      <div class="topbar topbar-back">
+        <button class="icon-btn" onclick="goTo('home')">
+          <span class="material-icons-outlined">arrow_back</span>
+        </button>
+        <span class="topbar-title">Ajuda / FAQ</span>
+        <div style="width:40px"></div>
+      </div>
+
+      <div class="screen-body scroll">
+        <div class="search-bar-wrapper">
+          <span class="material-icons-outlined search-icon-inner">search</span>
+          <input class="search-bar" placeholder="Buscar dúvida..." />
+        </div>
+        <div class="faq-item">
+          <span class="faq-q">Como solicitar a retirada?</span>
+          <span class="faq-a">Abra os detalhes do objeto encontrado, toque em Solicitar Retirada e descreva características que comprovem que o item é seu.</span>
+        </div>
+        <div class="faq-item">
+          <span class="faq-q">Onde retiro o objeto?</span>
+          <span class="faq-a">O local de retirada aparece nos detalhes do objeto e na notificação de aprovação.</span>
+        </div>
+        <div class="faq-item">
+          <span class="faq-q">O sistema usa avisos sonoros?</span>
+          <span class="faq-a">Não. Todas as atualizações importantes aparecem por texto, badge e mudança visual de status.</span>
+        </div>
       </div>
     </div>
 
@@ -907,6 +1238,11 @@
             <span>Acessibilidade</span>
             <span class="material-icons-outlined" style="margin-left:auto;color:#64748B">chevron_right</span>
           </button>
+          <button class="menu-item" onclick="goTo('ajuda')">
+            <span class="material-icons-outlined menu-item-icon">info</span>
+            <span>Ajuda / FAQ</span>
+            <span class="material-icons-outlined" style="margin-left:auto;color:#64748B">chevron_right</span>
+          </button>
           <button class="menu-item menu-item-danger">
             <span class="material-icons-outlined menu-item-icon" style="color:#B91C1C">logout</span>
             <span style="color:#B91C1C">Sair</span>
@@ -942,19 +1278,27 @@
 <div class="nav-legend">
   <strong>Telas:</strong>
   <button onclick="goTo('welcome')">1. Boas-vindas</button>
-  <button onclick="goTo('home')">2. Home Aluno</button>
-  <button onclick="goTo('buscar')">3. Buscar</button>
-  <button onclick="goTo('detalhes')">4. Detalhes</button>
-  <button onclick="goTo('solicitar-retirada')">5. Solicitar Retirada</button>
-  <button onclick="goTo('confirmacao-solicitacao')">6. Confirm. Solicitação</button>
-  <button onclick="goTo('cadastrar-perdido')">7. Cadastrar Perdido</button>
-  <button onclick="goTo('confirmacao-cadastro')">8. Confirm. Cadastro</button>
-  <button onclick="goTo('solicitacoes')">9. Solicitações</button>
-  <button onclick="goTo('painel-admin')">10. Painel Admin</button>
-  <button onclick="goTo('cadastrar-encontrado')">11. Cadastrar Encontrado</button>
-  <button onclick="goTo('validar-solicitacao')">12. Validar Solicitação</button>
-  <button onclick="goTo('notificacoes')">13. Notificações</button>
-  <button onclick="goTo('perfil')">14. Perfil</button>
+  <button onclick="goTo('login')">2. Login</button>
+  <button onclick="goTo('cadastro-usuario')">3. Cadastro</button>
+  <button onclick="goTo('home')">4. Home Aluno</button>
+  <button onclick="goTo('buscar')">5. Buscar</button>
+  <button onclick="goTo('filtros-avancados')">6. Filtros</button>
+  <button onclick="goTo('detalhes')">7. Detalhes</button>
+  <button onclick="goTo('solicitar-retirada')">8. Retirada</button>
+  <button onclick="goTo('confirmacao-solicitacao')">9. Conf. Solicitação</button>
+  <button onclick="goTo('cadastrar-perdido')">10. Cad. Perdido</button>
+  <button onclick="goTo('confirmacao-cadastro')">11. Conf. Cadastro</button>
+  <button onclick="goTo('solicitacoes')">12. Solicitações</button>
+  <button onclick="goTo('painel-admin')">13. Painel Admin</button>
+  <button onclick="goTo('lista-objetos')">14. Objetos Admin</button>
+  <button onclick="goTo('historico')">15. Histórico</button>
+  <button onclick="goTo('cadastrar-encontrado')">16. Cad. Encontrado</button>
+  <button onclick="goTo('confirmacao-encontrado')">17. Conf. Encontrado</button>
+  <button onclick="goTo('validar-solicitacao')">18. Validar</button>
+  <button onclick="goTo('encerramento-caso')">19. Encerrar</button>
+  <button onclick="goTo('notificacoes')">20. Notificações</button>
+  <button onclick="goTo('perfil')">21. Perfil</button>
+  <button onclick="goTo('ajuda')">22. Ajuda</button>
 </div>
 
 <script src="app.js"></script>

@@ -5,8 +5,11 @@
 
 const screens = [
   'welcome',
+  'login',
+  'cadastro-usuario',
   'home',
   'buscar',
+  'filtros-avancados',
   'detalhes',
   'solicitar-retirada',
   'confirmacao-solicitacao',
@@ -14,8 +17,13 @@ const screens = [
   'confirmacao-cadastro',
   'solicitacoes',
   'painel-admin',
+  'lista-objetos',
+  'historico',
   'cadastrar-encontrado',
+  'confirmacao-encontrado',
   'validar-solicitacao',
+  'encerramento-caso',
+  'ajuda',
   'notificacoes',
   'perfil'
 ];

@@ -30,10 +30,10 @@
 6. [Mapa do Site](#6-mapa-do-site)
 7. [Protótipo de Baixa Fidelidade](#7-protótipo-de-baixa-fidelidade)
 8. [Protótipo de Alta Fidelidade](#8-protótipo-de-alta-fidelidade)
-   - [8.1 Paleta de Cores](#81-paleta-de-cores)
-   - [8.2 Tipografia e Ícones / Affordances](#82-tipografia-e-ícones--affordances)
-   - [8.3 Aplicação das Heurísticas de Nielsen](#83-aplicação-das-heurísticas-de-nielsen)
-   - [8.4 Telas Finais](#84-telas-finais)
+    - [8.1 Paleta de Cores](#81-paleta-de-cores)
+    - [8.2 Tipografia e Ícones / Affordances](#82-tipografia-e-ícones--affordances)
+    - [8.3 Aplicação das Heurísticas de Nielsen](#83-aplicação-das-heurísticas-de-nielsen)
+    - [8.4 Telas Finais](#84-telas-finais)
 9. [Considerações Finais](#9-considerações-finais)
 10. [Referências](#10-referências)
 
@@ -460,7 +460,7 @@ Esquema análogo azul — o trio primária (#1E3A5F), accent (#4A90D9) e secund�
 Coolors (coolors.co) para exploração de harmonias e geração da paleta; WebAIM Contrast Checker para validação de contraste conforme WCAG AA.
 
 **Justificativa das escolhas:**  
-A paleta anterior apresentava cores primárias e secundárias com saturação elevada (#1565C0 e #26A69A), gerando contraste excessivo e desconexão entre os elementos. A revisão adota um esquema análogo coeso: o azul naval (#1E3A5F) remete a ambientes acadêmicos e institucionais sérios; o teal médio (#2E7D8C) conecta-se ao azul sem dissonância; o fundo cinza-névoa (#F5F7FA) é mais suave que o branco puro, reduzindo fadiga visual em sessões longas. As cores de status foram escurecidas (ex.: vermelho #B91C1C em vez de #E53935) para melhor contraste sobre fundos claros e eliminação da aparência de "semáforo neon". A persona Beatriz (PCD auditiva) se beneficia do alto contraste azul-carvão sobre cinza-névoa (ratio > 12:1) e da redundância de status por cor + ícone + texto.
+A paleta foi definida para transmitir seriedade institucional, clareza visual e acessibilidade no contexto universitário. O azul naval (#1E3A5F) remete a ambientes acadêmicos e comunica confiança; o teal médio (#2E7D8C) complementa o azul com equilíbrio, sem competir visualmente com os elementos principais; o fundo cinza-névoa (#F5F7FA) suaviza a leitura em comparação ao branco puro, reduzindo fadiga visual em sessões longas. As cores de status utilizam versões escuras e pouco saturadas das convenções de alerta, aviso e sucesso, garantindo contraste adequado sobre fundos claros e evitando excesso visual. A persona Beatriz (PCD auditiva) se beneficia do alto contraste azul-carvão sobre cinza-névoa (ratio > 12:1) e da redundância de status por cor + ícone + texto.
 
 **Visualização da paleta:**
 
