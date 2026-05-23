@@ -55,12 +55,60 @@ function goBack() {
   }
 }
 
+function enhanceAccessibility() {
+  // type="button" on all buttons without a type
+  document.querySelectorAll('button:not([type])').forEach(b => b.setAttribute('type', 'button'));
+
+  // aria-label for icon-only buttons
+  document.querySelectorAll('.icon-btn, .fab').forEach(btn => {
+    if (!btn.getAttribute('aria-label')) {
+      const svg = btn.querySelector('svg[data-icon]');
+      const label = svg ? svg.getAttribute('data-icon').replace(/_/g,' ') : 'ação';
+      btn.setAttribute('aria-label', label);
+    }
+  });
+
+  // aria-label for badge-dot
+  document.querySelectorAll('.badge-dot').forEach(dot => {
+    if (!dot.getAttribute('aria-label')) dot.setAttribute('aria-label', 'notificações pendentes');
+  });
+
+  // aria-label for search bars
+  document.querySelectorAll('.search-bar:not([aria-label])').forEach(s => s.setAttribute('aria-label', 'buscar objetos'));
+
+  // label[for] + input[id] pairing in form sections
+  document.querySelectorAll('.form-section').forEach((sec, i) => {
+    const label = sec.querySelector('.form-label');
+    const ctrl  = sec.querySelector('input,select,textarea');
+    if (label && ctrl && !ctrl.id) {
+      const id = 'form-ctrl-' + i;
+      ctrl.id = id;
+      label.setAttribute('for', id);
+    }
+  });
+}
+
+function toggleWebMode(force) {
+  const body = document.body;
+  const isWeb = force !== undefined ? force : !body.classList.contains('web-mode');
+  body.classList.toggle('web-mode', isWeb);
+  const btn = document.getElementById('toggle-view-btn');
+  if (btn) btn.textContent = isWeb ? '📱 Modo Mobile' : '🖥 Modo Web';
+  try { localStorage.setItem('uniachados-view', isWeb ? 'web' : 'mobile'); } catch(e) {}
+}
+
 // Init: read ?screen= query param OR hash (for backwards compat), default welcome
 window.addEventListener('DOMContentLoaded', () => {
   const params = new URLSearchParams(window.location.search);
   const qScreen = params.get('screen');
+  const qView  = params.get('view');
   const hashScreen = window.location.hash.replace('#', '');
-  // prefer query param so Figma capture hash doesn't conflict
   const target = qScreen || (screens.includes(hashScreen) ? hashScreen : 'welcome');
   goTo(screens.includes(target) ? target : 'welcome');
+
+  // Restore view mode: URL param > localStorage > default mobile
+  const savedView = qView || (function(){ try { return localStorage.getItem('uniachados-view'); } catch(e){ return null; } })();
+  if (savedView === 'web') toggleWebMode(true);
+
+  enhanceAccessibility();
 });

@@ -13,7 +13,7 @@
   --c-bg:         #F5F7FA;
   --c-surface:    #FFFFFF;
   --c-text:       #1E293B;
-  --c-text-sec:   #64748B;
+  --c-text-sec:   #637389;
   --c-error:      #B91C1C;
   --c-warning:    #B45309;
   --c-success:    #15803D;
@@ -607,3 +607,87 @@ body {
   padding: 4px 10px; cursor: pointer; color: var(--c-text);
 }
 .nav-legend button:hover { background: var(--c-primary); color: #fff; border-color: var(--c-primary); }
+.nav-legend-toggle {
+  background: var(--c-primary); color: #fff;
+  border: none; border-radius: var(--radius-sm);
+  font-size: 11px; font-weight: 600; font-family: 'Inter', sans-serif;
+  padding: 5px 12px; cursor: pointer; margin-right: 8px;
+}
+
+/* ══════════════════════════════════════════
+   WEB VIEW MODE — body.web-mode
+══════════════════════════════════════════ */
+body.web-mode {
+  background: #E8EDF2;
+  padding: 0;
+  align-items: stretch;
+  justify-content: flex-start;
+}
+body.web-mode .nav-legend { display: none; }
+body.web-mode .phone-shell {
+  width: 100%; max-width: 100%;
+  height: auto; min-height: 100vh;
+  border-radius: 0; box-shadow: none;
+}
+body.web-mode .phone-status-bar { display: none; }
+body.web-mode .screen-container { overflow: visible; height: auto; }
+
+/* Screens with sidebar nav (have .bottom-nav) */
+body.web-mode .screen:has(.bottom-nav) {
+  position: static;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  grid-template-columns: 220px 1fr;
+  grid-template-areas: "header header" "sidebar content";
+  min-height: 100vh;
+  height: auto;
+}
+body.web-mode .screen:has(.bottom-nav) > .topbar   { grid-area: header; position: sticky; top: 0; z-index: 100; padding: 14px 48px; }
+body.web-mode .screen:has(.bottom-nav) > .screen-body { grid-area: content; overflow-y: auto; padding: 28px 48px; }
+body.web-mode .screen:has(.bottom-nav) > .bottom-nav  { grid-area: sidebar; }
+
+/* Sidebar nav */
+body.web-mode .bottom-nav {
+  flex-direction: column;
+  width: 100%; height: auto;
+  border-top: none; border-right: 1px solid #E2E8F0;
+  padding: 16px 0; align-items: stretch;
+  background: var(--c-surface);
+}
+body.web-mode .nav-btn {
+  flex-direction: row; justify-content: flex-start;
+  padding: 13px 20px; font-size: 13px; gap: 12px; width: 100%;
+  border-left: 3px solid transparent;
+}
+body.web-mode .nav-btn.active {
+  background: #EFF6FF; border-left-color: var(--c-primary);
+}
+body.web-mode .bottom-nav-admin .nav-btn.active {
+  background: #ECFDF5; border-left-color: var(--c-secondary);
+}
+
+/* Topbar – screens without bottom-nav */
+body.web-mode .screen:not(:has(.bottom-nav)) {
+  position: static; height: auto; min-height: 100vh;
+}
+body.web-mode .screen:not(:has(.bottom-nav)) > .topbar {
+  padding: 14px 48px; position: sticky; top: 0; z-index: 100;
+}
+body.web-mode .screen:not(:has(.bottom-nav)) .screen-body {
+  max-width: 600px; margin: 0 auto; padding: 32px 40px;
+}
+body.web-mode .screen:not(:has(.bottom-nav)) .bottom-action-bar {
+  max-width: 600px; margin: 0 auto; padding: 12px 40px 24px;
+}
+body.web-mode .screen:not(:has(.bottom-nav)) .confirm-steps { max-width: 480px; }
+body.web-mode .screen:not(:has(.bottom-nav)) .confirm-summary { max-width: 480px; }
+
+/* Welcome screen */
+body.web-mode .welcome-bg { min-height: 100vh; padding: 60px; }
+body.web-mode .welcome-content { max-width: 380px; margin: 0 auto; }
+
+/* FAB */
+body.web-mode .fab { right: 48px; bottom: 40px; }
+
+/* Focus visible */
+body.web-mode .screen:focus { outline: none; }
