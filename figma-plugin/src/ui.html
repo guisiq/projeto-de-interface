@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Inter, sans-serif; font-size: 13px; background: #f5f5f5; }
+    .tabs { display: flex; border-bottom: 2px solid #e5e7eb; }
+    .tab { flex: 1; padding: 10px; text-align: center; cursor: pointer; font-weight: 500; color: #6b7280; background: none; border: none; }
+    .tab.active { color: #1e3a5f; border-bottom: 2px solid #1e3a5f; margin-bottom: -2px; }
+    .panel { padding: 16px; display: none; }
+    .panel.active { display: block; }
+    h3 { font-size: 14px; margin-bottom: 8px; color: #1e3a5f; }
+    p { color: #555; margin-bottom: 12px; line-height: 1.4; }
+    .btn { display: block; width: 100%; padding: 12px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; margin-bottom: 8px; }
+    .btn-primary { background: #1e3a5f; color: white; }
+    .btn-primary:hover { background: #2a4d7a; }
+    .btn-secondary { background: white; color: #1e3a5f; border: 1px solid #1e3a5f; }
+    .btn-secondary:hover { background: #eef3f9; }
+    .btn-danger { background: #dc2626; color: white; }
+    .btn-danger:hover { background: #b91c1c; }
+    .checkbox { margin: 8px 0; display: flex; align-items: center; gap: 6px; }
+    .checkbox input { width: 16px; height: 16px; }
+    #output { margin-top: 12px; max-height: 350px; overflow-y: auto; background: white; border-radius: 8px; padding: 12px; border: 1px solid #e5e7eb; font-size: 12px; display: none; }
+    .entry { padding: 4px 0; border-bottom: 1px solid #f3f4f6; }
+    .entry.success { color: #15803d; }
+    .entry.error { color: #b91c1c; }
+    .entry.skip { color: #92400e; }
+    .summary { font-weight: 600; padding: 8px 0; font-size: 13px; }
+    .count { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; margin-left: 4px; }
+    .count-ok { background: #dcfce7; color: #15803d; }
+    .count-err { background: #fee2e2; color: #b91c1c; }
+    .count-skip { background: #fef3c7; color: #92400e; }
+  </style>
+</head>
+<body>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab(0)">Botões Internos</button>
+    <button class="tab" onclick="switchTab(1)">Nav Inferior (Telas)</button>
+    <button class="tab" onclick="switchTab(2)">Frames</button>
+    <button class="tab" onclick="switchTab(3)">🔍 Diagnóstico</button>
+  </div>
+
+  <!-- Panel 0: Internal buttons -->
+  <div class="panel active" id="panel-0">
+    <h3>🔘 Conexões de Botões Internos</h3>
+    <p>Conecta botões, links e ícones dentro do app (back, entrar, cadastrar, FAB, etc).</p>
+    <p><strong id="count-internal">0</strong> conexões carregadas.</p>
+    <div class="checkbox">
+      <input type="checkbox" id="overwrite-0" checked />
+      <label for="overwrite-0">Sobrescrever conexões existentes</label>
+    </div>
+    <div class="checkbox">
+      <input type="checkbox" id="dryrun-0" />
+      <label for="dryrun-0">Dry Run (simular sem aplicar)</label>
+    </div>
+    <button class="btn btn-primary" onclick="applyConnections('internal')">▶ Aplicar Botões Internos</button>
+  </div>
+
+  <!-- Panel 1: Bottom nav buttons -->
+  <div class="panel" id="panel-1">
+    <h3>📋 Conexões Nav Inferior (Telas)</h3>
+    <p>Conecta os botões "1. Boas-vindas", "2. Login", etc. que ficam abaixo do celular em cada frame.</p>
+    <p><strong id="count-bottomnav">0</strong> conexões carregadas.</p>
+    <div class="checkbox">
+      <input type="checkbox" id="overwrite-1" checked />
+      <label for="overwrite-1">Sobrescrever conexões existentes</label>
+    </div>
+    <div class="checkbox">
+      <input type="checkbox" id="dryrun-1" />
+      <label for="dryrun-1">Dry Run (simular sem aplicar)</label>
+    </div>
+    <button class="btn btn-primary" onclick="applyConnections('bottomnav')">▶ Aplicar Nav Inferior</button>
+  </div>
+
+  <!-- Panel 2: Frames list -->
+  <div class="panel" id="panel-2">
+    <h3>📑 Frames na Página</h3>
+    <button class="btn btn-secondary" onclick="listFrames()">Listar Frames</button>
+  </div>
+
+  <!-- Panel 3: Diagnostics -->
+  <div class="panel" id="panel-3">
+    <h3>🔍 Diagnóstico de Estrutura</h3>
+    <p>Inspecione a estrutura dos frames para entender porque elementos não são encontrados.</p>
+
+    <div style="margin:12px 0">
+      <label style="font-weight:600;display:block;margin-bottom:4px">Inspecionar Frame:</label>
+      <input type="text" id="inspect-frame-name" placeholder="Ex: 02 — Login (vazio = listar todos)" style="width:100%;padding:8px;border:1px solid #d1d5db;border-radius:6px;font-size:13px" />
+      <div style="margin-top:4px">
+        <label style="font-size:11px;color:#666">Profundidade: </label>
+        <select id="inspect-depth" style="padding:4px;border-radius:4px;border:1px solid #d1d5db">
+          <option value="2">2 (rápido)</option>
+          <option value="3">3 (médio)</option>
+          <option value="4" selected>4 (detalhado)</option>
+          <option value="5">5 (completo)</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn btn-secondary" onclick="inspectFrame()">🔎 Inspecionar Frame</button>
+    <button class="btn btn-primary" onclick="diagnoseMissing()">🩺 Diagnosticar Erros (Botões Internos)</button>
+    <p style="margin-top:8px;font-size:11px;color:#666">O diagnóstico mostra textos, topbar e filhos diretos de cada frame com erro.</p>
+  </div>
+
+  <div id="output"></div>
+
+  <script>
+    const CONNECTIONS_INTERNAL = [
+  {
+    "id": 1,
+    "fromFrame": "01 — Boas-vindas",
+    "source": { "name": "Entrar", "aliases": ["btn-entrar"], "textMatch": "Entrar", "iconMatch": null, "nodeNameMatch": null },
+    "toFrame": "02 — Login",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "SLIDE_IN", "direction": "LEFT", "duration": 0.3 }
+  },
+  {
+    "id": 2,
+    "fromFrame": "01 — Boas-vindas",
+    "source": { "name": "Criar conta", "aliases": ["btn-criar-conta"], "textMatch": "Criar conta", "iconMatch": null, "nodeNameMatch": null },
+    "toFrame": "03 — Cadastro Usuário",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "SLIDE_IN", "direction": "LEFT", "duration": 0.3 }
+  },
+  {
+    "id": 3,
+    "fromFrame": "02 — Login",
+    "source": { "name": "arrow_back", "aliases": ["voltar", "back"], "textMatch": null, "iconMatch": "arrow_back", "nodeNameMatch": null },
+    "toFrame": "01 — Boas-vindas",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "SLIDE_IN", "direction": "RIGHT", "duration": 0.3 }
+  },
+  {
+    "id": 4,
+    "fromFrame": "02 — Login",
+    "source": { "name": "Entrar como aluno", "aliases": ["btn-entrar-aluno"], "textMatch": "Entrar como aluno", "iconMatch": null, "nodeNameMatch": null },
+    "toFrame": "04 — Home",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "SLIDE_IN", "direction": "LEFT", "duration": 0.3 }
+  },
+  {
+    "id": 5,
+    "fromFrame": "02 — Login",
+    "source": { "name": "Entrar como funcionário", "aliases": ["btn-entrar-func"], "textMatch": "Entrar como funcionário", "iconMatch": null, "nodeNameMatch": null },
+    "toFrame": "13 — Painel Admin",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "SLIDE_IN", "direction": "LEFT", "duration": 0.3 }
+  },
+  {
+    "id": 6,
+    "fromFrame": "02 — Login",
+    "source": { "name": "Esqueci minha senha", "aliases": ["link-esqueci"], "textMatch": "Esqueci minha senha", "iconMatch": null, "nodeNameMatch": null },
+    "toFrame": "22 — Ajuda",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "SLIDE_IN", "direction": "LEFT", "duration": 0.3 }
+  },
+  {
+    "id": 7,
+    "fromFrame": "03 — Cadastro Usuário",
+    "source": { "name": "arrow_back", "aliases": ["voltar"], "textMatch": null, "iconMatch": "arrow_back", "nodeNameMatch": null },
+    "toFrame": "01 — Boas-vindas",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "SLIDE_IN", "direction": "RIGHT", "duration": 0.3 }
+  },
+  {
+    "id": 8,
+    "fromFrame": "03 — Cadastro Usuário",
+    "source": { "name": "Criar conta (submit)", "aliases": ["btn-criar"], "textMatch": "Criar conta", "iconMatch": null, "nodeNameMatch": null },
+    "toFrame": "04 — Home",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "SLIDE_IN", "direction": "LEFT", "duration": 0.3 }
+  },
+  {
+    "id": 9,
+    "fromFrame": "04 — Home",
+    "source": { "name": "Notificações", "aliases": ["notifications"], "textMatch": null, "iconMatch": "notifications", "nodeNameMatch": null },
+    "toFrame": "20 — Notificações",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "SLIDE_IN", "direction": "LEFT", "duration": 0.3 }
+  },
+  {
+    "id": 10,
+    "fromFrame": "04 — Home",
+    "source": { "name": "Buscar objetos", "aliases": ["btn-buscar"], "textMatch": "Buscar objetos", "iconMatch": null, "nodeNameMatch": null },
+    "toFrame": "05 — Buscar",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "SLIDE_IN", "direction": "LEFT", "duration": 0.3 }
+  },
+  {
+    "id": 11,
+    "fromFrame": "04 — Home",
+    "source": { "name": "FAB cadastrar", "aliases": ["fab", "add"], "textMatch": null, "iconMatch": "add", "nodeNameMatch": null },
+    "toFrame": "10 — Cadastrar Perdido",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "SLIDE_IN", "direction": "LEFT", "duration": 0.3 }
+  },
+  {
+    "id": 12,
+    "fromFrame": "04 — Home",
+    "source": { "name": "Card objeto perdido", "aliases": ["card"], "textMatch": "Mochila preta", "iconMatch": null, "nodeNameMatch": "card" },
+    "toFrame": "07 — Detalhes",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "SLIDE_IN", "direction": "LEFT", "duration": 0.3 }
+  },
+  {
+    "id": 13,
+    "fromFrame": "04 — Home",
+    "source": { "name": "Nav: Início", "aliases": ["nav-inicio"], "textMatch": "Início", "iconMatch": null, "nodeNameMatch": null },
+    "toFrame": "04 — Home",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "DISSOLVE", "duration": 0.2 }
+  },
+  {
+    "id": 14,
+    "fromFrame": "04 — Home",
+    "source": { "name": "Nav: Buscar", "aliases": ["nav-buscar"], "textMatch": "Buscar", "iconMatch": null, "nodeNameMatch": null },
+    "toFrame": "05 — Buscar",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "DISSOLVE", "duration": 0.2 }
+  },
+  {
+    "id": 15,
+    "fromFrame": "04 — Home",
+    "source": { "name": "Nav: Cadastrar", "aliases": ["nav-cadastrar"], "textMatch": "Cadastrar", "iconMatch": null, "nodeNameMatch": null },
+    "toFrame": "10 — Cadastrar Perdido",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "DISSOLVE", "duration": 0.2 }
+  },
+  {
+    "id": 16,
+    "fromFrame": "04 — Home",
+    "source": { "name": "Nav: Perfil", "aliases": ["nav-perfil"], "textMatch": "Perfil", "iconMatch": null, "nodeNameMatch": null },
+    "toFrame": "21 — Perfil",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "DISSOLVE", "duration": 0.2 }
+  },
+  {
+    "id": 17,
+    "fromFrame": "05 — Buscar",
+    "source": { "name": "arrow_back", "aliases": ["voltar"], "textMatch": null, "iconMatch": "arrow_back", "nodeNameMatch": null },
+    "toFrame": "04 — Home",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "SLIDE_IN", "direction": "RIGHT", "duration": 0.3 }
+  },
+  {
+    "id": 18,
+    "fromFrame": "05 — Buscar",
+    "source": { "name": "Filtros", "aliases": ["btn-filtros"], "textMatch": "Filtros", "iconMatch": null, "nodeNameMatch": null },
+    "toFrame": "06 — Filtros Avançados",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "SLIDE_IN", "direction": "LEFT", "duration": 0.3 }
+  },
+  {
+    "id": 19,
+    "fromFrame": "05 — Buscar",
+    "source": { "name": "Card resultado", "aliases": ["card"], "textMatch": "Mochila preta", "iconMatch": null, "nodeNameMatch": "card" },
+    "toFrame": "07 — Detalhes",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "SLIDE_IN", "direction": "LEFT", "duration": 0.3 }
+  },
+  {
+    "id": 20,
+    "fromFrame": "05 — Buscar",
+    "source": { "name": "Nav: Início", "aliases": ["nav-inicio"], "textMatch": "Início", "iconMatch": null, "nodeNameMatch": null },
+    "toFrame": "04 — Home",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "DISSOLVE", "duration": 0.2 }
+  },
+  {
+    "id": 21,
+    "fromFrame": "05 — Buscar",
+    "source": { "name": "Nav: Cadastrar", "aliases": ["nav-cadastrar"], "textMatch": "Cadastrar", "iconMatch": null, "nodeNameMatch": null },
+    "toFrame": "10 — Cadastrar Perdido",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "DISSOLVE", "duration": 0.2 }
+  },
+  {
+    "id": 22,
+    "fromFrame": "05 — Buscar",
+    "source": { "name": "Nav: Perfil", "aliases": ["nav-perfil"], "textMatch": "Perfil", "iconMatch": null, "nodeNameMatch": null },
+    "toFrame": "21 — Perfil",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "DISSOLVE", "duration": 0.2 }
+  },
+  {
+    "id": 23,
+    "fromFrame": "06 — Filtros Avançados",
+    "source": { "name": "arrow_back", "aliases": ["voltar"], "textMatch": null, "iconMatch": "arrow_back", "nodeNameMatch": null },
+    "toFrame": "05 — Buscar",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "SLIDE_IN", "direction": "RIGHT", "duration": 0.3 }
+  },
+  {
+    "id": 24,
+    "fromFrame": "06 — Filtros Avançados",
+    "source": { "name": "Aplicar filtros", "aliases": ["btn-aplicar"], "textMatch": "Aplicar filtros", "iconMatch": null, "nodeNameMatch": null },
+    "toFrame": "05 — Buscar",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "SLIDE_IN", "direction": "RIGHT", "duration": 0.3 }
+  },
+  {
+    "id": 25,
+    "fromFrame": "07 — Detalhes",
+    "source": { "name": "arrow_back", "aliases": ["voltar"], "textMatch": null, "iconMatch": "arrow_back", "nodeNameMatch": null },
+    "toFrame": "05 — Buscar",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "SLIDE_IN", "direction": "RIGHT", "duration": 0.3 }
+  },
+  {
+    "id": 26,
+    "fromFrame": "07 — Detalhes",
+    "source": { "name": "Solicitar retirada", "aliases": ["btn-solicitar"], "textMatch": "Solicitar retirada", "iconMatch": null, "nodeNameMatch": null },
+    "toFrame": "08 — Solicitar Retirada",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "SLIDE_IN", "direction": "LEFT", "duration": 0.3 }
+  },
+  {
+    "id": 27,
+    "fromFrame": "08 — Solicitar Retirada",
+    "source": { "name": "arrow_back", "aliases": ["voltar"], "textMatch": null, "iconMatch": "arrow_back", "nodeNameMatch": null },
+    "toFrame": "07 — Detalhes",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "SLIDE_IN", "direction": "RIGHT", "duration": 0.3 }
+  },
+  {
+    "id": 28,
+    "fromFrame": "08 — Solicitar Retirada",
+    "source": { "name": "Enviar Solicitação", "aliases": ["btn-enviar"], "textMatch": "Enviar Solicitação", "iconMatch": null, "nodeNameMatch": null },
+    "toFrame": "09 — Confirmação Solicitação",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "SLIDE_IN", "direction": "LEFT", "duration": 0.3 }
+  },
+  {
+    "id": 29,
+    "fromFrame": "09 — Confirmação Solicitação",
+    "source": { "name": "Voltar ao início", "aliases": ["btn-voltar-inicio"], "textMatch": "Voltar ao início", "iconMatch": null, "nodeNameMatch": null },
+    "toFrame": "04 — Home",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "DISSOLVE", "duration": 0.3 }
+  },
+  {
+    "id": 30,
+    "fromFrame": "09 — Confirmação Solicitação",
+    "source": { "name": "Ver solicitações", "aliases": ["btn-ver-solic"], "textMatch": "Ver solicitações", "iconMatch": null, "nodeNameMatch": null },
+    "toFrame": "12 — Solicitações",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "SLIDE_IN", "direction": "LEFT", "duration": 0.3 }
+  },
+  {
+    "id": 31,
+    "fromFrame": "10 — Cadastrar Perdido",
+    "source": { "name": "arrow_back", "aliases": ["voltar"], "textMatch": null, "iconMatch": "arrow_back", "nodeNameMatch": null },
+    "toFrame": "04 — Home",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "SLIDE_IN", "direction": "RIGHT", "duration": 0.3 }
+  },
+  {
+    "id": 32,
+    "fromFrame": "10 — Cadastrar Perdido",
+    "source": { "name": "Enviar Cadastro", "aliases": ["btn-enviar-cadastro"], "textMatch": "Enviar Cadastro", "iconMatch": null, "nodeNameMatch": null },
+    "toFrame": "11 — Confirmação Cadastro",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "SLIDE_IN", "direction": "LEFT", "duration": 0.3 }
+  },
+  {
+    "id": 33,
+    "fromFrame": "11 — Confirmação Cadastro",
+    "source": { "name": "Voltar ao início", "aliases": ["btn-voltar-inicio"], "textMatch": "Voltar ao início", "iconMatch": null, "nodeNameMatch": null },
+    "toFrame": "04 — Home",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "DISSOLVE", "duration": 0.3 }
+  },
+  {
+    "id": 34,
+    "fromFrame": "12 — Solicitações",
+    "source": { "name": "arrow_back", "aliases": ["voltar"], "textMatch": null, "iconMatch": "arrow_back", "nodeNameMatch": null },
+    "toFrame": "04 — Home",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "SLIDE_IN", "direction": "RIGHT", "duration": 0.3 }
+  },
+  {
+    "id": 35,
+    "fromFrame": "12 — Solicitações",
+    "source": { "name": "Nav: Início", "aliases": ["nav-inicio"], "textMatch": "Início", "iconMatch": null, "nodeNameMatch": null },
+    "toFrame": "04 — Home",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "DISSOLVE", "duration": 0.2 }
+  },
+  {
+    "id": 36,
+    "fromFrame": "12 — Solicitações",
+    "source": { "name": "Nav: Buscar", "aliases": ["nav-buscar"], "textMatch": "Buscar", "iconMatch": null, "nodeNameMatch": null },
+    "toFrame": "05 — Buscar",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "DISSOLVE", "duration": 0.2 }
+  },
+  {
+    "id": 37,
+    "fromFrame": "12 — Solicitações",
+    "source": { "name": "Nav: Cadastrar", "aliases": ["nav-cadastrar"], "textMatch": "Cadastrar", "iconMatch": null, "nodeNameMatch": null },
+    "toFrame": "10 — Cadastrar Perdido",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "DISSOLVE", "duration": 0.2 }
+  },
+  {
+    "id": 38,
+    "fromFrame": "12 — Solicitações",
+    "source": { "name": "Nav: Perfil", "aliases": ["nav-perfil"], "textMatch": "Perfil", "iconMatch": null, "nodeNameMatch": null },
+    "toFrame": "21 — Perfil",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "DISSOLVE", "duration": 0.2 }
+  },
+  {
+    "id": 39,
+    "fromFrame": "13 — Painel Admin",
+    "source": { "name": "Notificações", "aliases": ["notifications"], "textMatch": null, "iconMatch": "notifications", "nodeNameMatch": null },
+    "toFrame": "20 — Notificações",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "SLIDE_IN", "direction": "LEFT", "duration": 0.3 }
+  },
+  {
+    "id": 40,
+    "fromFrame": "13 — Painel Admin",
+    "source": { "name": "Ver todas solicitações", "aliases": ["link-ver-todas"], "textMatch": "Ver todas", "iconMatch": null, "nodeNameMatch": null },
+    "toFrame": "12 — Solicitações",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "SLIDE_IN", "direction": "LEFT", "duration": 0.3 }
+  },
+  {
+    "id": 41,
+    "fromFrame": "13 — Painel Admin",
+    "source": { "name": "Card solicitação pendente", "aliases": ["card-solicitacao"], "textMatch": "Pendente", "iconMatch": null, "nodeNameMatch": "card" },
+    "toFrame": "18 — Validar Solicitação",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "SLIDE_IN", "direction": "LEFT", "duration": 0.3 }
+  },
+  {
+    "id": 42,
+    "fromFrame": "13 — Painel Admin",
+    "source": { "name": "Nav: Objetos", "aliases": ["nav-objetos"], "textMatch": "Objetos", "iconMatch": null, "nodeNameMatch": null },
+    "toFrame": "14 — Lista Objetos",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "DISSOLVE", "duration": 0.2 }
+  },
+  {
+    "id": 43,
+    "fromFrame": "13 — Painel Admin",
+    "source": { "name": "Nav: Histórico", "aliases": ["nav-historico"], "textMatch": "Histórico", "iconMatch": null, "nodeNameMatch": null },
+    "toFrame": "15 — Histórico",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "DISSOLVE", "duration": 0.2 }
+  },
+  {
+    "id": 44,
+    "fromFrame": "13 — Painel Admin",
+    "source": { "name": "Nav: Perfil", "aliases": ["nav-perfil"], "textMatch": "Perfil", "iconMatch": null, "nodeNameMatch": null },
+    "toFrame": "21 — Perfil",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "DISSOLVE", "duration": 0.2 }
+  },
+  {
+    "id": 45,
+    "fromFrame": "14 — Lista Objetos",
+    "source": { "name": "arrow_back", "aliases": ["voltar"], "textMatch": null, "iconMatch": "arrow_back", "nodeNameMatch": null },
+    "toFrame": "13 — Painel Admin",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "SLIDE_IN", "direction": "RIGHT", "duration": 0.3 }
+  },
+  {
+    "id": 46,
+    "fromFrame": "14 — Lista Objetos",
+    "source": { "name": "FAB cadastrar encontrado", "aliases": ["fab", "add"], "textMatch": null, "iconMatch": "add", "nodeNameMatch": null },
+    "toFrame": "16 — Cadastrar Encontrado",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "SLIDE_IN", "direction": "LEFT", "duration": 0.3 }
+  },
+  {
+    "id": 47,
+    "fromFrame": "14 — Lista Objetos",
+    "source": { "name": "Nav: Início", "aliases": ["nav-inicio"], "textMatch": "Início", "iconMatch": null, "nodeNameMatch": null },
+    "toFrame": "13 — Painel Admin",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "DISSOLVE", "duration": 0.2 }
+  },
+  {
+    "id": 48,
+    "fromFrame": "14 — Lista Objetos",
+    "source": { "name": "Nav: Histórico", "aliases": ["nav-historico"], "textMatch": "Histórico", "iconMatch": null, "nodeNameMatch": null },
+    "toFrame": "15 — Histórico",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "DISSOLVE", "duration": 0.2 }
+  },
+  {
+    "id": 49,
+    "fromFrame": "14 — Lista Objetos",
+    "source": { "name": "Nav: Perfil", "aliases": ["nav-perfil"], "textMatch": "Perfil", "iconMatch": null, "nodeNameMatch": null },
+    "toFrame": "21 — Perfil",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "DISSOLVE", "duration": 0.2 }
+  },
+  {
+    "id": 50,
+    "fromFrame": "15 — Histórico",
+    "source": { "name": "arrow_back", "aliases": ["voltar"], "textMatch": null, "iconMatch": "arrow_back", "nodeNameMatch": null },
+    "toFrame": "13 — Painel Admin",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "SLIDE_IN", "direction": "RIGHT", "duration": 0.3 }
+  },
+  {
+    "id": 51,
+    "fromFrame": "15 — Histórico",
+    "source": { "name": "Nav: Início", "aliases": ["nav-inicio"], "textMatch": "Início", "iconMatch": null, "nodeNameMatch": null },
+    "toFrame": "13 — Painel Admin",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "DISSOLVE", "duration": 0.2 }
+  },
+  {
+    "id": 52,
+    "fromFrame": "15 — Histórico",
+    "source": { "name": "Nav: Objetos", "aliases": ["nav-objetos"], "textMatch": "Objetos", "iconMatch": null, "nodeNameMatch": null },
+    "toFrame": "14 — Lista Objetos",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "DISSOLVE", "duration": 0.2 }
+  },
+  {
+    "id": 53,
+    "fromFrame": "15 — Histórico",
+    "source": { "name": "Nav: Perfil", "aliases": ["nav-perfil"], "textMatch": "Perfil", "iconMatch": null, "nodeNameMatch": null },
+    "toFrame": "21 — Perfil",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "DISSOLVE", "duration": 0.2 }
+  },
+  {
+    "id": 54,
+    "fromFrame": "16 — Cadastrar Encontrado",
+    "source": { "name": "arrow_back", "aliases": ["voltar"], "textMatch": null, "iconMatch": "arrow_back", "nodeNameMatch": null },
+    "toFrame": "14 — Lista Objetos",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "SLIDE_IN", "direction": "RIGHT", "duration": 0.3 }
+  },
+  {
+    "id": 55,
+    "fromFrame": "16 — Cadastrar Encontrado",
+    "source": { "name": "Publicar Objeto", "aliases": ["btn-publicar"], "textMatch": "Publicar Objeto", "iconMatch": null, "nodeNameMatch": null },
+    "toFrame": "17 — Confirmação Encontrado",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "SLIDE_IN", "direction": "LEFT", "duration": 0.3 }
+  },
+  {
+    "id": 56,
+    "fromFrame": "17 — Confirmação Encontrado",
+    "source": { "name": "Voltar ao painel", "aliases": ["btn-voltar-painel"], "textMatch": "Voltar ao painel", "iconMatch": null, "nodeNameMatch": null },
+    "toFrame": "13 — Painel Admin",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "DISSOLVE", "duration": 0.3 }
+  },
+  {
+    "id": 57,
+    "fromFrame": "18 — Validar Solicitação",
+    "source": { "name": "arrow_back", "aliases": ["voltar"], "textMatch": null, "iconMatch": "arrow_back", "nodeNameMatch": null },
+    "toFrame": "13 — Painel Admin",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "SLIDE_IN", "direction": "RIGHT", "duration": 0.3 }
+  },
+  {
+    "id": 58,
+    "fromFrame": "18 — Validar Solicitação",
+    "source": { "name": "Aprovar", "aliases": ["btn-aprovar"], "textMatch": "Aprovar", "iconMatch": null, "nodeNameMatch": null },
+    "toFrame": "19 — Encerramento Caso",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "SLIDE_IN", "direction": "LEFT", "duration": 0.3 }
+  },
+  {
+    "id": 59,
+    "fromFrame": "18 — Validar Solicitação",
+    "source": { "name": "Rejeitar", "aliases": ["btn-rejeitar"], "textMatch": "Rejeitar", "iconMatch": null, "nodeNameMatch": null },
+    "toFrame": "13 — Painel Admin",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "DISSOLVE", "duration": 0.3 }
+  },
+  {
+    "id": 60,
+    "fromFrame": "19 — Encerramento Caso",
+    "source": { "name": "arrow_back", "aliases": ["voltar"], "textMatch": null, "iconMatch": "arrow_back", "nodeNameMatch": null },
+    "toFrame": "18 — Validar Solicitação",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "SLIDE_IN", "direction": "RIGHT", "duration": 0.3 }
+  },
+  {
+    "id": 61,
+    "fromFrame": "19 — Encerramento Caso",
+    "source": { "name": "Confirmar encerramento", "aliases": ["btn-encerrar"], "textMatch": "Confirmar encerramento", "iconMatch": null, "nodeNameMatch": null },
+    "toFrame": "13 — Painel Admin",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "DISSOLVE", "duration": 0.3 }
+  },
+  {
+    "id": 62,
+    "fromFrame": "20 — Notificações",
+    "source": { "name": "arrow_back", "aliases": ["voltar"], "textMatch": null, "iconMatch": "arrow_back", "nodeNameMatch": null },
+    "toFrame": "04 — Home",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "SLIDE_IN", "direction": "RIGHT", "duration": 0.3 }
+  },
+  {
+    "id": 63,
+    "fromFrame": "21 — Perfil",
+    "source": { "name": "Sair", "aliases": ["btn-sair", "logout"], "textMatch": "Sair", "iconMatch": null, "nodeNameMatch": null },
+    "toFrame": "01 — Boas-vindas",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "DISSOLVE", "duration": 0.3 }
+  },
+  {
+    "id": 64,
+    "fromFrame": "21 — Perfil",
+    "source": { "name": "Nav: Início", "aliases": ["nav-inicio"], "textMatch": "Início", "iconMatch": null, "nodeNameMatch": null },
+    "toFrame": "04 — Home",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "DISSOLVE", "duration": 0.2 }
+  },
+  {
+    "id": 65,
+    "fromFrame": "21 — Perfil",
+    "source": { "name": "Nav: Buscar", "aliases": ["nav-buscar"], "textMatch": "Buscar", "iconMatch": null, "nodeNameMatch": null },
+    "toFrame": "05 — Buscar",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "DISSOLVE", "duration": 0.2 }
+  },
+  {
+    "id": 66,
+    "fromFrame": "21 — Perfil",
+    "source": { "name": "Nav: Cadastrar", "aliases": ["nav-cadastrar"], "textMatch": "Cadastrar", "iconMatch": null, "nodeNameMatch": null },
+    "toFrame": "10 — Cadastrar Perdido",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "DISSOLVE", "duration": 0.2 }
+  },
+  {
+    "id": 67,
+    "fromFrame": "22 — Ajuda",
+    "source": { "name": "arrow_back", "aliases": ["voltar"], "textMatch": null, "iconMatch": "arrow_back", "nodeNameMatch": null },
+    "toFrame": "04 — Home",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "SLIDE_IN", "direction": "RIGHT", "duration": 0.3 }
+  }
+];
+
+    // Generate bottom nav connections dynamically (avoids 140KB inline JSON)
+    const FRAME_LIST = [
+      { num: '01', name: '01 — Boas-vindas', btn: '1. Boas-vindas' },
+      { num: '02', name: '02 — Login', btn: '2. Login' },
+      { num: '03', name: '03 — Cadastro Usuário', btn: '3. Cadastro' },
+      { num: '04', name: '04 — Home', btn: '4. Home Aluno' },
+      { num: '05', name: '05 — Buscar', btn: '5. Buscar' },
+      { num: '06', name: '06 — Filtros Avançados', btn: '6. Filtros' },
+      { num: '07', name: '07 — Detalhes', btn: '7. Detalhes' },
+      { num: '08', name: '08 — Solicitar Retirada', btn: '8. Retirada' },
+      { num: '09', name: '09 — Confirmação Solicitação', btn: '9. Conf. Solicitação' },
+      { num: '10', name: '10 — Cadastrar Perdido', btn: '10. Cad. Perdido' },
+      { num: '11', name: '11 — Confirmação Cadastro', btn: '11. Conf. Cadastro' },
+      { num: '12', name: '12 — Solicitações', btn: '12. Solicitações' },
+      { num: '13', name: '13 — Painel Admin', btn: '13. Painel Admin' },
+      { num: '14', name: '14 — Lista Objetos', btn: '14. Objetos Admin' },
+      { num: '15', name: '15 — Histórico', btn: '15. Histórico' },
+      { num: '16', name: '16 — Cadastrar Encontrado', btn: '16. Cad. Encontrado' },
+      { num: '17', name: '17 — Confirmação Encontrado', btn: '17. Conf. Encontrado' },
+      { num: '18', name: '18 — Validar Solicitação', btn: '18. Validar' },
+      { num: '19', name: '19 — Encerramento Caso', btn: '19. Encerrar' },
+      { num: '20', name: '20 — Notificações', btn: '20. Notificações' },
+      { num: '21', name: '21 — Perfil', btn: '21. Perfil' },
+      { num: '22', name: '22 — Ajuda', btn: '22. Ajuda' },
+    ];
+
+    function generateBottomNav() {
+      const conns = [];
+      let id = 1;
+      for (const from of FRAME_LIST) {
+        for (const to of FRAME_LIST) {
+          if (from.num === to.num) continue;
+          conns.push({
+            id: id++,
+            fromFrame: from.name,
+            source: { name: 'Bottom: ' + to.btn, aliases: [], textMatch: to.btn, iconMatch: null, nodeNameMatch: null },
+            toFrame: to.name,
+            trigger: 'ON_CLICK',
+            navigation: 'NAVIGATE',
+            transition: { type: 'DISSOLVE', duration: 0.2 }
+          });
+        }
+      }
+      return conns;
+    }
+    const CONNECTIONS_BOTTOMNAV = generateBottomNav();
+
+    document.getElementById('count-internal').textContent = CONNECTIONS_INTERNAL.length;
+    document.getElementById('count-bottomnav').textContent = CONNECTIONS_BOTTOMNAV.length;
+
+    function switchTab(idx) {
+      document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', i === idx));
+      document.querySelectorAll('.panel').forEach((p, i) => p.classList.toggle('active', i === idx));
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function applyConnections(type) {
+      const idx = type === 'internal' ? 0 : 1;
+      const connections = type === 'internal' ? CONNECTIONS_INTERNAL : CONNECTIONS_BOTTOMNAV;
+      const overwrite = document.getElementById('overwrite-' + idx).checked;
+      const dryRun = document.getElementById('dryrun-' + idx).checked;
+
+      const output = document.getElementById('output');
+      output.style.display = 'block';
+      output.innerHTML = '<p>Processando ' + connections.length + ' conexões...</p>';
+
+      parent.postMessage({ pluginMessage: {
+        type: 'apply-connections',
+        connections: connections,
+        config: { overwriteExisting: overwrite, dryRun: dryRun }
+      }}, '*');
+    }
+
+    function listFrames() {
+      const output = document.getElementById('output');
+      output.style.display = 'block';
+      output.innerHTML = '<p>Carregando...</p>';
+      parent.postMessage({ pluginMessage: { type: 'list-frames' } }, '*');
+    }
+
+    function inspectFrame() {
+      const frameName = document.getElementById('inspect-frame-name').value.trim();
+      const maxDepth = parseInt(document.getElementById('inspect-depth').value);
+      const output = document.getElementById('output');
+      output.style.display = 'block';
+      output.innerHTML = '<p>Inspecionando...</p>';
+      parent.postMessage({ pluginMessage: { type: 'inspect-frame', frameName, maxDepth } }, '*');
+    }
+
+    function diagnoseMissing() {
+      const output = document.getElementById('output');
+      output.style.display = 'block';
+      output.innerHTML = '<p>Diagnosticando erros nas conexões internas...</p>';
+      parent.postMessage({ pluginMessage: {
+        type: 'inspect-all-errors',
+        connections: CONNECTIONS_INTERNAL,
+      }}, '*');
+    }
+
+    window.onmessage = (event) => {
+      const msg = event.data.pluginMessage;
+      if (!msg) return;
+      const output = document.getElementById('output');
+      output.style.display = 'block';
+
+      if (msg.type === 'report') {
+        const r = msg.report;
+        let html = '<div class="summary">';
+        html += '✅ Aplicados <span class="count count-ok">' + r.summary.applied + '</span> ';
+        html += '⏭ Existentes <span class="count count-skip">' + r.summary.skippedExisting + '</span> ';
+        html += '❌ Não encontrados <span class="count count-err">' + (r.summary.missingSources + r.summary.missingTargets) + '</span>';
+        html += '</div>';
+
+        if (r.applied.length > 0) {
+          html += '<h4 style="margin:8px 0 4px;color:#15803d">Aplicados:</h4>';
+          for (const e of r.applied) {
+            html += '<div class="entry success">#' + e.connectionId + ' ' + e.fromFrame + ' → ' + e.sourceName + ' → ' + e.toFrame + '</div>';
+          }
+        }
+        if (r.missingSources.length > 0) {
+          html += '<h4 style="margin:8px 0 4px;color:#b91c1c">Fonte não encontrada:</h4>';
+          for (const e of r.missingSources) {
+            html += '<div class="entry error">#' + e.connectionId + ' ' + e.fromFrame + ': ' + e.sourceName + ' — ' + (e.detail || '') + '</div>';
+          }
+        }
+        if (r.missingTargets.length > 0) {
+          html += '<h4 style="margin:8px 0 4px;color:#b91c1c">Frame não encontrado:</h4>';
+          for (const e of r.missingTargets) {
+            html += '<div class="entry error">#' + e.connectionId + ' ' + e.detail + '</div>';
+          }
+        }
+        output.innerHTML = html;
+      }
+
+      if (msg.type === 'frames-list') {
+        let html = '<h4>' + msg.frames.length + ' frames:</h4>';
+        for (const f of msg.frames) {
+          html += '<div class="entry">' + f.name + ' <small style="color:#888">(' + (f.w||'') + 'x' + (f.h||'') + ')</small></div>';
+        }
+        output.innerHTML = html;
+      }
+
+      if (msg.type === 'inspect-result') {
+        const d = msg.data;
+        if (d.error) {
+          let html = '<div class="entry error">' + d.error + '</div>';
+          if (d.availableFrames) {
+            html += '<h4 style="margin:8px 0 4px">Frames disponíveis:</h4>';
+            for (const f of d.availableFrames) {
+              html += '<div class="entry">' + f + '</div>';
+            }
+          }
+          output.innerHTML = html;
+          return;
+        }
+        if (d.allFrames) {
+          let html = '<h4>' + d.allFrames.length + ' frames na página:</h4>';
+          for (const f of d.allFrames) {
+            html += '<div class="entry"><strong>' + f.name + '</strong> <small>(' + f.w + 'x' + f.h + ', ' + f.childCount + ' filhos)</small></div>';
+          }
+          output.innerHTML = html;
+          return;
+        }
+        // Full frame inspection
+        let html = '<h4>Frame: ' + d.frameName + ' (' + d.frameSize.w + 'x' + d.frameSize.h + ')</h4>';
+        html += '<p style="font-size:11px;color:#666">' + d.directChildrenCount + ' filhos diretos</p>';
+
+        html += '<h4 style="margin:12px 0 4px;color:#1e3a5f">📝 Todos os textos encontrados:</h4>';
+        html += '<div style="max-height:150px;overflow-y:auto;background:#f9fafb;padding:8px;border-radius:4px;font-size:11px">';
+        for (const t of (d.allTextNodes || [])) {
+          html += '<div>"<strong>' + escapeHtml(t.text) + '</strong>" <small style="color:#888">path: ' + escapeHtml(t.path) + '</small></div>';
+        }
+        html += '</div>';
+
+        if (d.topbar) {
+          html += '<h4 style="margin:12px 0 4px;color:#1e3a5f">🔝 Topbar detectada:</h4>';
+          html += '<pre style="font-size:10px;max-height:120px;overflow:auto;background:#f9fafb;padding:8px;border-radius:4px">' + escapeHtml(JSON.stringify(d.topbar, null, 2)) + '</pre>';
+        } else {
+          html += '<p style="color:#b91c1c;font-size:11px">⚠️ Nenhuma topbar detectada (height≤80, y≤60, width>200)</p>';
+        }
+
+        if (d.bottomNav) {
+          html += '<h4 style="margin:12px 0 4px;color:#1e3a5f">⬇️ Bottom Nav detectada:</h4>';
+          html += '<pre style="font-size:10px;max-height:120px;overflow:auto;background:#f9fafb;padding:8px;border-radius:4px">' + escapeHtml(JSON.stringify(d.bottomNav, null, 2)) + '</pre>';
+        } else {
+          html += '<p style="color:#b91c1c;font-size:11px">⚠️ Nenhuma bottom nav detectada</p>';
+        }
+
+        html += '<h4 style="margin:12px 0 4px;color:#1e3a5f">📂 Filhos diretos:</h4>';
+        html += '<div style="font-size:11px">';
+        for (const c of (d.directChildren || [])) {
+          html += '<div>' + escapeHtml(c.name) + ' <small>(' + c.type + ' ' + c.w + 'x' + c.h + ' @' + c.x + ',' + c.y + ')</small></div>';
+        }
+        html += '</div>';
+
+        output.innerHTML = html;
+      }
+
+      if (msg.type === 'diagnostics-result') {
+        const diagnostics = msg.data;
+        if (diagnostics.length === 0) {
+          output.innerHTML = '<div class="entry success">✅ Nenhum erro encontrado — todas as conexões resolveram!</div>';
+          return;
+        }
+        let html = '<h4 style="margin-bottom:8px">🩺 ' + diagnostics.length + ' problemas diagnosticados:</h4>';
+        for (const d of diagnostics) {
+          html += '<div style="border:1px solid #e5e7eb;border-radius:6px;padding:8px;margin-bottom:8px;background:white">';
+          html += '<div class="entry error"><strong>#' + d.connectionId + '</strong> — ' + d.issue + '</div>';
+
+          if (d.issue === 'frame_not_found' || d.issue === 'target_frame_not_found') {
+            html += '<div style="font-size:11px;margin-top:4px">Frame procurado: <strong>"' + escapeHtml(d.frameName) + '"</strong></div>';
+            html += '<div style="font-size:11px;color:#666">Disponíveis: ' + (d.availableFrames || []).join(', ') + '</div>';
+          }
+
+          if (d.issue === 'source_not_found') {
+            html += '<div style="font-size:11px;margin-top:4px">Procurando: <strong>"' + escapeHtml(d.sourceName) + '"</strong> em "' + escapeHtml(d.frameName) + '"</div>';
+            html += '<div style="font-size:11px;color:#666">Config: ' + escapeHtml(JSON.stringify(d.sourceConfig)) + '</div>';
+
+            if (d.topbarChildren && d.topbarChildren.length > 0) {
+              html += '<div style="font-size:11px;margin-top:4px;color:#1e3a5f"><strong>Topbar filhos:</strong></div>';
+              for (const tc of d.topbarChildren) {
+                html += '<div style="font-size:10px;margin-left:8px">' + escapeHtml(tc.name) + ' (' + tc.type + ' ' + tc.w + 'x' + tc.h + ' @' + tc.x + ',' + tc.y + ')</div>';
+              }
+            }
+
+            if (d.frameTextNodes && d.frameTextNodes.length > 0) {
+              html += '<div style="font-size:11px;margin-top:4px;color:#1e3a5f"><strong>Textos no frame (' + d.frameTextNodes.length + '):</strong></div>';
+              html += '<div style="max-height:80px;overflow-y:auto;font-size:10px;margin-left:8px">';
+              for (const t of d.frameTextNodes.slice(0, 30)) {
+                html += '<div>"' + escapeHtml(t.text) + '" <small>(' + escapeHtml(t.nodeName) + ')</small></div>';
+              }
+              if (d.frameTextNodes.length > 30) html += '<div>... +' + (d.frameTextNodes.length - 30) + ' mais</div>';
+              html += '</div>';
+            }
+          }
+
+          html += '</div>';
+        }
+        output.innerHTML = html;
+      }
+
+      if (msg.type === 'status') {
+        output.innerHTML = '<p>' + msg.message + '</p>';
+      }
+
+      if (msg.type === 'error') {
+        output.innerHTML = '<p class="entry error">' + msg.message + '</p>';
+      }
+    };
+  </script>
+</body>
+</html>

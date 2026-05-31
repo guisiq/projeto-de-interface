@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Inter, sans-serif; font-size: 13px; background: #f5f5f5; }
+    .tabs { display: flex; border-bottom: 2px solid #e5e7eb; }
+    .tab { flex: 1; padding: 10px; text-align: center; cursor: pointer; font-weight: 500; color: #6b7280; background: none; border: none; }
+    .tab.active { color: #1e3a5f; border-bottom: 2px solid #1e3a5f; margin-bottom: -2px; }
+    .panel { padding: 16px; display: none; }
+    .panel.active { display: block; }
+    h3 { font-size: 14px; margin-bottom: 8px; color: #1e3a5f; }
+    p { color: #555; margin-bottom: 12px; line-height: 1.4; }
+    .btn { display: block; width: 100%; padding: 12px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; margin-bottom: 8px; }
+    .btn-primary { background: #1e3a5f; color: white; }
+    .btn-primary:hover { background: #2a4d7a; }
+    .btn-secondary { background: white; color: #1e3a5f; border: 1px solid #1e3a5f; }
+    .btn-secondary:hover { background: #eef3f9; }
+    .btn-danger { background: #dc2626; color: white; }
+    .btn-danger:hover { background: #b91c1c; }
+    .checkbox { margin: 8px 0; display: flex; align-items: center; gap: 6px; }
+    .checkbox input { width: 16px; height: 16px; }
+    #output { margin-top: 12px; max-height: 350px; overflow-y: auto; background: white; border-radius: 8px; padding: 12px; border: 1px solid #e5e7eb; font-size: 12px; display: none; }
+    .entry { padding: 4px 0; border-bottom: 1px solid #f3f4f6; }
+    .entry.success { color: #15803d; }
+    .entry.error { color: #b91c1c; }
+    .entry.skip { color: #92400e; }
+    .summary { font-weight: 600; padding: 8px 0; font-size: 13px; }
+    .count { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; margin-left: 4px; }
+    .count-ok { background: #dcfce7; color: #15803d; }
+    .count-err { background: #fee2e2; color: #b91c1c; }
+    .count-skip { background: #fef3c7; color: #92400e; }
+  </style>
+</head>
+<body>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab(0)">Botões Internos</button>
+    <button class="tab" onclick="switchTab(1)">Nav Inferior (Telas)</button>
+    <button class="tab" onclick="switchTab(2)">Frames</button>
+  </div>
+
+  <!-- Panel 0: Internal buttons -->
+  <div class="panel active" id="panel-0">
+    <h3>🔘 Conexões de Botões Internos</h3>
+    <p>Conecta botões, links e ícones dentro do app (back, entrar, cadastrar, FAB, etc).</p>
+    <p><strong id="count-internal">0</strong> conexões carregadas.</p>
+    <div class="checkbox">
+      <input type="checkbox" id="overwrite-0" checked />
+      <label for="overwrite-0">Sobrescrever conexões existentes</label>
+    </div>
+    <div class="checkbox">
+      <input type="checkbox" id="dryrun-0" />
+      <label for="dryrun-0">Dry Run (simular sem aplicar)</label>
+    </div>
+    <button class="btn btn-primary" onclick="applyConnections('internal')">▶ Aplicar Botões Internos</button>
+  </div>
+
+  <!-- Panel 1: Bottom nav buttons -->
+  <div class="panel" id="panel-1">
+    <h3>📋 Conexões Nav Inferior (Telas)</h3>
+    <p>Conecta os botões "1. Boas-vindas", "2. Login", etc. que ficam abaixo do celular em cada frame.</p>
+    <p><strong id="count-bottomnav">0</strong> conexões carregadas.</p>
+    <div class="checkbox">
+      <input type="checkbox" id="overwrite-1" checked />
+      <label for="overwrite-1">Sobrescrever conexões existentes</label>
+    </div>
+    <div class="checkbox">
+      <input type="checkbox" id="dryrun-1" />
+      <label for="dryrun-1">Dry Run (simular sem aplicar)</label>
+    </div>
+    <button class="btn btn-primary" onclick="applyConnections('bottomnav')">▶ Aplicar Nav Inferior</button>
+  </div>
+
+  <!-- Panel 2: Frames list -->
+  <div class="panel" id="panel-2">
+    <h3>📑 Frames na Página</h3>
+    <button class="btn btn-secondary" onclick="listFrames()">Listar Frames</button>
+  </div>
+
+  <div id="output"></div>
+
+  <script>
+    const CONNECTIONS_INTERNAL = CONNECTIONS_INTERNAL_PLACEHOLDER;
+
+    // Generate bottom nav connections dynamically (avoids 140KB inline JSON)
+    const FRAME_LIST = [
+      { num: '01', name: '01 — Boas-vindas', btn: '1. Boas-vindas' },
+      { num: '02', name: '02 — Login', btn: '2. Login' },
+      { num: '03', name: '03 — Cadastro Usuário', btn: '3. Cadastro' },
+      { num: '04', name: '04 — Home', btn: '4. Home Aluno' },
+      { num: '05', name: '05 — Buscar', btn: '5. Buscar' },
+      { num: '06', name: '06 — Filtros Avançados', btn: '6. Filtros' },
+      { num: '07', name: '07 — Detalhes', btn: '7. Detalhes' },
+      { num: '08', name: '08 — Solicitar Retirada', btn: '8. Retirada' },
+      { num: '09', name: '09 — Confirmação Solicitação', btn: '9. Conf. Solicitação' },
+      { num: '10', name: '10 — Cadastrar Perdido', btn: '10. Cad. Perdido' },
+      { num: '11', name: '11 — Confirmação Cadastro', btn: '11. Conf. Cadastro' },
+      { num: '12', name: '12 — Solicitações', btn: '12. Solicitações' },
+      { num: '13', name: '13 — Painel Admin', btn: '13. Painel Admin' },
+      { num: '14', name: '14 — Lista Objetos', btn: '14. Objetos Admin' },
+      { num: '15', name: '15 — Histórico', btn: '15. Histórico' },
+      { num: '16', name: '16 — Cadastrar Encontrado', btn: '16. Cad. Encontrado' },
+      { num: '17', name: '17 — Confirmação Encontrado', btn: '17. Conf. Encontrado' },
+      { num: '18', name: '18 — Validar Solicitação', btn: '18. Validar' },
+      { num: '19', name: '19 — Encerramento Caso', btn: '19. Encerrar' },
+      { num: '20', name: '20 — Notificações', btn: '20. Notificações' },
+      { num: '21', name: '21 — Perfil', btn: '21. Perfil' },
+      { num: '22', name: '22 — Ajuda', btn: '22. Ajuda' },
+    ];
+
+    function generateBottomNav() {
+      const conns = [];
+      let id = 1;
+      for (const from of FRAME_LIST) {
+        for (const to of FRAME_LIST) {
+          if (from.num === to.num) continue;
+          conns.push({
+            id: id++,
+            fromFrame: from.name,
+            source: { name: 'Bottom: ' + to.btn, aliases: [], textMatch: to.btn, iconMatch: null, nodeNameMatch: null },
+            toFrame: to.name,
+            trigger: 'ON_CLICK',
+            navigation: 'NAVIGATE',
+            transition: { type: 'DISSOLVE', duration: 0.2 }
+          });
+        }
+      }
+      return conns;
+    }
+    const CONNECTIONS_BOTTOMNAV = generateBottomNav();
+
+    document.getElementById('count-internal').textContent = CONNECTIONS_INTERNAL.length;
+    document.getElementById('count-bottomnav').textContent = CONNECTIONS_BOTTOMNAV.length;
+
+    function switchTab(idx) {
+      document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', i === idx));
+      document.querySelectorAll('.panel').forEach((p, i) => p.classList.toggle('active', i === idx));
+    }
+
+    function applyConnections(type) {
+      const idx = type === 'internal' ? 0 : 1;
+      const connections = type === 'internal' ? CONNECTIONS_INTERNAL : CONNECTIONS_BOTTOMNAV;
+      const overwrite = document.getElementById('overwrite-' + idx).checked;
+      const dryRun = document.getElementById('dryrun-' + idx).checked;
+
+      const output = document.getElementById('output');
+      output.style.display = 'block';
+      output.innerHTML = '<p>Processando ' + connections.length + ' conexões...</p>';
+
+      parent.postMessage({ pluginMessage: {
+        type: 'apply-connections',
+        connections: connections,
+        config: { overwriteExisting: overwrite, dryRun: dryRun }
+      }}, '*');
+    }
+
+    function listFrames() {
+      const output = document.getElementById('output');
+      output.style.display = 'block';
+      output.innerHTML = '<p>Carregando...</p>';
+      parent.postMessage({ pluginMessage: { type: 'list-frames' } }, '*');
+    }
+
+    window.onmessage = (event) => {
+      const msg = event.data.pluginMessage;
+      if (!msg) return;
+      const output = document.getElementById('output');
+      output.style.display = 'block';
+
+      if (msg.type === 'report') {
+        const r = msg.report;
+        let html = '<div class="summary">';
+        html += '✅ Aplicados <span class="count count-ok">' + r.summary.applied + '</span> ';
+        html += '⏭ Existentes <span class="count count-skip">' + r.summary.skippedExisting + '</span> ';
+        html += '❌ Não encontrados <span class="count count-err">' + (r.summary.missingSources + r.summary.missingTargets) + '</span>';
+        html += '</div>';
+
+        if (r.applied.length > 0) {
+          html += '<h4 style="margin:8px 0 4px;color:#15803d">Aplicados:</h4>';
+          for (const e of r.applied) {
+            html += '<div class="entry success">#' + e.connectionId + ' ' + e.fromFrame + ' → ' + e.sourceName + ' → ' + e.toFrame + '</div>';
+          }
+        }
+        if (r.missingSources.length > 0) {
+          html += '<h4 style="margin:8px 0 4px;color:#b91c1c">Fonte não encontrada:</h4>';
+          for (const e of r.missingSources) {
+            html += '<div class="entry error">#' + e.connectionId + ' ' + e.fromFrame + ': ' + e.sourceName + ' — ' + (e.detail || '') + '</div>';
+          }
+        }
+        if (r.missingTargets.length > 0) {
+          html += '<h4 style="margin:8px 0 4px;color:#b91c1c">Frame não encontrado:</h4>';
+          for (const e of r.missingTargets) {
+            html += '<div class="entry error">#' + e.connectionId + ' ' + e.detail + '</div>';
+          }
+        }
+        output.innerHTML = html;
+      }
+
+      if (msg.type === 'frames-list') {
+        let html = '<h4>' + msg.frames.length + ' frames:</h4>';
+        for (const f of msg.frames) {
+          html += '<div class="entry">' + f.name + ' <small style="color:#888">(' + f.id + ')</small></div>';
+        }
+        output.innerHTML = html;
+      }
+
+      if (msg.type === 'status') {
+        output.innerHTML = '<p>' + msg.message + '</p>';
+      }
+
+      if (msg.type === 'error') {
+        output.innerHTML = '<p class="entry error">' + msg.message + '</p>';
+      }
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+{
+  "name": "figma-plugin-rename",
+  "version": "1.0.0",
+  "private": true,
+  "devDependencies": {
+    "@figma/plugin-typings": "^1.100.0",
+    "typescript": "^5.4.0"
+  }
+}

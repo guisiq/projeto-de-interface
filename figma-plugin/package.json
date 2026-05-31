@@ -1,0 +1,13 @@
+{
+  "name": "auto-prototype-connector",
+  "version": "1.0.0",
+  "description": "Plugin Figma para automatizar conexões de protótipo no UniAchados",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch"
+  },
+  "devDependencies": {
+    "@figma/plugin-typings": "^1.100.0",
+    "typescript": "^5.4.0"
+  }
+}
