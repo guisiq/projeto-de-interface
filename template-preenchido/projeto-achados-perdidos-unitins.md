@@ -354,11 +354,9 @@ flowchart TD
 
 **Próximo passo do usuário:** Digitar no campo de busca, clicar em um card de objeto recente, ou tocar no botão "+" para cadastrar item perdido.
 
-| Vista Mobile | Vista Web |
-|:---:|:---:|
-| ![Home Aluno — mobile](../assets/prints-telas/tela-04-home-aluno.png) | ![Home Aluno — web](../assets/prints-telas/web/tela-04-home-aluno-web.png) |
+![Wireframe da Home do Aluno](../assets/wireframes/wireframe-01-home.png)
 
-*Figura W1 — Tela Home do Aluno: acesso rápido, busca e objetos recentes (mobile e web).*
+*Figura W1 — Wireframe da Home: divisão de áreas (status bar, header, campo de busca, listagem em scroll, FAB e nav bar).*
 
 ## Tela 2 — Buscar Objetos
 
@@ -374,11 +372,9 @@ flowchart TD
 
 **Próximo passo do usuário:** Aplicar filtros para refinar busca ou clicar em um card para ver os detalhes do objeto.
 
-| Vista Mobile | Vista Web |
-|:---:|:---:|
-| ![Buscar — mobile](../assets/prints-telas/tela-05-buscar.png) | ![Buscar — web](../assets/prints-telas/web/tela-05-buscar-web.png) |
+![Wireframe de Busca de Objetos](../assets/wireframes/wireframe-02-buscar.png)
 
-*Figura W2 — Tela de Busca com chips de filtro e lista de resultados (mobile e web).*
+*Figura W2 — Wireframe de Busca: área de campo + chips de filtro + contador + lista de resultados em scroll.*
 
 ## Tela 3 — Detalhes do Objeto
 
@@ -396,11 +392,9 @@ flowchart TD
 
 **Próximo passo do usuário:** Tocar em "Solicitar Retirada" para iniciar o processo de recuperação, ou voltar à busca.
 
-| Vista Mobile | Vista Web |
-|:---:|:---:|
-| ![Detalhes — mobile](../assets/prints-telas/tela-07-detalhes.png) | ![Detalhes — web](../assets/prints-telas/web/tela-07-detalhes-web.png) |
+![Wireframe de Detalhes do Objeto](../assets/wireframes/wireframe-03-detalhes.png)
 
-*Figura W3 — Tela de Detalhes do Objeto com botão Solicitar Retirada (mobile e web).*
+*Figura W3 — Wireframe de Detalhes: imagem de destaque, seções de informações, seção de retirada e botão fixo na base.*
 
 ## Tela 4 — Cadastrar Objeto Perdido
 
@@ -422,11 +416,9 @@ flowchart TD
 
 **Próximo passo do usuário:** Preencher os campos e enviar, recebendo tela de confirmação.
 
-| Vista Mobile | Vista Web |
-|:---:|:---:|
-| ![Cadastrar Perdido — mobile](../assets/prints-telas/tela-10-cad-perdido.png) | ![Cadastrar Perdido — web](../assets/prints-telas/web/tela-10-cad-perdido-web.png) |
+![Wireframe de Cadastro de Objeto Perdido](../assets/wireframes/wireframe-04-cadastro.png)
 
-*Figura W4 — Formulário de Cadastro de Objeto Perdido (mobile e web).*
+*Figura W4 — Wireframe de Cadastro: campos de formulário (texto, dropdown, textarea, date picker, upload) e barra de ações.*
 
 ## Tela 5 — Painel do Funcionário
 
@@ -442,11 +434,9 @@ flowchart TD
 
 **Próximo passo do usuário:** Validar uma solicitação pendente, cadastrar novo objeto encontrado, ou consultar histórico de casos.
 
-| Vista Mobile | Vista Web |
-|:---:|:---:|
-| ![Painel Admin — mobile](../assets/prints-telas/tela-13-painel-admin.png) | ![Painel Admin — web](../assets/prints-telas/web/tela-13-painel-admin-web.png) |
+![Wireframe do Painel do Funcionário](../assets/wireframes/wireframe-05-painel.png)
 
-*Figura W5 — Painel do Funcionário com métricas e solicitações pendentes (mobile e web).*
+*Figura W5 — Wireframe do Painel Admin: cards de métricas, lista de solicitações com ações validar/rejeitar, FAB e nav bar administrativa.*
 
 ---
 

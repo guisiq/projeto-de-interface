@@ -1271,6 +1271,507 @@
       </div>
     </div>
 
+    <!-- ═══════════════════════════════════
+         VARIAÇÃO 02E — Login (Erro credenciais)
+    ════════════════════════════════════ -->
+    <div class="screen hidden" id="screen-login-erro" data-screen="login-erro">
+      <div class="topbar topbar-back">
+        <button class="icon-btn" onclick="goTo('welcome')">
+          <span class="material-icons-outlined">arrow_back</span>
+        </button>
+        <span class="topbar-title">Login institucional</span>
+        <div style="width:40px"></div>
+      </div>
+
+      <div class="screen-body scroll">
+        <div class="alert-error">
+          <span class="material-icons-outlined" style="color:#B91C1C">error</span>
+          <p>E-mail ou senha incorretos. Verifique seus dados e tente novamente.</p>
+        </div>
+
+        <div class="form-section">
+          <label class="form-label">E-mail institucional <span class="req">*</span></label>
+          <input class="form-input input-error" type="email" value="ana.silva@unitins.br" />
+        </div>
+
+        <div class="form-section">
+          <label class="form-label">Senha <span class="req">*</span></label>
+          <input class="form-input input-error" type="password" value="senhaerrada" />
+          <span class="field-error">Senha incorreta</span>
+        </div>
+
+        <button class="btn-primary btn-full" onclick="goTo('login-erro')">Entrar como aluno</button>
+        <button class="btn-secondary btn-full btn-secondary-light" onclick="goTo('painel-admin')" style="margin-top:10px">Entrar como funcionário</button>
+        <button class="link-btn" style="margin-top:14px;display:block;text-align:center">Esqueci minha senha</button>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════
+         VARIAÇÃO 02V — Login (Campos vazios)
+    ════════════════════════════════════ -->
+    <div class="screen hidden" id="screen-login-vazio" data-screen="login-vazio">
+      <div class="topbar topbar-back">
+        <button class="icon-btn" onclick="goTo('welcome')">
+          <span class="material-icons-outlined">arrow_back</span>
+        </button>
+        <span class="topbar-title">Login institucional</span>
+        <div style="width:40px"></div>
+      </div>
+
+      <div class="screen-body scroll">
+        <div class="info-box">
+          <span class="material-icons-outlined" style="color:#1D4ED8">info</span>
+          <p>Use seu e-mail institucional para acessar as telas de aluno ou funcionário.</p>
+        </div>
+
+        <div class="form-section">
+          <label class="form-label">E-mail institucional <span class="req">*</span></label>
+          <input class="form-input input-error" type="email" placeholder="nome@unitins.br" />
+          <span class="field-error">Campo obrigatório</span>
+        </div>
+
+        <div class="form-section">
+          <label class="form-label">Senha <span class="req">*</span></label>
+          <input class="form-input input-error" type="password" placeholder="••••••••" />
+          <span class="field-error">Campo obrigatório</span>
+        </div>
+
+        <button class="btn-primary btn-full" onclick="goTo('login-vazio')">Entrar como aluno</button>
+        <button class="btn-secondary btn-full btn-secondary-light" onclick="goTo('painel-admin')" style="margin-top:10px">Entrar como funcionário</button>
+        <button class="link-btn" style="margin-top:14px;display:block;text-align:center">Esqueci minha senha</button>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════
+         VARIAÇÃO 03E — Cadastro (E-mail inválido)
+    ════════════════════════════════════ -->
+    <div class="screen hidden" id="screen-cadastro-erro-email" data-screen="cadastro-erro-email">
+      <div class="topbar topbar-back">
+        <button class="icon-btn" onclick="goTo('welcome')">
+          <span class="material-icons-outlined">arrow_back</span>
+        </button>
+        <span class="topbar-title">Criar conta</span>
+        <div style="width:40px"></div>
+      </div>
+
+      <div class="screen-body scroll">
+        <div class="form-section">
+          <label class="form-label">Nome completo <span class="req">*</span></label>
+          <input class="form-input" value="Beatriz Oliveira" />
+        </div>
+        <div class="form-section">
+          <label class="form-label">E-mail institucional <span class="req">*</span></label>
+          <input class="form-input input-error" type="email" value="beatriz@gmail.com" />
+          <span class="field-error">Use um e-mail institucional (@unitins.br)</span>
+        </div>
+        <div class="form-section">
+          <label class="form-label">Perfil de acesso <span class="req">*</span></label>
+          <select class="form-select">
+            <option selected>Aluno</option>
+            <option>Funcionário</option>
+          </select>
+        </div>
+        <div class="form-section">
+          <label class="form-label">Matrícula ou SIAPE <span class="req">*</span></label>
+          <input class="form-input" value="2024005678" />
+        </div>
+        <div class="form-section">
+          <label class="form-label">Senha <span class="req">*</span></label>
+          <input class="form-input" type="password" value="unitins2026" />
+        </div>
+        <p class="req-note"><span class="req">*</span> Campos obrigatórios</p>
+      </div>
+
+      <div class="bottom-action-bar">
+        <button class="btn-secondary btn-full" onclick="goTo('welcome')" style="margin-bottom:8px">Cancelar</button>
+        <button class="btn-primary btn-full" onclick="goTo('cadastro-erro-email')">Criar conta</button>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════
+         VARIAÇÃO 03S — Cadastro (Senha fraca)
+    ════════════════════════════════════ -->
+    <div class="screen hidden" id="screen-cadastro-erro-senha" data-screen="cadastro-erro-senha">
+      <div class="topbar topbar-back">
+        <button class="icon-btn" onclick="goTo('welcome')">
+          <span class="material-icons-outlined">arrow_back</span>
+        </button>
+        <span class="topbar-title">Criar conta</span>
+        <div style="width:40px"></div>
+      </div>
+
+      <div class="screen-body scroll">
+        <div class="form-section">
+          <label class="form-label">Nome completo <span class="req">*</span></label>
+          <input class="form-input" value="Beatriz Oliveira" />
+        </div>
+        <div class="form-section">
+          <label class="form-label">E-mail institucional <span class="req">*</span></label>
+          <input class="form-input" type="email" value="beatriz.oliveira@unitins.br" />
+        </div>
+        <div class="form-section">
+          <label class="form-label">Perfil de acesso <span class="req">*</span></label>
+          <select class="form-select">
+            <option selected>Aluno</option>
+            <option>Funcionário</option>
+          </select>
+        </div>
+        <div class="form-section">
+          <label class="form-label">Matrícula ou SIAPE <span class="req">*</span></label>
+          <input class="form-input" value="2024005678" />
+        </div>
+        <div class="form-section">
+          <label class="form-label">Senha <span class="req">*</span></label>
+          <input class="form-input input-warning" type="password" value="123" />
+          <span class="field-error field-warning">A senha deve ter no mínimo 8 caracteres, incluindo letra e número.</span>
+          <div class="password-strength">
+            <div class="strength-bar strength-weak"></div>
+            <span class="strength-label strength-label-weak">Fraca</span>
+          </div>
+        </div>
+        <p class="req-note"><span class="req">*</span> Campos obrigatórios</p>
+      </div>
+
+      <div class="bottom-action-bar">
+        <button class="btn-secondary btn-full" onclick="goTo('welcome')" style="margin-bottom:8px">Cancelar</button>
+        <button class="btn-primary btn-full btn-disabled">Criar conta</button>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════
+         VARIAÇÃO 05V — Buscar (Sem resultados)
+    ════════════════════════════════════ -->
+    <div class="screen hidden" id="screen-buscar-vazio" data-screen="buscar-vazio">
+      <div class="topbar topbar-back">
+        <button class="icon-btn" onclick="goTo('home')">
+          <span class="material-icons-outlined">arrow_back</span>
+        </button>
+        <span class="topbar-title">Buscar objetos</span>
+        <div style="width:40px"></div>
+      </div>
+
+      <div class="screen-body scroll">
+        <div class="search-bar-wrapper search-active">
+          <span class="material-icons-outlined search-icon-inner">search</span>
+          <input class="search-bar" placeholder="Buscar objeto..." value="notebook rosa" />
+        </div>
+
+        <div class="filter-chips">
+          <button class="chip chip-active">Todos</button>
+          <button class="chip">Eletrônicos</button>
+          <button class="chip">Documentos</button>
+          <button class="chip">Roupas</button>
+          <button class="chip">Acessórios</button>
+        </div>
+
+        <div class="empty-state">
+          <span class="material-icons-outlined empty-icon">search_off</span>
+          <h3 class="empty-title">Nenhum objeto encontrado</h3>
+          <p class="empty-desc">Tente outros termos ou ajuste os filtros</p>
+          <button class="btn-secondary" onclick="goTo('buscar')">Limpar busca</button>
+        </div>
+      </div>
+
+      <div class="bottom-nav">
+        <button class="nav-btn" onclick="goTo('home')">
+          <span class="material-icons-outlined">home</span><span>Home</span>
+        </button>
+        <button class="nav-btn active" onclick="goTo('buscar')">
+          <span class="material-icons-outlined">search</span><span>Buscar</span>
+        </button>
+        <button class="nav-btn" onclick="goTo('cadastrar-perdido')">
+          <span class="material-icons-outlined">add_circle_outline</span><span>Cadastrar</span>
+        </button>
+        <button class="nav-btn" onclick="goTo('solicitacoes')">
+          <span class="material-icons-outlined">inbox</span><span>Solicitações</span>
+        </button>
+        <button class="nav-btn" onclick="goTo('perfil')">
+          <span class="material-icons-outlined">person_outline</span><span>Perfil</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════
+         VARIAÇÃO 08E — Solicitar Retirada (Erro)
+    ════════════════════════════════════ -->
+    <div class="screen hidden" id="screen-solicitar-retirada-erro" data-screen="solicitar-retirada-erro">
+      <div class="topbar topbar-back">
+        <button class="icon-btn" onclick="goTo('detalhes')">
+          <span class="material-icons-outlined">arrow_back</span>
+        </button>
+        <span class="topbar-title">Solicitar retirada</span>
+        <div style="width:40px"></div>
+      </div>
+
+      <div class="screen-body scroll">
+        <div class="alert-error">
+          <span class="material-icons-outlined" style="color:#B91C1C">error</span>
+          <p>Preencha todos os campos obrigatórios antes de enviar.</p>
+        </div>
+
+        <div class="form-section">
+          <label class="form-label">Objeto solicitado</label>
+          <div class="field-readonly">Carregador USB-C Branco</div>
+        </div>
+
+        <div class="form-section">
+          <label class="form-label">Descreva características do objeto <span class="req">*</span></label>
+          <textarea class="form-textarea input-error" placeholder="Ex.: tem um adesivo azul perto do pino..."></textarea>
+          <span class="field-error">Descreva ao menos uma característica do objeto</span>
+        </div>
+
+        <div class="form-section">
+          <label class="form-label">Documento de identificação <span class="req">*</span></label>
+          <button class="upload-btn upload-error">
+            <span class="material-icons-outlined">upload_file</span>
+            Anexar RG ou Carteira de Estudante
+          </button>
+          <span class="field-error">Anexe um documento para comprovar sua identidade</span>
+        </div>
+
+        <div class="form-section">
+          <label class="form-label">Observações (opcional)</label>
+          <textarea class="form-textarea" placeholder="Informações adicionais para o responsável..."></textarea>
+        </div>
+
+        <div style="height:24px"></div>
+      </div>
+
+      <div class="bottom-action-bar">
+        <button class="btn-secondary btn-full" onclick="goTo('detalhes')" style="margin-bottom:8px">Cancelar</button>
+        <button class="btn-primary btn-full btn-disabled">Enviar Solicitação</button>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════
+         VARIAÇÃO 09R — Solicitação Rejeitada
+    ════════════════════════════════════ -->
+    <div class="screen hidden" id="screen-solicitacao-rejeitada" data-screen="solicitacao-rejeitada">
+      <div class="screen-body center-content">
+        <div class="confirm-icon confirm-icon-error">
+          <span class="material-icons-outlined" style="font-size:48px;color:#B91C1C">cancel</span>
+        </div>
+        <h2 class="confirm-title">Solicitação não aprovada</h2>
+        <p class="confirm-desc">O responsável não conseguiu confirmar que o objeto é seu. Verifique os dados e tente novamente.</p>
+
+        <div class="confirm-summary">
+          <div class="summary-row">
+            <span class="summary-label">Objeto</span>
+            <span class="summary-value">Carregador USB-C Branco</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Status</span>
+            <span class="badge badge-rejected">Rejeitada</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Motivo</span>
+            <span class="summary-value">Descrição não confere com o objeto</span>
+          </div>
+        </div>
+
+        <button class="btn-primary btn-full" onclick="goTo('solicitar-retirada')" style="margin-top:24px">Tentar novamente</button>
+        <button class="link-btn" onclick="goTo('home')" style="margin-top:12px;display:block;text-align:center">Voltar ao início</button>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════
+         VARIAÇÃO 10E — Cadastrar Perdido (Erro)
+    ════════════════════════════════════ -->
+    <div class="screen hidden" id="screen-cadastrar-perdido-erro" data-screen="cadastrar-perdido-erro">
+      <div class="topbar topbar-back">
+        <button class="icon-btn" onclick="goTo('home')">
+          <span class="material-icons-outlined">arrow_back</span>
+        </button>
+        <span class="topbar-title">Cadastrar objeto perdido</span>
+        <div style="width:40px"></div>
+      </div>
+
+      <div class="screen-body scroll">
+        <div class="alert-error">
+          <span class="material-icons-outlined" style="color:#B91C1C">error</span>
+          <p>Preencha todos os campos obrigatórios</p>
+        </div>
+
+        <div class="form-section">
+          <label class="form-label">Nome do objeto <span class="req">*</span></label>
+          <input class="form-input input-error" placeholder="Ex.: Carregador, Guarda-chuva, RG..." />
+          <span class="field-error">Campo obrigatório</span>
+        </div>
+
+        <div class="form-section">
+          <label class="form-label">Categoria <span class="req">*</span></label>
+          <select class="form-select input-error">
+            <option selected>Selecione...</option>
+          </select>
+          <span class="field-error">Selecione uma categoria</span>
+        </div>
+
+        <div class="form-section">
+          <label class="form-label">Descrição</label>
+          <textarea class="form-textarea" placeholder="Cor, marca, detalhes que identifiquem o objeto..."></textarea>
+        </div>
+
+        <div class="form-section">
+          <label class="form-label">Local onde perdeu <span class="req">*</span></label>
+          <select class="form-select input-error">
+            <option selected>Selecione o local...</option>
+          </select>
+          <span class="field-error">Selecione um local</span>
+        </div>
+
+        <div class="form-section">
+          <label class="form-label">Data aproximada <span class="req">*</span></label>
+          <input class="form-input input-error" type="date" />
+          <span class="field-error">Informe a data aproximada</span>
+        </div>
+
+        <div class="form-section">
+          <label class="form-label">Foto (opcional)</label>
+          <button class="upload-btn">
+            <span class="material-icons-outlined">add_a_photo</span>
+            Tirar foto ou escolher da galeria
+          </button>
+        </div>
+
+        <p class="req-note"><span class="req">*</span> Campos obrigatórios</p>
+        <div style="height:24px"></div>
+      </div>
+
+      <div class="bottom-action-bar">
+        <button class="btn-secondary btn-full" onclick="goTo('home')" style="margin-bottom:8px">Cancelar</button>
+        <button class="btn-primary btn-full" onclick="goTo('cadastrar-perdido-erro')">Enviar Cadastro</button>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════
+         VARIAÇÃO 16E — Cadastrar Encontrado (Erro)
+    ════════════════════════════════════ -->
+    <div class="screen hidden" id="screen-cadastrar-encontrado-erro" data-screen="cadastrar-encontrado-erro">
+      <div class="topbar topbar-back topbar-admin">
+        <button class="icon-btn" onclick="goTo('painel-admin')">
+          <span class="material-icons-outlined">arrow_back</span>
+        </button>
+        <span class="topbar-title">Cadastrar objeto encontrado</span>
+        <div style="width:40px"></div>
+      </div>
+
+      <div class="screen-body scroll">
+        <div class="alert-error">
+          <span class="material-icons-outlined" style="color:#B91C1C">error</span>
+          <p>Preencha todos os campos obrigatórios</p>
+        </div>
+
+        <div class="form-section">
+          <label class="form-label">Nome do objeto <span class="req">*</span></label>
+          <input class="form-input input-error" placeholder="Ex.: Óculos, Carteira, Celular..." />
+          <span class="field-error">Campo obrigatório</span>
+        </div>
+
+        <div class="form-section">
+          <label class="form-label">Categoria <span class="req">*</span></label>
+          <select class="form-select input-error">
+            <option selected>Selecione...</option>
+          </select>
+          <span class="field-error">Selecione uma categoria</span>
+        </div>
+
+        <div class="form-section">
+          <label class="form-label">Descrição <span class="req">*</span></label>
+          <textarea class="form-textarea input-error" placeholder="Cor, características, estado de conservação..."></textarea>
+          <span class="field-error">Descreva o objeto encontrado</span>
+        </div>
+
+        <div class="form-section">
+          <label class="form-label">Local encontrado <span class="req">*</span></label>
+          <select class="form-select">
+            <option selected>Biblioteca Central</option>
+          </select>
+        </div>
+
+        <div class="form-section">
+          <label class="form-label">Data e hora <span class="req">*</span></label>
+          <input class="form-input" type="datetime-local" value="2026-05-22T09:30" />
+        </div>
+
+        <div class="form-section">
+          <label class="form-label">Foto do objeto <span class="req">*</span></label>
+          <button class="upload-btn upload-error">
+            <span class="material-icons-outlined">add_a_photo</span>
+            Tirar foto ou escolher da galeria
+          </button>
+          <span class="field-error">A foto do objeto é obrigatória para publicação</span>
+        </div>
+
+        <p class="req-note"><span class="req">*</span> Campos obrigatórios</p>
+        <div style="height:24px"></div>
+      </div>
+
+      <div class="bottom-action-bar">
+        <button class="btn-secondary btn-full" onclick="goTo('painel-admin')" style="margin-bottom:8px">Cancelar</button>
+        <button class="btn-primary btn-full btn-disabled">Publicar Objeto</button>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════
+         VARIAÇÃO 18R — Validar (Modal rejeição)
+    ════════════════════════════════════ -->
+    <div class="screen hidden" id="screen-rejeitar-solicitacao" data-screen="rejeitar-solicitacao">
+      <div class="topbar topbar-back topbar-admin">
+        <button class="icon-btn" onclick="goTo('painel-admin')">
+          <span class="material-icons-outlined">arrow_back</span>
+        </button>
+        <span class="topbar-title">Validar solicitação</span>
+        <div style="width:40px"></div>
+      </div>
+
+      <div class="screen-body scroll" style="position:relative">
+        <!-- Conteúdo de fundo (escurecido) -->
+        <div class="overlay-dim">
+          <div class="info-box info-box-warn">
+            <span class="material-icons-outlined" style="color:#B45309">warning</span>
+            <p>Verifique os dados do solicitante antes de aprovar a retirada.</p>
+          </div>
+          <div class="section-card">
+            <span class="section-card-title">Objeto</span>
+          </div>
+        </div>
+
+        <!-- Modal de rejeição -->
+        <div class="modal-overlay">
+          <div class="modal-card">
+            <div class="modal-header">
+              <span class="material-icons-outlined" style="color:#B91C1C;font-size:32px">cancel</span>
+              <h3 class="modal-title">Rejeitar solicitação?</h3>
+            </div>
+            <p class="modal-desc">Esta ação notificará o aluno sobre a rejeição.</p>
+            <div class="form-section">
+              <label class="form-label">Motivo da rejeição <span class="req">*</span></label>
+              <textarea class="form-textarea" placeholder="Descreva o motivo da rejeição...">Descrição fornecida não confere com as características do objeto.</textarea>
+            </div>
+            <button class="btn-reject-full" onclick="goTo('painel-admin')" style="margin-bottom:8px">
+              <span class="material-icons-outlined" style="vertical-align:middle;margin-right:4px">cancel</span>
+              Confirmar rejeição
+            </button>
+            <button class="btn-secondary btn-full" onclick="goTo('validar-solicitacao')">Cancelar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════
+         VARIAÇÃO 00E — Erro de Conexão
+    ════════════════════════════════════ -->
+    <div class="screen hidden" id="screen-erro-conexao" data-screen="erro-conexao">
+      <div class="screen-body center-content">
+        <div class="confirm-icon confirm-icon-neutral">
+          <span class="material-icons-outlined" style="font-size:64px;color:#64748B">wifi_off</span>
+        </div>
+        <h2 class="confirm-title">Sem conexão com a internet</h2>
+        <p class="confirm-desc">Verifique sua conexão e tente novamente</p>
+        <button class="btn-primary btn-full" onclick="goTo('home')" style="margin-top:24px">Tentar novamente</button>
+      </div>
+    </div>
+
   </div><!-- /.screen-container -->
 </div><!-- /.phone-shell -->
 
@@ -1300,6 +1801,18 @@
   <button onclick="goTo('notificacoes')">20. Notificações</button>
   <button onclick="goTo('perfil')">21. Perfil</button>
   <button onclick="goTo('ajuda')">22. Ajuda</button>
+  <br/><strong style="color:#B91C1C">Variações (Erro):</strong>
+  <button onclick="goTo('login-erro')" style="border-color:#B91C1C;color:#B91C1C">Login Erro</button>
+  <button onclick="goTo('login-vazio')" style="border-color:#B91C1C;color:#B91C1C">Login Vazio</button>
+  <button onclick="goTo('cadastro-erro-email')" style="border-color:#B91C1C;color:#B91C1C">Cadastro Email</button>
+  <button onclick="goTo('cadastro-erro-senha')" style="border-color:#B91C1C;color:#B91C1C">Cadastro Senha</button>
+  <button onclick="goTo('buscar-vazio')" style="border-color:#B91C1C;color:#B91C1C">Busca Vazia</button>
+  <button onclick="goTo('solicitar-retirada-erro')" style="border-color:#B91C1C;color:#B91C1C">Retirada Erro</button>
+  <button onclick="goTo('solicitacao-rejeitada')" style="border-color:#B91C1C;color:#B91C1C">Rejeitada</button>
+  <button onclick="goTo('cadastrar-perdido-erro')" style="border-color:#B91C1C;color:#B91C1C">Cad. Perdido Erro</button>
+  <button onclick="goTo('cadastrar-encontrado-erro')" style="border-color:#B91C1C;color:#B91C1C">Cad. Encontrado Erro</button>
+  <button onclick="goTo('rejeitar-solicitacao')" style="border-color:#B91C1C;color:#B91C1C">Modal Rejeição</button>
+  <button onclick="goTo('erro-conexao')" style="border-color:#B91C1C;color:#B91C1C">Sem Conexão</button>
 </div>
 
 <script src="app.js"></script>

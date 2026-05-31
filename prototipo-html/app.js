@@ -25,7 +25,19 @@ const screens = [
   'encerramento-caso',
   'ajuda',
   'notificacoes',
-  'perfil'
+  'perfil',
+  // Variações de erro
+  'login-erro',
+  'login-vazio',
+  'cadastro-erro-email',
+  'cadastro-erro-senha',
+  'buscar-vazio',
+  'solicitar-retirada-erro',
+  'solicitacao-rejeitada',
+  'cadastrar-perdido-erro',
+  'cadastrar-encontrado-erro',
+  'rejeitar-solicitacao',
+  'erro-conexao'
 ];
 
 let history_stack = ['welcome'];
