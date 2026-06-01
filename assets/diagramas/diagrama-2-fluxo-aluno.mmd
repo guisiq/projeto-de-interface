@@ -1,0 +1,17 @@
+flowchart TD
+  A[Home do Aluno] --> B[Buscar Objeto]
+  B --> C[Aplicar Filtros]
+  C --> D[Ver Resultados]
+  D --> E{Encontrou objeto provável?}
+
+  E -->|Não| F[Ajustar filtros ou cadastrar objeto perdido]
+  F --> G[Cadastrar Objeto Perdido]
+  G --> A
+
+  E -->|Sim| H[Ver Detalhes do Objeto]
+  H --> K[Solicitar Retirada]
+  K --> L[Preencher Formulário]
+  L --> M{Dados válidos?}
+  M -->|Não| L
+  M -->|Sim| N[Confirmação da Solicitação]
+  N --> O[Acompanhar em Minhas Solicitações]

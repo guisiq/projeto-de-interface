@@ -26,17 +26,20 @@
     .entry.error { color: #b91c1c; }
     .entry.skip { color: #92400e; }
     .summary { font-weight: 600; padding: 8px 0; font-size: 13px; }
+    .muted { color: #6b7280; font-size: 12px; }
     .count { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; margin-left: 4px; }
     .count-ok { background: #dcfce7; color: #15803d; }
     .count-err { background: #fee2e2; color: #b91c1c; }
     .count-skip { background: #fef3c7; color: #92400e; }
+    .export-box { width: 100%; min-height: 260px; margin-top: 8px; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font: 11px/1.45 ui-monospace, SFMono-Regular, Consolas, monospace; color: #0f172a; background: #f8fafc; resize: vertical; }
   </style>
 </head>
 <body>
   <div class="tabs">
     <button class="tab active" onclick="switchTab(0)">Botões Internos</button>
-    <button class="tab" onclick="switchTab(1)">Nav Inferior (Telas)</button>
+    <button class="tab" onclick="switchTab(1)">Nav Inferior</button>
     <button class="tab" onclick="switchTab(2)">Frames</button>
+    <button class="tab" onclick="switchTab(3)">Diagnóstico</button>
   </div>
 
   <!-- Panel 0: Internal buttons -->
@@ -58,8 +61,8 @@
   <!-- Panel 1: Bottom nav buttons -->
   <div class="panel" id="panel-1">
     <h3>📋 Conexões Nav Inferior (Telas)</h3>
-    <p>Conecta os botões "1. Boas-vindas", "2. Login", etc. que ficam abaixo do celular em cada frame.</p>
-    <p><strong id="count-bottomnav">0</strong> conexões carregadas.</p>
+    <p>Apaga a barra "Telas:" importada e recria uma única component compartilhada com as telas principais e alternativas existentes.</p>
+    <p><strong id="count-bottomnav">Componente único</strong>.</p>
     <div class="checkbox">
       <input type="checkbox" id="overwrite-1" checked />
       <label for="overwrite-1">Sobrescrever conexões existentes</label>
@@ -68,13 +71,28 @@
       <input type="checkbox" id="dryrun-1" />
       <label for="dryrun-1">Dry Run (simular sem aplicar)</label>
     </div>
-    <button class="btn btn-primary" onclick="applyConnections('bottomnav')">▶ Aplicar Nav Inferior</button>
+    <button class="btn btn-primary" onclick="rebuildBottomNav()">▶ Recriar Nav Inferior</button>
   </div>
 
   <!-- Panel 2: Frames list -->
   <div class="panel" id="panel-2">
     <h3>📑 Frames na Página</h3>
     <button class="btn btn-secondary" onclick="listFrames()">Listar Frames</button>
+    <button class="btn btn-primary" onclick="organizeFrames()">▶ Organizar Frames</button>
+    <button class="btn btn-primary" onclick="unifyFlows()">▶ Unificar Flows</button>
+    <button class="btn btn-primary" onclick="fixVariantLayouts()">▶ Corrigir Variações</button>
+    <button class="btn btn-primary" onclick="addPhoneChrome()">▶ Adicionar Moldura aos Variantes</button>
+    <button class="btn btn-primary" onclick="connectBackArrows()">▶ Conectar Setas de Voltar</button>
+    <button class="btn btn-secondary" onclick="exportAllScreenshots()">Exportar Prints de Todas as Telas</button>
+  </div>
+
+  <!-- Panel 3: Diagnostic -->
+  <div class="panel" id="panel-3">
+    <h3>🔍 Diagnóstico de Conexões</h3>
+    <p>Testa todas as conexões internas e mostra problemas com detalhes (textos reais, estrutura do topbar, etc).</p>
+    <button class="btn btn-primary" onclick="runDiagnostics()">▶ Executar Diagnóstico</button>
+    <button class="btn btn-secondary" onclick="exportStructure('selected')">Exportar Estrutura Selecionada</button>
+    <button class="btn btn-secondary" onclick="exportStructure('all')">Exportar Estrutura de Todas as Telas</button>
   </div>
 
   <div id="output"></div>
@@ -82,7 +100,7 @@
   <script>
     const CONNECTIONS_INTERNAL = CONNECTIONS_INTERNAL_PLACEHOLDER;
 
-    // Generate bottom nav connections dynamically (avoids 140KB inline JSON)
+    // Target label helpers used by the generated bottom nav component.
     const FRAME_LIST = [
       { num: '01', name: '01 — Boas-vindas', btn: '1. Boas-vindas' },
       { num: '02', name: '02 — Login', btn: '2. Login' },
@@ -108,29 +126,25 @@
       { num: '22', name: '22 — Ajuda', btn: '22. Ajuda' },
     ];
 
-    function generateBottomNav() {
-      const conns = [];
-      let id = 1;
-      for (const from of FRAME_LIST) {
-        for (const to of FRAME_LIST) {
-          if (from.num === to.num) continue;
-          conns.push({
-            id: id++,
-            fromFrame: from.name,
-            source: { name: 'Bottom: ' + to.btn, aliases: [], textMatch: to.btn, iconMatch: null, nodeNameMatch: null },
-            toFrame: to.name,
-            trigger: 'ON_CLICK',
-            navigation: 'NAVIGATE',
-            transition: { type: 'DISSOLVE', duration: 0.2 }
-          });
-        }
-      }
-      return conns;
-    }
-    const CONNECTIONS_BOTTOMNAV = generateBottomNav();
+    // Variant/error screens that also have bottom nav buttons
+    const VARIANT_FRAMES = [
+      { num: 'V01', name: 'V01 — Login Erro', btn: 'V01. Login Erro' },
+      { num: 'V02', name: 'V02 — Login Vazio', btn: 'V02. Login Vazio' },
+      { num: 'V03', name: 'V03 — Cadastro Erro Email', btn: 'V03. Cad. Erro Email' },
+      { num: 'V04', name: 'V04 — Cadastro Erro Senha', btn: 'V04. Cad. Erro Senha' },
+      { num: 'V05', name: 'V05 — Busca Vazia', btn: 'V05. Busca Vazia' },
+      { num: 'V06', name: 'V06 — Retirada Erro', btn: 'V06. Retirada Erro' },
+      { num: 'V07', name: 'V07 — Solicitação Rejeitada', btn: 'V07. Solic. Rejeitada' },
+      { num: 'V08', name: 'V08 — Cad Perdido Erro', btn: 'V08. Cad Perd. Erro' },
+      { num: 'V09', name: 'V09 — Cad Encontrado Erro', btn: 'V09. Cad Enc. Erro' },
+      { num: 'V10', name: 'V10 — Modal Rejeição', btn: 'V10. Modal Rejeição' },
+      { num: 'V11', name: 'V11 — Sem Conexão', btn: 'V11. Sem Conexão' },
+      { num: 'V12', name: 'V12 — Cadastro Variação', btn: 'V12. Cad. Variação' },
+      { num: 'V13', name: 'V13 — Buscar Variação', btn: 'V13. Buscar Variação' },
+    ];
 
     document.getElementById('count-internal').textContent = CONNECTIONS_INTERNAL.length;
-    document.getElementById('count-bottomnav').textContent = CONNECTIONS_BOTTOMNAV.length;
+    document.getElementById('count-bottomnav').textContent = 'Componente único';
 
     function switchTab(idx) {
       document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', i === idx));
@@ -139,7 +153,7 @@
 
     function applyConnections(type) {
       const idx = type === 'internal' ? 0 : 1;
-      const connections = type === 'internal' ? CONNECTIONS_INTERNAL : CONNECTIONS_BOTTOMNAV;
+      const connections = CONNECTIONS_INTERNAL;
       const overwrite = document.getElementById('overwrite-' + idx).checked;
       const dryRun = document.getElementById('dryrun-' + idx).checked;
 
@@ -154,11 +168,110 @@
       }}, '*');
     }
 
+    function rebuildBottomNav() {
+      const overwrite = document.getElementById('overwrite-1').checked;
+      const dryRun = document.getElementById('dryrun-1').checked;
+      const output = document.getElementById('output');
+      output.style.display = 'block';
+      output.innerHTML = '<p>Recriando nav inferior como componente único...</p>';
+      parent.postMessage({ pluginMessage: {
+        type: 'rebuild-bottom-nav',
+        config: { overwriteExisting: overwrite, dryRun: dryRun }
+      }}, '*');
+    }
+
     function listFrames() {
       const output = document.getElementById('output');
       output.style.display = 'block';
       output.innerHTML = '<p>Carregando...</p>';
       parent.postMessage({ pluginMessage: { type: 'list-frames' } }, '*');
+    }
+
+    function unifyFlows() {
+      const output = document.getElementById('output');
+      output.style.display = 'block';
+      output.innerHTML = '<p>Unificando flows da página...</p>';
+      parent.postMessage({ pluginMessage: { type: 'unify-flows' } }, '*');
+    }
+
+    function organizeFrames() {
+      const output = document.getElementById('output');
+      output.style.display = 'block';
+      output.innerHTML = '<p>Organizando frames por jornada...</p>';
+      parent.postMessage({ pluginMessage: { type: 'organize-frames' } }, '*');
+    }
+
+    function fixVariantLayouts() {
+      const output = document.getElementById('output');
+      output.style.display = 'block';
+      output.innerHTML = '<p>Corrigindo variações pelo padrão da tela Login...</p>';
+      parent.postMessage({ pluginMessage: { type: 'fix-variant-layouts' } }, '*');
+    }
+
+    function addPhoneChrome() {
+      const output = document.getElementById('output');
+      output.style.display = 'block';
+      output.innerHTML = '<p>Adicionando moldura de celular aos variantes...</p>';
+      parent.postMessage({ pluginMessage: { type: 'add-phone-chrome' } }, '*');
+    }
+
+    function connectBackArrows() {
+      const output = document.getElementById('output');
+      output.style.display = 'block';
+      output.innerHTML = '<p>Conectando setas de voltar (navegação BACK do Figma)...</p>';
+      parent.postMessage({ pluginMessage: { type: 'connect-back-arrows' } }, '*');
+    }
+
+    function exportAllScreenshots() {
+      const output = document.getElementById('output');
+      output.style.display = 'block';
+      output.innerHTML = '<p>Gerando prints de todas as telas...</p>';
+      parent.postMessage({ pluginMessage: { type: 'export-all-screenshots' } }, '*');
+    }
+
+    function downloadAllScreenshots() {
+      const files = window.__exportedScreenshots || [];
+      if (!files.length) return;
+
+      let delay = 0;
+      for (const file of files) {
+        setTimeout(() => {
+          const link = document.createElement('a');
+          link.href = 'data:' + file.mimeType + ';base64,' + file.base64;
+          link.download = file.fileName;
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+        }, delay);
+        delay += 120;
+      }
+    }
+
+    function runDiagnostics() {
+      const output = document.getElementById('output');
+      output.style.display = 'block';
+      output.innerHTML = '<p>Executando diagnóstico em ' + CONNECTIONS_INTERNAL.length + ' conexões...</p>';
+      parent.postMessage({ pluginMessage: { type: 'inspect-all-errors', connections: CONNECTIONS_INTERNAL } }, '*');
+    }
+
+    function exportStructure(scope) {
+      const output = document.getElementById('output');
+      output.style.display = 'block';
+      output.innerHTML = '<p>Exportando estrutura ' + (scope === 'selected' ? 'dos frames selecionados' : 'de todas as telas') + '...</p>';
+      parent.postMessage({ pluginMessage: {
+        type: 'export-structure',
+        scope: scope,
+        maxDepth: 5,
+        connections: CONNECTIONS_INTERNAL
+      }}, '*');
+    }
+
+    function copyExportText() {
+      const field = document.getElementById('export-json');
+      if (!field) return;
+      field.focus();
+      field.select();
+      try { document.execCommand('copy'); } catch (e) {}
     }
 
     window.onmessage = (event) => {
@@ -210,6 +323,78 @@
 
       if (msg.type === 'error') {
         output.innerHTML = '<p class="entry error">' + msg.message + '</p>';
+      }
+
+      if (msg.type === 'diagnostics-result') {
+        const diags = msg.data;
+        if (diags.length === 0) {
+          output.innerHTML = '<div class="summary" style="color:#15803d">✅ Nenhum problema encontrado! Todas as conexões foram resolvidas.</div>';
+          return;
+        }
+        let html = '<div class="summary">❌ ' + diags.length + ' problemas encontrados:</div>';
+        for (const d of diags) {
+          html += '<div class="entry error" style="margin:6px 0;padding:6px;background:#fef2f2;border-radius:4px">';
+          html += '<strong>#' + d.connectionId + '</strong> ';
+          if (d.issue === 'frame_not_found') {
+            html += 'Frame "<b>' + d.frameName + '</b>" não existe.<br>';
+            html += '<small>Frames disponíveis: ' + d.availableFrames.join(', ') + '</small>';
+          } else if (d.issue === 'target_frame_not_found') {
+            html += 'Frame destino "<b>' + d.frameName + '</b>" não existe.<br>';
+            html += '<small>Frames disponíveis: ' + d.availableFrames.join(', ') + '</small>';
+          } else if (d.issue === 'source_not_found') {
+            html += d.frameName + ': <b>' + d.sourceName + '</b> não encontrado<br>';
+            if (d.sourceConfig.iconMatch) {
+              html += '<small>Busca por ícone: ' + d.sourceConfig.iconMatch + '</small><br>';
+            }
+            if (d.sourceConfig.textMatch) {
+              html += '<small>Busca por texto: "' + d.sourceConfig.textMatch + '"</small><br>';
+            }
+            if (d.phoneInfo) {
+              html += '<small><b>Phone container:</b> ' + d.phoneInfo.w + 'x' + d.phoneInfo.h + '<br>';
+              html += '<b>Nós top (y&lt;80):</b><br>';
+              for (var n of d.phoneInfo.topNodes) {
+                html += '  ' + '—'.repeat(n.depth) + ' ' + n.name + ' (' + n.type + ' ' + n.w + 'x' + n.h + ' @' + n.x + ',' + n.y + ' children:' + n.childCount + ')<br>';
+              }
+              html += '</small>';
+            }
+            if (d.topbarChildren && d.topbarChildren.length > 0) {
+              html += '<small><b>Topbar:</b> ' + d.topbarChildren.map(function(c) { return c.name + '(' + c.type + ' ' + c.w + 'x' + c.h + ' @' + Math.round(c.x) + ',' + Math.round(c.y) + ')'; }).join(', ') + '</small><br>';
+            }
+            if (d.frameTextNodes && d.frameTextNodes.length > 0) {
+              html += '<small><b>Textos no frame:</b> ' + d.frameTextNodes.map(function(t) { return '"' + t.text.substring(0, 30) + '"'; }).join(', ') + '</small>';
+            }
+            if (d.directChildren && d.directChildren.length > 0) {
+              html += '<br><small><b>Filhos diretos:</b> ' + d.directChildren.map(function(c) { return c.name + '(' + c.type + ' ' + c.w + 'x' + c.h + ')'; }).join(', ') + '</small>';
+            }
+          }
+          html += '</div>';
+        }
+        output.innerHTML = html;
+      }
+
+      if (msg.type === 'structure-export') {
+        const payload = JSON.stringify(msg.data, null, 2);
+        let html = '<div class="summary">Estrutura exportada: ' + msg.data.frames.length + ' frame(s). Cole este JSON aqui junto com o print.</div>';
+        html += '<button class="btn btn-secondary" onclick="copyExportText()">Copiar JSON</button>';
+        html += '<textarea id="export-json" class="export-box" spellcheck="false">' + payload.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</textarea>';
+        output.innerHTML = html;
+      }
+
+      if (msg.type === 'screenshots-export') {
+        const files = (msg.data && msg.data.files) ? msg.data.files : [];
+        window.__exportedScreenshots = files;
+
+        let html = '<div class="summary">✅ Prints gerados: ' + files.length + ' tela(s)</div>';
+        if (files.length > 0) {
+          html += '<button class="btn btn-primary" onclick="downloadAllScreenshots()">Baixar Todos os Prints (.png)</button>';
+          html += '<div class="muted" style="margin-top:6px">Dica: o navegador pode pedir confirmação para múltiplos downloads.</div>';
+          html += '<div style="margin-top:10px">';
+          for (const f of files) {
+            html += '<div class="entry">' + f.fileName + '</div>';
+          }
+          html += '</div>';
+        }
+        output.innerHTML = html;
       }
     };
   </script>

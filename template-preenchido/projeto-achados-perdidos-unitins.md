@@ -289,11 +289,7 @@ flowchart TD
   G --> A
 
   E -->|Sim| H[Ver Detalhes do Objeto]
-  H --> I{Status permite retirada?}
-
-  I -->|Não| J[Ver status em Minhas Solicitações]
-
-  I -->|Sim| K[Solicitar Retirada]
+  H --> K[Solicitar Retirada]
   K --> L[Preencher Formulário]
   L --> M{Dados válidos?}
   M -->|Não| L
@@ -313,16 +309,14 @@ flowchart TD
   A --> C[Solicitações Pendentes]
 
   B --> D[Preencher Dados do Objeto]
-  D --> E{Cadastro válido?}
-  E -->|Não| D
-  E -->|Sim| F[Objeto Publicado]
+  D --> E[Objeto Publicado]
 
   C --> G[Ver Solicitação]
   G --> H[Validar Dados do Solicitante]
   H --> I{Decisão}
   I -->|Aprovar| J[Retirada Aprovada]
   I -->|Rejeitar| K[Solicitação Rejeitada]
-  K --> C
+  K --> A
 
   J --> L[Confirmar Entrega]
   L --> M[Encerrar Caso]
@@ -532,209 +526,237 @@ A paleta foi definida para transmitir seriedade institucional, clareza visual e 
 | 3. Prevenção de erros | Cadastro de Objeto, Solicitar Retirada, Painel Admin | Campos com validação em tempo real; botão "Enviar" desabilitado até formulário completo; dropdown para categorias e locais (evita digitação incorreta); modal de confirmação antes de encerrar caso | Erros são evitados antes de acontecerem, eliminando frustração e retrabalho |
 | 4. Reconhecimento em vez de memorização | Buscar Objetos, Home, Filtros | Filtros sempre visíveis na tela (não escondidos em menu); cards com foto + título + local (informações visuais); ícones reconhecíveis na navegação; histórico de buscas recentes | O usuário não precisa memorizar informações ou caminhos — tudo está visível e acessível por reconhecimento visual |
 
-**Prints com marcações:** *Inserir imagens das telas com anotações indicando onde cada heurística se manifesta.*
+**Prints com marcações (base):**
+
+### Heurística 1 — Visibilidade do estado do sistema
+
+![Heurística 1 — Home do aluno](../assets/prints-telas/tela-04-home-aluno.png)
+
+*Figura 4A — Home do aluno com elementos de status visíveis (cards e indicadores de acompanhamento).* 
+
+![Heurística 1 — Confirmação da solicitação](../assets/prints-telas/tela-09-confirmacao-solicitacao.png)
+
+*Figura 4B — Tela de confirmação com feedback imediato após envio da solicitação.*
+
+![Heurística 1 — Painel admin](../assets/prints-telas/tela-13-painel-admin.png)
+
+*Figura 4C — Painel administrativo com visão de métricas e estado operacional.*
+
+### Heurística 2 — Consistência e padrões
+
+![Heurística 2 — Buscar objetos](../assets/prints-telas/tela-05-buscar-objetos.png)
+
+*Figura 4D — Padrão visual de cards, ícones e estrutura de navegação na busca.*
+
+![Heurística 2 — Minhas solicitações](../assets/prints-telas/tela-12-minhas-solicitacoes.png)
+
+*Figura 4E — Repetição consistente de componentes e linguagem visual nas solicitações.*
+
+![Heurística 2 — Perfil](../assets/prints-telas/tela-21-perfil.png)
+
+*Figura 4F — Continuidade de tipografia, espaçamentos e blocos de conteúdo na tela de perfil.*
+
+### Heurística 3 — Prevenção de erros
+
+![Heurística 3 — Criar conta](../assets/prints-telas/tela-03-criar-conta.png)
+
+*Figura 4G — Cadastro com campos obrigatórios e estrutura que reduz preenchimentos incorretos.*
+
+![Heurística 3 — Solicitar retirada](../assets/prints-telas/tela-08-solicitar-retirada.png)
+
+*Figura 4H — Formulário de solicitação com instruções de preenchimento e ações seguras.*
+
+### Heurística 4 — Reconhecimento em vez de memorização
+
+![Heurística 4 — Buscar objetos](../assets/prints-telas/tela-05-buscar-objetos.png)
+
+*Figura 4I — Filtros e resultados visíveis para reduzir dependência de memória.*
+
+![Heurística 4 — Detalhes do objeto](../assets/prints-telas/tela-07-detalhes-objeto.png)
+
+*Figura 4J — Rótulos explícitos e ação principal clara na tela de detalhes.*
 
 ---
 
 ## 8.4 Telas Finais
 
-## Tela Final 1 — Tela de Boas-vindas
+Nesta versão, as telas finais foram atualizadas com os novos prints exportados do Figma, mantendo apenas a vista principal (sem versão web). A sequência abaixo cobre as 22 telas do fluxo principal.
 
-**Objetivo principal:** Apresentar o sistema ao usuário e direcionar para login ou cadastro.  
-**Explicação:** Tela inicial com identidade visual do UniAchados, breve descrição do propósito ("Encontre seus objetos perdidos no campus") e dois botões: "Entrar" e "Criar conta". Design limpo e centrado com ilustração ou ícone representativo.  
+## Tela Final 1 — Boas-vindas
 
-| Vista Mobile | Vista Web |
-|:---:|:---:|
-| ![Boas-vindas — mobile](../assets/prints-telas/tela-01-boas-vindas.png) | ![Boas-vindas — web](../assets/prints-telas/web/tela-01-boas-vindas-web.png) |
+**Explicação básica:** Apresenta o sistema e direciona o usuário para login ou criação de conta.
 
-*Figura 4 — Tela de boas-vindas: mobile (shell de celular) e web (tela cheia).*
+![Tela Final 1 — Boas-vindas](../assets/printtelasFigma/sem-menu/01%20—%20Boas-vindas.png)
 
-## Tela Final 2 — Home do Aluno
+*Figura 4 — Tela de boas-vindas do sistema UniAchados.*
 
-**Objetivo principal:** Oferecer visão geral e acesso rápido às funcionalidades principais.  
-**Explicação:** Tela pós-login com busca rápida no topo, seção de objetos recentes em cards horizontais, botão flutuante para cadastrar objeto e barra de navegação inferior. É o hub central de onde o aluno acessa tudo.  
+## Tela Final 2 — Login
 
-| Vista Mobile | Vista Web |
-|:---:|:---:|
-| ![Home Aluno — mobile](../assets/prints-telas/tela-04-home-aluno.png) | ![Home Aluno — web](../assets/prints-telas/web/tela-04-home-aluno-web.png) |
+**Explicação básica:** Permite autenticar o usuário para acessar os fluxos de aluno ou funcionário.
 
-*Figura 5 — Home do Aluno com objetos recentes e navegação adaptada para cada contexto.*
+![Tela Final 2 — Login](../assets/printtelasFigma/sem-menu/02%20—%20Login.png)
 
-## Tela Final 3 — Buscar Objetos
+*Figura 5 — Tela de login institucional.*
 
-**Objetivo principal:** Permitir busca e filtragem de objetos cadastrados no sistema.  
-**Explicação:** Campo de busca no topo com chips de filtro abaixo (Categoria, Local, Data, Status). Resultados exibidos em lista de cards verticais com miniatura, título, local e badge de status. Contador de resultados visível.  
+## Tela Final 3 — Cadastro de Usuário
 
-| Vista Mobile | Vista Web |
-|:---:|:---:|
-| ![Buscar — mobile](../assets/prints-telas/tela-05-buscar.png) | ![Buscar — web](../assets/prints-telas/web/tela-05-buscar-web.png) |
+**Explicação básica:** Coleta os dados iniciais para criação de uma nova conta no sistema.
 
-*Figura 6 — Busca com chips de filtro e lista de resultados.*
+![Tela Final 3 — Cadastro de Usuário](../assets/printtelasFigma/sem-menu/03%20—%20Cadastro%20Usuário.png)
 
-## Tela Final 4 — Resultado da Busca (com filtros ativos)
+*Figura 6 — Tela de criação de conta.*
 
-**Objetivo principal:** Exibir resultados filtrados de forma clara e navegável.  
-**Explicação:** Tela com filtros ativos destacados como chips azuis (com "X" para remover), lista de cards resultantes e mensagem de vazio quando não há resultados. Permite refinamento contínuo.  
+## Tela Final 4 — Home do Aluno
 
-| Vista Mobile | Vista Web |
-|:---:|:---:|
-| ![Filtros — mobile](../assets/prints-telas/tela-06-filtros.png) | ![Filtros — web](../assets/prints-telas/web/tela-06-filtros-web.png) |
+**Explicação básica:** Funciona como tela principal do aluno, com acesso rápido às funções mais usadas.
 
-*Figura 7 — Filtros avançados com seções por categoria, local e período.*
+![Tela Final 4 — Home](../assets/printtelasFigma/sem-menu/04%20—%20Home.png)
 
-## Tela Final 5 — Filtros Avançados
+*Figura 7 — Tela inicial do aluno com busca rápida e objetos recentes.*
 
-**Objetivo principal:** Oferecer opções detalhadas de filtragem em tela dedicada (modal ou fullscreen).  
-**Explicação:** Tela/modal com seções: Categoria (checkboxes), Local (dropdown ou lista), Período (date range), Status (radio buttons). Botões "Aplicar filtros" e "Limpar tudo" na base.  
+## Tela Final 5 — Buscar Objetos
 
-| Vista Mobile | Vista Web |
-|:---:|:---:|
-| ![Filtros Avançados — mobile](../assets/prints-telas/tela-06-filtros.png) | ![Filtros Avançados — web](../assets/prints-telas/web/tela-06-filtros-web.png) |
+**Explicação básica:** Permite pesquisar objetos cadastrados e visualizar resultados de forma organizada.
 
-*Figura 8 — Painel de filtros avançados com checkboxes, dropdown e range de datas.*
+![Tela Final 5 — Buscar](../assets/printtelasFigma/sem-menu/05%20—%20Buscar.png)
 
-## Tela Final 6 — Detalhes do Objeto
+*Figura 8 — Tela de busca com resultados e filtros rápidos.*
 
-**Objetivo principal:** Exibir todas as informações de um objeto e permitir ação de solicitação.  
-**Explicação:** Foto grande no topo (carrossel), abaixo: título, badge de status, descrição, categoria, local, data/hora, observações. Botão principal "Solicitar Retirada" fixo na base. Informações organizadas em seções claras.  
+## Tela Final 6 — Filtros Avançados
 
-| Vista Mobile | Vista Web |
-|:---:|:---:|
-| ![Detalhes — mobile](../assets/prints-telas/tela-07-detalhes.png) | ![Detalhes — web](../assets/prints-telas/web/tela-07-detalhes-web.png) |
+**Explicação básica:** Oferece filtros detalhados para refinar a busca por categoria, local, período e status.
 
-*Figura 9 — Tela de detalhes: foto, informações completas e botão de solicitação.*
+![Tela Final 6 — Filtros Avançados](../assets/printtelasFigma/sem-menu/06%20—%20Filtros%20Avançados.png)
 
-## Tela Final 7 — Solicitar Retirada
+*Figura 9 — Tela de filtros avançados para refino de resultados.*
 
-**Objetivo principal:** Coletar informações do solicitante para validação de identidade.  
-**Explicação:** Formulário curto: campo "Descreva características do objeto" (para provar que é o dono), documento de identificação (upload ou número), observações opcionais. Instrução clara no topo sobre o processo.  
+## Tela Final 7 — Detalhes do Objeto
 
-| Vista Mobile | Vista Web |
-|:---:|:---:|
-| ![Solicitar Retirada — mobile](../assets/prints-telas/tela-08-retirada.png) | ![Solicitar Retirada — web](../assets/prints-telas/web/tela-08-retirada-web.png) |
+**Explicação básica:** Exibe as informações completas do objeto para confirmar a identificação antes de agir.
 
-*Figura 10 — Formulário de solicitação de retirada com campos de identificação.*
+![Tela Final 7 — Detalhes](../assets/printtelasFigma/sem-menu/07%20—%20Detalhes.png)
 
-## Tela Final 8 — Confirmação da Solicitação
+*Figura 10 — Tela de detalhes do objeto encontrado.*
 
-**Objetivo principal:** Informar que a solicitação foi registrada e indicar próximos passos.  
-**Explicação:** Tela com ícone de sucesso (check verde), mensagem "Solicitação enviada com sucesso!", resumo do pedido, próximos passos ("Aguarde validação do responsável"), e botão "Ver minhas solicitações".  
+## Tela Final 8 — Solicitar Retirada
 
-| Vista Mobile | Vista Web |
-|:---:|:---:|
-| ![Confirmação Solicitação — mobile](../assets/prints-telas/tela-09-conf-solicitacao.png) | ![Confirmação Solicitação — web](../assets/prints-telas/web/tela-09-conf-solicitacao-web.png) |
+**Explicação básica:** Reúne os dados necessários para o aluno solicitar a retirada de um objeto encontrado.
 
-*Figura 11 — Confirmação de solicitação com resumo e indicador de próximos passos.*
+![Tela Final 8 — Solicitar Retirada](../assets/printtelasFigma/sem-menu/08%20—%20Solicitar%20Retirada.png)
 
-## Tela Final 9 — Cadastrar Objeto Perdido
+*Figura 11 — Formulário de solicitação de retirada.*
 
-**Objetivo principal:** Permitir que o aluno registre um item que perdeu no campus.  
-**Explicação:** Formulário com campos: nome do objeto, categoria (dropdown), descrição, local onde perdeu (dropdown com locais do campus), data aproximada, foto opcional. Indicador de obrigatórios (*). Botões "Enviar" e "Cancelar".  
+## Tela Final 9 — Confirmação da Solicitação
 
-| Vista Mobile | Vista Web |
-|:---:|:---:|
-| ![Cadastrar Perdido — mobile](../assets/prints-telas/tela-10-cad-perdido.png) | ![Cadastrar Perdido — web](../assets/prints-telas/web/tela-10-cad-perdido-web.png) |
+**Explicação básica:** Informa que a solicitação foi enviada e orienta os próximos passos do usuário.
 
-*Figura 12 — Cadastro de objeto perdido com campos obrigatórios sinalizados.*
+![Tela Final 9 — Confirmação Solicitação](../assets/printtelasFigma/sem-menu/09%20—%20Confirmação%20Solicitação.png)
 
-## Tela Final 10 — Cadastrar Objeto Encontrado (Funcionário)
+*Figura 12 — Feedback de sucesso após envio da solicitação.*
 
-**Objetivo principal:** Permitir que o funcionário registre um item recebido/encontrado.  
-**Explicação:** Similar ao cadastro de perdido, mas com campos adicionais: "Entregue por" (opcional), local de armazenamento, e status inicial "Encontrado". Foto obrigatória para facilitar identificação.  
+## Tela Final 10 — Cadastrar Objeto Perdido
 
-| Vista Mobile | Vista Web |
-|:---:|:---:|
-| ![Cadastrar Encontrado — mobile](../assets/prints-telas/tela-16-cad-encontrado.png) | ![Cadastrar Encontrado — web](../assets/prints-telas/web/tela-16-cad-encontrado-web.png) |
+**Explicação básica:** Permite registrar um objeto perdido para facilitar sua localização no sistema.
 
-*Figura 13 — Cadastro de objeto encontrado (fluxo do funcionário) com campo de localização de guarda.*
+![Tela Final 10 — Cadastrar Perdido](../assets/printtelasFigma/sem-menu/10%20—%20Cadastrar%20Perdido.png)
 
-## Tela Final 11 — Minhas Solicitações
+*Figura 13 — Formulário de cadastro de objeto perdido.*
 
-**Objetivo principal:** Permitir ao aluno acompanhar o status de todas as suas solicitações.  
-**Explicação:** Lista de cards com: nome do objeto, data da solicitação, badge de status atualizado. Cada card é clicável para ver detalhes. Tabs para filtrar: "Em andamento" e "Finalizadas".  
+## Tela Final 11 — Confirmação de Cadastro
 
-| Vista Mobile | Vista Web |
-|:---:|:---:|
-| ![Solicitações — mobile](../assets/prints-telas/tela-12-solicitacoes.png) | ![Solicitações — web](../assets/prints-telas/web/tela-12-solicitacoes-web.png) |
+**Explicação básica:** Confirma o registro do objeto perdido e mostra que ele entrou no acompanhamento.
 
-*Figura 14 — Lista de solicitações do aluno com status atualizados em tempo real.*
+![Tela Final 11 — Confirmação Cadastro](../assets/printtelasFigma/sem-menu/11%20—%20Confirmação%20Cadastro.png)
 
-## Tela Final 12 — Notificações
+*Figura 14 — Confirmação após cadastro de objeto perdido.*
 
-**Objetivo principal:** Centralizar alertas e atualizações importantes para o usuário.  
-**Explicação:** Lista cronológica de notificações com ícone, título, descrição curta e timestamp. Itens não lidos com destaque visual (fundo levemente colorido). Exemplos: "Sua solicitação foi aprovada", "Novo objeto encontrado na Biblioteca".  
+## Tela Final 12 — Minhas Solicitações
 
-| Vista Mobile | Vista Web |
-|:---:|:---:|
-| ![Notificações — mobile](../assets/prints-telas/tela-20-notificacoes.png) | ![Notificações — web](../assets/prints-telas/web/tela-20-notificacoes-web.png) |
+**Explicação básica:** Mostra ao aluno o histórico e o status atualizado de cada solicitação enviada.
 
-*Figura 15 — Central de notificações com destaque visual para itens não lidos.*
+![Tela Final 12 — Solicitações](../assets/printtelasFigma/sem-menu/12%20—%20Solicitações.png)
 
-## Tela Final 13 — Perfil do Usuário
+*Figura 15 — Acompanhamento de solicitações do aluno.*
 
-**Objetivo principal:** Exibir e permitir edição de dados pessoais e configurações.  
-**Explicação:** Foto/avatar, nome, e-mail institucional, curso/setor. Opções: editar perfil, configurações de notificação, alterar senha, sair. Design simples com lista de opções.  
+## Tela Final 13 — Painel Admin
 
-| Vista Mobile | Vista Web |
-|:---:|:---:|
-| ![Perfil — mobile](../assets/prints-telas/tela-21-perfil.png) | ![Perfil — web](../assets/prints-telas/web/tela-21-perfil-web.png) |
+**Explicação básica:** Centraliza a visão operacional do funcionário com métricas e atalhos de gestão.
 
-*Figura 16 — Perfil do usuário com estatísticas e opções de configuração.*
+![Tela Final 13 — Painel Admin](../assets/printtelasFigma/sem-menu/13%20—%20Painel%20Admin.png)
 
-## Tela Final 14 — Ajuda / FAQ
+*Figura 16 — Painel do funcionário com indicadores e atalhos.*
 
-**Objetivo principal:** Esclarecer dúvidas frequentes e orientar o uso do sistema.  
-**Explicação:** Lista de perguntas frequentes em formato accordion (clica para expandir resposta). Perguntas como: "Como solicitar retirada?", "Quanto tempo o objeto fica guardado?", "Como cadastrar um objeto encontrado?". Campo de busca no topo.  
+## Tela Final 14 — Lista de Objetos
 
-| Vista Mobile | Vista Web |
-|:---:|:---:|
-| ![Ajuda — mobile](../assets/prints-telas/tela-22-ajuda.png) | ![Ajuda — web](../assets/prints-telas/web/tela-22-ajuda-web.png) |
+**Explicação básica:** Apresenta os objetos cadastrados para consulta e gestão no fluxo administrativo.
 
-*Figura 17 — FAQ com busca e lista de perguntas frequentes.*
+![Tela Final 14 — Lista Objetos](../assets/printtelasFigma/sem-menu/14%20—%20Lista%20Objetos.png)
 
-## Tela Final 15 — Painel do Funcionário (Dashboard)
+*Figura 17 — Tela administrativa com listagem de objetos cadastrados.*
 
-**Objetivo principal:** Oferecer visão gerencial e acesso rápido a ações administrativas.  
-**Explicação:** Cards de métricas (solicitações pendentes, objetos cadastrados, casos encerrados no mês). Lista de solicitações recentes com ações rápidas (Validar/Rejeitar). Botão de cadastro de objeto encontrado. Navegação por tabs.  
+## Tela Final 15 — Histórico
 
-| Vista Mobile | Vista Web |
-|:---:|:---:|
-| ![Painel Admin — mobile](../assets/prints-telas/tela-13-painel-admin.png) | ![Painel Admin — web](../assets/prints-telas/web/tela-13-painel-admin-web.png) |
+**Explicação básica:** Exibe os casos finalizados para rastreabilidade e consulta de atendimentos anteriores.
 
-*Figura 18 — Painel do funcionário com métricas, solicitações pendentes e navegação administrativa.*
+![Tela Final 15 — Histórico](../assets/printtelasFigma/sem-menu/15%20—%20Histórico.png)
 
-## Tela Final 16 — Lista de Objetos Cadastrados (Admin)
+*Figura 18 — Histórico de casos encerrados.*
 
-**Objetivo principal:** Permitir ao funcionário visualizar e gerenciar todos os objetos do sistema.  
-**Explicação:** Tabela/lista com: foto miniatura, nome, categoria, data de cadastro, status. Filtros no topo. Ações em cada item: editar, alterar status, excluir. Paginação ou scroll infinito.  
+## Tela Final 16 — Cadastrar Objeto Encontrado
 
-| Vista Mobile | Vista Web |
-|:---:|:---:|
-| ![Lista Objetos Admin — mobile](../assets/prints-telas/tela-14-lista-objetos.png) | ![Lista Objetos Admin — web](../assets/prints-telas/web/tela-14-lista-objetos-web.png) |
+**Explicação básica:** Permite ao funcionário registrar um objeto encontrado e disponibilizá-lo para busca.
 
-*Figura 19 — Lista administrativa de objetos com filtros, status e ações por item.*
+![Tela Final 16 — Cadastrar Encontrado](../assets/printtelasFigma/sem-menu/16%20—%20Cadastrar%20Encontrado.png)
 
-## Tela Final 17 — Validação de Solicitação (Admin)
+*Figura 19 — Formulário de cadastro de objeto encontrado (funcionário).*
 
-**Objetivo principal:** Permitir ao funcionário avaliar e decidir sobre uma solicitação de retirada.  
-**Explicação:** Tela com dados do objeto (foto, descrição), dados do solicitante (nome, justificativa, documento), e dois botões de ação: "Aprovar Retirada" (verde) e "Rejeitar" (vermelho). Campo opcional para observações.  
+## Tela Final 17 — Confirmação de Objeto Encontrado
 
-| Vista Mobile | Vista Web |
-|:---:|:---:|
-| ![Validar Solicitação — mobile](../assets/prints-telas/tela-18-validar.png) | ![Validar Solicitação — web](../assets/prints-telas/web/tela-18-validar-web.png) |
+**Explicação básica:** Confirma que o objeto encontrado foi publicado com sucesso no sistema.
 
-*Figura 20 — Tela de validação com dados do solicitante e botões de aprovar/rejeitar.*
+![Tela Final 17 — Confirmação Encontrado](../assets/printtelasFigma/sem-menu/17%20—%20Confirmação%20Encontrado.png)
 
-## Tela Final 18 — Encerramento do Caso
+*Figura 20 — Confirmação após publicação de objeto encontrado.*
 
-**Objetivo principal:** Confirmar a finalização de um caso após retirada realizada.  
-**Explicação:** Resumo do caso (objeto, solicitante, datas), campo para observações finais, checkbox "Confirmo que o objeto foi entregue ao solicitante", botão "Encerrar Caso". Após encerramento, status muda para "Finalizado".  
+## Tela Final 18 — Validar Solicitação
 
-| Vista Mobile | Vista Web |
-|:---:|:---:|
-| ![Encerramento — mobile](../assets/prints-telas/tela-19-encerramento.png) | ![Encerramento — web](../assets/prints-telas/web/tela-19-encerramento-web.png) |
+**Explicação básica:** Permite analisar os dados do solicitante e decidir entre aprovar ou rejeitar a retirada.
 
-*Figura 21 — Tela de encerramento do caso com confirmação de entrega.*
+![Tela Final 18 — Validar Solicitação](../assets/printtelasFigma/sem-menu/18%20—%20Validar%20Solicitação.png)
+
+*Figura 21 — Tela de validação com ações de aprovar e rejeitar.*
+
+## Tela Final 19 — Encerramento do Caso
+
+**Explicação básica:** Formaliza a conclusão do atendimento após a entrega do objeto ao solicitante.
+
+![Tela Final 19 — Encerramento Caso](../assets/printtelasFigma/sem-menu/19%20—%20Encerramento%20Caso.png)
+
+*Figura 22 — Confirmação de encerramento após entrega do objeto.*
+
+## Tela Final 20 — Notificações
+
+**Explicação básica:** Reúne alertas e atualizações relevantes sobre solicitações e movimentações do sistema.
+
+![Tela Final 20 — Notificações](../assets/printtelasFigma/sem-menu/20%20—%20Notificações.png)
+
+*Figura 23 — Central de notificações do usuário.*
+
+## Tela Final 21 — Perfil
+
+**Explicação básica:** Exibe os dados do usuário e concentra opções pessoais de configuração.
+
+![Tela Final 21 — Perfil](../assets/printtelasFigma/sem-menu/21%20—%20Perfil.png)
+
+*Figura 24 — Tela de perfil com dados e configurações do usuário.*
+
+## Tela Final 22 — Ajuda / FAQ
+
+**Explicação básica:** Oferece orientações rápidas para dúvidas frequentes sobre uso do UniAchados.
+
+![Tela Final 22 — Ajuda](../assets/printtelasFigma/sem-menu/22%20—%20Ajuda.png)
+
+*Figura 25 — Tela de ajuda com perguntas frequentes.*
 
 ---
 
@@ -792,3 +814,4 @@ Esta experiência demonstrou que o desenvolvimento de software não se limita à
 - Google. **Material Design Guidelines**. Disponível em: https://m3.material.io/
 - Figma. **Figma for Beginners**. Disponível em: https://www.youtube.com/playlist?list=PLXDU_eVOJTx7QHLShNqIXL1Cgbxj7HlN4
 - Nielsen Norman Group. **UX Research Methods**. Disponível em: https://www.nngroup.com/articles/which-ux-research-methods/
+

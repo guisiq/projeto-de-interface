@@ -42,28 +42,6 @@
     }
   },
   {
-    "id": 3,
-    "fromFrame": "02 — Login",
-    "source": {
-      "name": "arrow_back",
-      "aliases": [
-        "voltar",
-        "back"
-      ],
-      "textMatch": null,
-      "iconMatch": "arrow_back",
-      "nodeNameMatch": null
-    },
-    "toFrame": "01 — Boas-vindas",
-    "trigger": "ON_CLICK",
-    "navigation": "NAVIGATE",
-    "transition": {
-      "type": "SLIDE_IN",
-      "direction": "RIGHT",
-      "duration": 0.3
-    }
-  },
-  {
     "id": 4,
     "fromFrame": "02 — Login",
     "source": {
@@ -130,20 +108,19 @@
     "id": 7,
     "fromFrame": "03 — Cadastro Usuário",
     "source": {
-      "name": "arrow_back",
+      "name": "Cancelar",
       "aliases": [
-        "voltar"
+        "btn-cancelar-cadastro"
       ],
-      "textMatch": null,
-      "iconMatch": "arrow_back",
+      "textMatch": "Cancelar",
+      "iconMatch": null,
       "nodeNameMatch": null
     },
     "toFrame": "01 — Boas-vindas",
     "trigger": "ON_CLICK",
     "navigation": "NAVIGATE",
     "transition": {
-      "type": "SLIDE_IN",
-      "direction": "RIGHT",
+      "type": "DISSOLVE",
       "duration": 0.3
     }
   },
@@ -159,12 +136,11 @@
       "iconMatch": null,
       "nodeNameMatch": null
     },
-    "toFrame": "04 — Home",
+    "toFrame": "02 — Login",
     "trigger": "ON_CLICK",
     "navigation": "NAVIGATE",
     "transition": {
-      "type": "SLIDE_IN",
-      "direction": "LEFT",
+      "type": "DISSOLVE",
       "duration": 0.3
     }
   },
@@ -193,11 +169,11 @@
     "id": 10,
     "fromFrame": "04 — Home",
     "source": {
-      "name": "Buscar objetos",
+      "name": "Buscar objeto (barra)",
       "aliases": [
         "btn-buscar"
       ],
-      "textMatch": "Buscar objetos",
+      "textMatch": "Buscar objeto",
       "iconMatch": null,
       "nodeNameMatch": null
     },
@@ -257,11 +233,12 @@
     "id": 13,
     "fromFrame": "04 — Home",
     "source": {
-      "name": "Nav: Início",
+      "name": "Nav: Home",
       "aliases": [
+        "nav-home",
         "nav-inicio"
       ],
-      "textMatch": "Início",
+      "textMatch": "Home",
       "iconMatch": null,
       "nodeNameMatch": null
     },
@@ -334,27 +311,6 @@
     }
   },
   {
-    "id": 17,
-    "fromFrame": "05 — Buscar",
-    "source": {
-      "name": "arrow_back",
-      "aliases": [
-        "voltar"
-      ],
-      "textMatch": null,
-      "iconMatch": "arrow_back",
-      "nodeNameMatch": null
-    },
-    "toFrame": "04 — Home",
-    "trigger": "ON_CLICK",
-    "navigation": "NAVIGATE",
-    "transition": {
-      "type": "SLIDE_IN",
-      "direction": "RIGHT",
-      "duration": 0.3
-    }
-  },
-  {
     "id": 18,
     "fromFrame": "05 — Buscar",
     "source": {
@@ -400,11 +356,12 @@
     "id": 20,
     "fromFrame": "05 — Buscar",
     "source": {
-      "name": "Nav: Início",
+      "name": "Nav: Home",
       "aliases": [
+        "nav-home",
         "nav-inicio"
       ],
-      "textMatch": "Início",
+      "textMatch": "Home",
       "iconMatch": null,
       "nodeNameMatch": null
     },
@@ -457,27 +414,6 @@
     }
   },
   {
-    "id": 23,
-    "fromFrame": "06 — Filtros Avançados",
-    "source": {
-      "name": "arrow_back",
-      "aliases": [
-        "voltar"
-      ],
-      "textMatch": null,
-      "iconMatch": "arrow_back",
-      "nodeNameMatch": null
-    },
-    "toFrame": "05 — Buscar",
-    "trigger": "ON_CLICK",
-    "navigation": "NAVIGATE",
-    "transition": {
-      "type": "SLIDE_IN",
-      "direction": "RIGHT",
-      "duration": 0.3
-    }
-  },
-  {
     "id": 24,
     "fromFrame": "06 — Filtros Avançados",
     "source": {
@@ -487,27 +423,6 @@
       ],
       "textMatch": "Aplicar filtros",
       "iconMatch": null,
-      "nodeNameMatch": null
-    },
-    "toFrame": "05 — Buscar",
-    "trigger": "ON_CLICK",
-    "navigation": "NAVIGATE",
-    "transition": {
-      "type": "SLIDE_IN",
-      "direction": "RIGHT",
-      "duration": 0.3
-    }
-  },
-  {
-    "id": 25,
-    "fromFrame": "07 — Detalhes",
-    "source": {
-      "name": "arrow_back",
-      "aliases": [
-        "voltar"
-      ],
-      "textMatch": null,
-      "iconMatch": "arrow_back",
       "nodeNameMatch": null
     },
     "toFrame": "05 — Buscar",
@@ -537,27 +452,6 @@
     "transition": {
       "type": "SLIDE_IN",
       "direction": "LEFT",
-      "duration": 0.3
-    }
-  },
-  {
-    "id": 27,
-    "fromFrame": "08 — Solicitar Retirada",
-    "source": {
-      "name": "arrow_back",
-      "aliases": [
-        "voltar"
-      ],
-      "textMatch": null,
-      "iconMatch": "arrow_back",
-      "nodeNameMatch": null
-    },
-    "toFrame": "07 — Detalhes",
-    "trigger": "ON_CLICK",
-    "navigation": "NAVIGATE",
-    "transition": {
-      "type": "SLIDE_IN",
-      "direction": "RIGHT",
       "duration": 0.3
     }
   },
@@ -603,27 +497,6 @@
     }
   },
   {
-    "id": 31,
-    "fromFrame": "10 — Cadastrar Perdido",
-    "source": {
-      "name": "arrow_back",
-      "aliases": [
-        "voltar"
-      ],
-      "textMatch": null,
-      "iconMatch": "arrow_back",
-      "nodeNameMatch": null
-    },
-    "toFrame": "04 — Home",
-    "trigger": "ON_CLICK",
-    "navigation": "NAVIGATE",
-    "transition": {
-      "type": "SLIDE_IN",
-      "direction": "RIGHT",
-      "duration": 0.3
-    }
-  },
-  {
     "id": 32,
     "fromFrame": "10 — Cadastrar Perdido",
     "source": {
@@ -665,35 +538,15 @@
     }
   },
   {
-    "id": 34,
-    "fromFrame": "12 — Solicitações",
-    "source": {
-      "name": "arrow_back",
-      "aliases": [
-        "voltar"
-      ],
-      "textMatch": null,
-      "iconMatch": "arrow_back",
-      "nodeNameMatch": null
-    },
-    "toFrame": "04 — Home",
-    "trigger": "ON_CLICK",
-    "navigation": "NAVIGATE",
-    "transition": {
-      "type": "SLIDE_IN",
-      "direction": "RIGHT",
-      "duration": 0.3
-    }
-  },
-  {
     "id": 35,
     "fromFrame": "12 — Solicitações",
     "source": {
-      "name": "Nav: Início",
+      "name": "Nav: Home",
       "aliases": [
+        "nav-home",
         "nav-inicio"
       ],
-      "textMatch": "Início",
+      "textMatch": "Home",
       "iconMatch": null,
       "nodeNameMatch": null
     },
@@ -889,27 +742,6 @@
     }
   },
   {
-    "id": 45,
-    "fromFrame": "14 — Lista Objetos",
-    "source": {
-      "name": "arrow_back",
-      "aliases": [
-        "voltar"
-      ],
-      "textMatch": null,
-      "iconMatch": "arrow_back",
-      "nodeNameMatch": null
-    },
-    "toFrame": "13 — Painel Admin",
-    "trigger": "ON_CLICK",
-    "navigation": "NAVIGATE",
-    "transition": {
-      "type": "SLIDE_IN",
-      "direction": "RIGHT",
-      "duration": 0.3
-    }
-  },
-  {
     "id": 46,
     "fromFrame": "14 — Lista Objetos",
     "source": {
@@ -992,27 +824,6 @@
     }
   },
   {
-    "id": 50,
-    "fromFrame": "15 — Histórico",
-    "source": {
-      "name": "arrow_back",
-      "aliases": [
-        "voltar"
-      ],
-      "textMatch": null,
-      "iconMatch": "arrow_back",
-      "nodeNameMatch": null
-    },
-    "toFrame": "13 — Painel Admin",
-    "trigger": "ON_CLICK",
-    "navigation": "NAVIGATE",
-    "transition": {
-      "type": "SLIDE_IN",
-      "direction": "RIGHT",
-      "duration": 0.3
-    }
-  },
-  {
     "id": 51,
     "fromFrame": "15 — Histórico",
     "source": {
@@ -1073,27 +884,6 @@
     }
   },
   {
-    "id": 54,
-    "fromFrame": "16 — Cadastrar Encontrado",
-    "source": {
-      "name": "arrow_back",
-      "aliases": [
-        "voltar"
-      ],
-      "textMatch": null,
-      "iconMatch": "arrow_back",
-      "nodeNameMatch": null
-    },
-    "toFrame": "14 — Lista Objetos",
-    "trigger": "ON_CLICK",
-    "navigation": "NAVIGATE",
-    "transition": {
-      "type": "SLIDE_IN",
-      "direction": "RIGHT",
-      "duration": 0.3
-    }
-  },
-  {
     "id": 55,
     "fromFrame": "16 — Cadastrar Encontrado",
     "source": {
@@ -1131,27 +921,6 @@
     "navigation": "NAVIGATE",
     "transition": {
       "type": "DISSOLVE",
-      "duration": 0.3
-    }
-  },
-  {
-    "id": 57,
-    "fromFrame": "18 — Validar Solicitação",
-    "source": {
-      "name": "arrow_back",
-      "aliases": [
-        "voltar"
-      ],
-      "textMatch": null,
-      "iconMatch": "arrow_back",
-      "nodeNameMatch": null
-    },
-    "toFrame": "13 — Painel Admin",
-    "trigger": "ON_CLICK",
-    "navigation": "NAVIGATE",
-    "transition": {
-      "type": "SLIDE_IN",
-      "direction": "RIGHT",
       "duration": 0.3
     }
   },
@@ -1197,27 +966,6 @@
     }
   },
   {
-    "id": 60,
-    "fromFrame": "19 — Encerramento Caso",
-    "source": {
-      "name": "arrow_back",
-      "aliases": [
-        "voltar"
-      ],
-      "textMatch": null,
-      "iconMatch": "arrow_back",
-      "nodeNameMatch": null
-    },
-    "toFrame": "18 — Validar Solicitação",
-    "trigger": "ON_CLICK",
-    "navigation": "NAVIGATE",
-    "transition": {
-      "type": "SLIDE_IN",
-      "direction": "RIGHT",
-      "duration": 0.3
-    }
-  },
-  {
     "id": 61,
     "fromFrame": "19 — Encerramento Caso",
     "source": {
@@ -1229,32 +977,11 @@
       "iconMatch": null,
       "nodeNameMatch": null
     },
-    "toFrame": "13 — Painel Admin",
+    "toFrame": "15 — Histórico",
     "trigger": "ON_CLICK",
     "navigation": "NAVIGATE",
     "transition": {
       "type": "DISSOLVE",
-      "duration": 0.3
-    }
-  },
-  {
-    "id": 62,
-    "fromFrame": "20 — Notificações",
-    "source": {
-      "name": "arrow_back",
-      "aliases": [
-        "voltar"
-      ],
-      "textMatch": null,
-      "iconMatch": "arrow_back",
-      "nodeNameMatch": null
-    },
-    "toFrame": "04 — Home",
-    "trigger": "ON_CLICK",
-    "navigation": "NAVIGATE",
-    "transition": {
-      "type": "SLIDE_IN",
-      "direction": "RIGHT",
       "duration": 0.3
     }
   },
@@ -1283,11 +1010,12 @@
     "id": 64,
     "fromFrame": "21 — Perfil",
     "source": {
-      "name": "Nav: Início",
+      "name": "Nav: Home",
       "aliases": [
+        "nav-home",
         "nav-inicio"
       ],
-      "textMatch": "Início",
+      "textMatch": "Home",
       "iconMatch": null,
       "nodeNameMatch": null
     },
@@ -1341,23 +1069,101 @@
   },
   {
     "id": 67,
-    "fromFrame": "22 — Ajuda",
-    "source": {
-      "name": "arrow_back",
-      "aliases": [
-        "voltar"
-      ],
-      "textMatch": null,
-      "iconMatch": "arrow_back",
-      "nodeNameMatch": null
-    },
-    "toFrame": "04 — Home",
+    "fromFrame": "04 — Home",
+    "source": { "name": "Nav: Solicitações", "aliases": ["nav-solicitacoes"], "textMatch": "Solicitações", "iconMatch": "inbox", "nodeNameMatch": null },
+    "toFrame": "12 — Solicitações",
     "trigger": "ON_CLICK",
     "navigation": "NAVIGATE",
-    "transition": {
-      "type": "SLIDE_IN",
-      "direction": "RIGHT",
-      "duration": 0.3
-    }
+    "transition": { "type": "DISSOLVE", "duration": 0.2 }
+  },
+  {
+    "id": 68,
+    "fromFrame": "05 — Buscar",
+    "source": { "name": "Nav: Solicitações", "aliases": ["nav-solicitacoes"], "textMatch": "Solicitações", "iconMatch": "inbox", "nodeNameMatch": null },
+    "toFrame": "12 — Solicitações",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "DISSOLVE", "duration": 0.2 }
+  },
+  {
+    "id": 69,
+    "fromFrame": "09 — Confirmação Solicitação",
+    "source": { "name": "Ver minhas solicitações", "aliases": ["btn-ver-solicitacoes"], "textMatch": "Ver minhas solicitações", "iconMatch": null, "nodeNameMatch": null },
+    "toFrame": "12 — Solicitações",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "SLIDE_IN", "direction": "LEFT", "duration": 0.3 }
+  },
+  {
+    "id": 70,
+    "fromFrame": "11 — Confirmação Cadastro",
+    "source": { "name": "Buscar meu objeto", "aliases": ["btn-buscar-objeto"], "textMatch": "Buscar meu objeto", "iconMatch": null, "nodeNameMatch": null },
+    "toFrame": "05 — Buscar",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "SLIDE_IN", "direction": "LEFT", "duration": 0.3 }
+  },
+  {
+    "id": 71,
+    "fromFrame": "12 — Solicitações",
+    "source": { "name": "Card solicitação", "aliases": ["card-solicitacao"], "textMatch": "Em análise", "iconMatch": null, "nodeNameMatch": null },
+    "toFrame": "07 — Detalhes",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "SLIDE_IN", "direction": "LEFT", "duration": 0.3 }
+  },
+  {
+    "id": 72,
+    "fromFrame": "13 — Painel Admin",
+    "source": { "name": "Cadastrar objeto encontrado (CTA)", "aliases": ["btn-cadastrar-encontrado"], "textMatch": "Cadastrar objeto encontrado", "iconMatch": null, "nodeNameMatch": null },
+    "toFrame": "16 — Cadastrar Encontrado",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "SLIDE_IN", "direction": "LEFT", "duration": 0.3 }
+  },
+  {
+    "id": 73,
+    "fromFrame": "14 — Lista Objetos",
+    "source": { "name": "Card objeto", "aliases": ["card-objeto"], "textMatch": "Carregador USB-C Branco", "iconMatch": null, "nodeNameMatch": null },
+    "toFrame": "07 — Detalhes",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "SLIDE_IN", "direction": "LEFT", "duration": 0.3 }
+  },
+  {
+    "id": 74,
+    "fromFrame": "15 — Histórico",
+    "source": { "name": "Nav: Solicitações", "aliases": ["nav-validar"], "textMatch": "Solicitações", "iconMatch": "pending_actions", "nodeNameMatch": null },
+    "toFrame": "18 — Validar Solicitação",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "DISSOLVE", "duration": 0.2 }
+  },
+  {
+    "id": 75,
+    "fromFrame": "17 — Confirmação Encontrado",
+    "source": { "name": "Ver objetos cadastrados", "aliases": ["btn-ver-objetos"], "textMatch": "Ver objetos cadastrados", "iconMatch": null, "nodeNameMatch": null },
+    "toFrame": "14 — Lista Objetos",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "SLIDE_IN", "direction": "LEFT", "duration": 0.3 }
+  },
+  {
+    "id": 76,
+    "fromFrame": "21 — Perfil",
+    "source": { "name": "Ajuda / FAQ", "aliases": ["menu-ajuda"], "textMatch": "Ajuda", "iconMatch": null, "nodeNameMatch": null },
+    "toFrame": "22 — Ajuda",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "SLIDE_IN", "direction": "LEFT", "duration": 0.3 }
+  },
+  {
+    "id": 77,
+    "fromFrame": "13 — Painel Admin",
+    "source": { "name": "Validar (linha)", "aliases": ["btn-validar"], "textMatch": "Validar", "iconMatch": null, "nodeNameMatch": null },
+    "toFrame": "18 — Validar Solicitação",
+    "trigger": "ON_CLICK",
+    "navigation": "NAVIGATE",
+    "transition": { "type": "SLIDE_IN", "direction": "LEFT", "duration": 0.3 }
   }
 ]

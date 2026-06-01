@@ -1,7 +1,7 @@
 {
   "name": "auto-prototype-connector",
   "version": "1.0.0",
-  "description": "Plugin Figma para automatizar conexões de protótipo no UniAchados",
+  "description": "Plugin Figma para importar telas HTML e automatizar conexões de protótipo no UniAchados",
   "scripts": {
     "build": "tsc",
     "watch": "tsc --watch"

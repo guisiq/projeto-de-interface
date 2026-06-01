@@ -1,0 +1,17 @@
+flowchart TD
+  A[Painel do Funcionário] --> B[Cadastrar Objeto Encontrado]
+  A --> C[Solicitações Pendentes]
+
+  B --> D[Preencher Dados do Objeto]
+  D --> E[Objeto Publicado]
+
+  C --> G[Ver Solicitação]
+  G --> H[Validar Dados do Solicitante]
+  H --> I{Decisão}
+  I -->|Aprovar| J[Retirada Aprovada]
+  I -->|Rejeitar| K[Solicitação Rejeitada]
+  K --> A
+
+  J --> L[Confirmar Entrega]
+  L --> M[Encerrar Caso]
+  M --> N[Histórico de Casos]

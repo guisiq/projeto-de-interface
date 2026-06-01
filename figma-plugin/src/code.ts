@@ -60,6 +60,22 @@ interface PluginConfig {
   dryRun: boolean;
 }
 
+interface BottomNavTarget {
+  frame: FrameNode;
+  label: string;
+  sortKey: number;
+}
+
+interface ScreenshotAsset {
+  frameName: string;
+  fileName: string;
+  mimeType: "image/png";
+  base64: string;
+}
+
+declare function atob(data: string): string;
+declare function btoa(data: string): string;
+
 // ─── Utilities ───────────────────────────────────────────────────────────────
 
 function normalize(text: string): string {
@@ -78,6 +94,10 @@ function textContains(haystack: string, needle: string): boolean {
 
 function textMatches(a: string, b: string): boolean {
   return normalize(a) === normalize(b);
+}
+
+function isControlLikeNode(node: SceneNode): boolean {
+  return textContains(node.name, "Button") || textContains(node.name, "Input") || textContains(node.name, "Link") || textContains(node.name, "btn");
 }
 
 // ─── Frame Finder ────────────────────────────────────────────────────────────
@@ -163,7 +183,14 @@ function findClickableAncestor(node: SceneNode, maxLevels: number = 5): SceneNod
       if (frame.width > 400 || frame.height > 200) {
         break;
       }
+      if (isControlLikeNode(frame)) {
+        return frame;
+      }
       best = frame;
+      const text = getAllText(frame);
+      if (textMatches(text, getAllText(node))) {
+        return frame;
+      }
     }
     // Also stop if we reach a top-level frame (direct child of page)
     if (current.parent && current.parent.type === "PAGE") {
@@ -185,19 +212,18 @@ function findByText(frame: FrameNode, textToFind: string): SceneNode | null {
   const matches = textNodes.filter(t => textContains(t.characters, textToFind));
   if (matches.length === 0) return null;
 
-  if (matches.length === 1) {
-    return findClickableAncestor(matches[0]);
-  }
-
-  // Multiple: prefer exact match
   const exact = matches.filter(t => textMatches(t.characters, textToFind));
-  if (exact.length === 1) {
-    return findClickableAncestor(exact[0]);
-  }
+  const candidates = exact.length > 0 ? exact : matches;
 
-  // Prefer shortest text (most specific)
-  matches.sort((a, b) => a.characters.length - b.characters.length);
-  return findClickableAncestor(matches[0]);
+  candidates.sort((a, b) => {
+    const clickableA = findClickableAncestor(a);
+    const clickableB = findClickableAncestor(b);
+    const controlScoreA = isControlLikeNode(clickableA) ? 1 : 0;
+    const controlScoreB = isControlLikeNode(clickableB) ? 1 : 0;
+    if (controlScoreA !== controlScoreB) return controlScoreB - controlScoreA;
+    return a.characters.length - b.characters.length;
+  });
+  return findClickableAncestor(candidates[0]);
 }
 
 /**
@@ -209,30 +235,58 @@ function findBackButton(frame: FrameNode): SceneNode | null {
   const byName = findNodeByNamePattern(frame, ["arrow_back", "arrow back", "back", "icon-btn", "voltar"]);
   if (byName) return byName;
 
-  // Strategy 2: Recursive search for small element in top-left quadrant.
-  // HTML-to-Design may nest content deeply, so we search all levels.
-  const frameW = frame.width;
-  const frameH = frame.height;
+  // Strategy 2: Find the phone screen container first (375x780-ish),
+  // then search within its TOP area for the back button.
+  // HTML-to-Design nests deeply, so we use the phone container as reference.
+  let phoneContainer: FrameNode | null = null;
+  for (const child of frame.children) {
+    if ("width" in child && "height" in child && "children" in child) {
+      const c = child as FrameNode;
+      // Phone screen: ~375px wide, ~780+ tall
+      if (c.width >= 300 && c.width <= 430 && c.height >= 600) {
+        phoneContainer = c;
+        break;
+      }
+    }
+  }
+
+  const searchRoot = phoneContainer || frame;
+  const containerW = ("width" in searchRoot) ? (searchRoot as any).width : frame.width;
+  const containerH = ("height" in searchRoot) ? (searchRoot as any).height : frame.height;
+  const maxX = containerW * 0.25;  // left 25% of phone
+  const maxY = containerH * 0.10;  // top 10% of phone (status bar + nav bar area)
   let bestCandidate: SceneNode | null = null;
-  let bestScore = 0;
+  let bestScore = -Infinity;
 
   function searchBackBtn(node: SceneNode, absX: number, absY: number, depth: number): void {
-    if (depth > 8) return;
-    if ("width" in node && "height" in node) {
-      const n = node as FrameNode;
-      const w = n.width;
-      const h = n.height;
-      // Back button: 16-60px, in top-left region (left 15%, top 10%)
-      const inLeftRegion = absX < frameW * 0.15;
-      const inTopRegion = absY < frameH * 0.12;
-      const rightSize = w >= 16 && w <= 60 && h >= 16 && h <= 60;
+    if (depth > 12) return;
+    if (absX > maxX || absY > maxY) return;
+    if (bestCandidate && bestScore > 150) return;
 
-      if (inLeftRegion && inTopRegion && rightSize) {
-        // Score: prefer smaller and more top-left
-        const score = 100 - (absX + absY) / 2;
-        if (score > bestScore) {
-          bestScore = score;
-          bestCandidate = node;
+    // Skip text nodes — back button is not text
+    if (node.type === "TEXT") return;
+
+    if (node !== (searchRoot as SceneNode) && "width" in node && "height" in node) {
+      const w = (node as any).width as number;
+      const h = (node as any).height as number;
+
+      const isVector = node.type === "VECTOR" || node.type === "BOOLEAN_OPERATION" ||
+                      node.type === "LINE" || node.type === "POLYGON" || node.type === "STAR";
+      const isClickable = node.type === "FRAME" || node.type === "INSTANCE" || 
+                         node.type === "COMPONENT" || node.type === "GROUP";
+
+      if (isVector && w >= 4 && w <= 40 && h >= 4 && h <= 40) {
+        const clickable = findClickableAncestor(node, 4);
+        const score = 200 - absX - absY;
+        if (score > bestScore) { bestScore = score; bestCandidate = clickable; }
+        return;
+      }
+      if (isClickable && w >= 16 && w <= 64 && h >= 16 && h <= 64) {
+        // Only count as candidate if it has few children (icon container, not layout)
+        const childCount = "children" in node ? (node as any).children.length : 0;
+        if (childCount <= 3) {
+          const score = 150 - absX - absY - w;
+          if (score > bestScore) { bestScore = score; bestCandidate = node; }
         }
       }
     }
@@ -245,7 +299,7 @@ function findBackButton(frame: FrameNode): SceneNode | null {
     }
   }
 
-  searchBackBtn(frame, 0, 0, 0);
+  searchBackBtn(searchRoot as SceneNode, 0, 0, 0);
   return bestCandidate;
 }
 
@@ -306,21 +360,20 @@ function findFAB(frame: FrameNode): SceneNode | null {
 function findNotificationIcon(frame: FrameNode): SceneNode | null {
   const frameW = frame.width;
   const frameH = frame.height;
+  const maxY = frameH * 0.15;
   let bestCandidate: SceneNode | null = null;
   let bestX = 0;
 
   function searchTopRight(node: SceneNode, absX: number, absY: number, depth: number): void {
-    if (depth > 8) return;
+    if (depth > 6) return;
+    if (absY > maxY) return; // Early exit: below top region
     if ("width" in node && "height" in node) {
-      const n = node as FrameNode;
-      const w = n.width;
-      const h = n.height;
-      // Notification icon: small, in top-right region
-      const inRightRegion = absX > frameW * 0.7;
-      const inTopRegion = absY < frameH * 0.12;
+      const w = (node as any).width as number;
+      const h = (node as any).height as number;
+      const inRightRegion = absX > frameW * 0.65;
       const rightSize = w >= 16 && w <= 50 && h >= 16 && h <= 50;
 
-      if (inRightRegion && inTopRegion && rightSize && absX > bestX) {
+      if (inRightRegion && rightSize && absX > bestX) {
         bestX = absX;
         bestCandidate = node;
       }
@@ -343,23 +396,46 @@ function findNotificationIcon(frame: FrameNode): SceneNode | null {
  * Find navigation bar items by label text.
  */
 function findNavItem(frame: FrameNode, labelText: string): SceneNode | null {
-  const frameH = frame.height;
-
-  // Find the bottom nav — a container near the bottom of the frame
-  let bottomNav: FrameNode | null = null;
+  // First find the phone container (375x780-ish)
+  let phoneContainer: FrameNode | null = null;
   for (const child of frame.children) {
-    if ("y" in child && "height" in child && "children" in child) {
+    if ("width" in child && "height" in child && "children" in child) {
       const c = child as FrameNode;
-      // Bottom nav: at the bottom, short height, full width
-      if ((c.y + c.height) >= frameH - 5 && c.height <= 100 && c.height >= 40 && c.width > 200) {
-        bottomNav = c;
+      if (c.width >= 300 && c.width <= 430 && c.height >= 600) {
+        phoneContainer = c;
+        break;
       }
     }
   }
 
+  const searchRoot = phoneContainer || frame;
+  const rootH = ("height" in searchRoot) ? (searchRoot as any).height : frame.height;
+
+  // Find the bottom nav — a container near the bottom
+  let bottomNav: FrameNode | null = null;
+  function findBottomBar(node: SceneNode, absY: number, depth: number): void {
+    if (depth > 3 || bottomNav) return;
+    if ("y" in node && "height" in node && "children" in node && "width" in node) {
+      const c = node as FrameNode;
+      const nodeBottom = absY + c.height;
+      // Bottom nav: near the bottom, short height, wide
+      if (nodeBottom >= rootH - 10 && c.height <= 100 && c.height >= 40 && c.width > 200) {
+        bottomNav = c;
+        return;
+      }
+    }
+    if ("children" in node) {
+      for (const child of (node as ChildrenMixin & SceneNode).children) {
+        const cy = absY + ("y" in child ? (child as any).y : 0);
+        findBottomBar(child as SceneNode, cy, depth + 1);
+      }
+    }
+  }
+  findBottomBar(searchRoot as SceneNode, 0, 0);
+
   if (bottomNav) {
     // Search for a child of bottom nav containing the label text
-    for (const child of bottomNav.children) {
+    for (const child of (bottomNav as FrameNode).children) {
       const text = getAllText(child as SceneNode);
       if (textContains(text, labelText)) {
         return child as SceneNode;
@@ -375,7 +451,10 @@ function findNavItem(frame: FrameNode, labelText: string): SceneNode | null {
     }
   }
 
-  // Fallback: search entire frame
+  // Fallback: search only in phone container for the text
+  if (phoneContainer) {
+    return findByText(phoneContainer, labelText);
+  }
   return findByText(frame, labelText);
 }
 
@@ -525,10 +604,708 @@ function buildReaction(targetFrame: FrameNode, entry: ConnectionEntry): Reaction
   };
 }
 
+function buildImportReaction(targetFrame: FrameNode): Reaction {
+  return {
+    trigger: { type: "ON_CLICK" },
+    actions: [{
+      type: "NODE",
+      destinationId: targetFrame.id,
+      navigation: "NAVIGATE",
+      transition: {
+        type: "DISSOLVE",
+        duration: 0.2,
+        easing: { type: "EASE_IN_AND_OUT" },
+      },
+      preserveScrollPosition: false,
+    }],
+  };
+}
+
+async function loadImportFonts(): Promise<void> {
+  await Promise.all([
+    figma.loadFontAsync({ family: "Inter", style: "Regular" }),
+    figma.loadFontAsync({ family: "Inter", style: "Medium" }),
+    figma.loadFontAsync({ family: "Inter", style: "Bold" }),
+  ]);
+}
+
+function createLabel(text: string, x: number, y: number, size: number, style: "Regular" | "Medium" | "Bold", color: RGB): TextNode {
+  const label = figma.createText();
+  label.name = text;
+  label.fontName = { family: "Inter", style };
+  label.fontSize = size;
+  label.characters = text;
+  label.fills = [{ type: "SOLID", color }];
+  label.x = x;
+  label.y = y;
+  return label;
+}
+
 // ─── Main Logic ──────────────────────────────────────────────────────────────
 
 function sleep(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function getSingleFlowStartFrame(allFrames?: FrameNode[]): FrameNode | null {
+  const frames = allFrames || figma.currentPage.children.filter((n): n is FrameNode => n.type === "FRAME");
+  return findFrameByName("01 — Boas-vindas", frames) ||
+    frames.filter(isScreenFrame).sort((a, b) => screenSortKey(a.name) - screenSortKey(b.name))[0] ||
+    frames[0] ||
+    null;
+}
+
+function unifyPrototypeFlows(): Report {
+  const report: Report = {
+    summary: { expected: 1, applied: 0, skippedExisting: 0, missingSources: 0, missingTargets: 0, ambiguous: 0 },
+    applied: [],
+    skippedExisting: [],
+    missingSources: [],
+    missingTargets: [],
+    ambiguous: [],
+  };
+
+  const startFrame = getSingleFlowStartFrame();
+  if (!startFrame) {
+    report.missingTargets.push({
+      connectionId: 0,
+      fromFrame: "Página atual",
+      sourceName: "Flows",
+      toFrame: "UniAchados",
+      detail: "Nenhum frame encontrado para iniciar o fluxo",
+    });
+    report.summary.missingTargets++;
+    return report;
+  }
+
+  try {
+    const previous = ((figma.currentPage as any).flowStartingPoints || []).length;
+    (figma.currentPage as any).flowStartingPoints = [{ nodeId: startFrame.id, name: "UniAchados" }];
+    report.applied.push({
+      connectionId: 1,
+      fromFrame: startFrame.name,
+      sourceName: `Flows unificados (${previous} removidos)`,
+      toFrame: "UniAchados",
+    });
+    report.summary.applied = 1;
+  } catch (error: any) {
+    report.missingSources.push({
+      connectionId: 0,
+      fromFrame: "Página atual",
+      sourceName: "Flows",
+      toFrame: startFrame.name,
+      detail: `Erro ao atualizar flows: ${error.message || error}`,
+    });
+    report.summary.missingSources++;
+  }
+
+  return report;
+}
+
+// ─── Frame Organizer ────────────────────────────────────────────────────────
+
+const ORGANIZE_LABEL_PLUGIN_KEY = "uniachados-organize-label";
+
+const ORGANIZE_LAYOUT: Record<string, { col: number; row: number }> = {
+  "01": { col: 0, row: 0 },
+  "02": { col: 1, row: 0 },
+  "03": { col: 2, row: 0 },
+  "V01": { col: 1, row: 1 },
+  "V02": { col: 1, row: 2 },
+  "V03": { col: 2, row: 1 },
+  "V04": { col: 2, row: 2 },
+  "V12": { col: 2, row: 3 },
+
+  "04": { col: 1, row: 4 },
+  "05": { col: 2, row: 4 },
+  "07": { col: 3, row: 4 },
+  "08": { col: 4, row: 4 },
+  "09": { col: 5, row: 4 },
+  "06": { col: 2, row: 5 },
+  "V05": { col: 2, row: 6 },
+  "V13": { col: 3, row: 6 },
+  "V06": { col: 4, row: 5 },
+
+  "10": { col: 0, row: 5 },
+  "11": { col: 1, row: 5 },
+  "V08": { col: 0, row: 6 },
+
+  "12": { col: 1, row: 7 },
+  "20": { col: 2, row: 7 },
+  "21": { col: 3, row: 7 },
+  "22": { col: 4, row: 7 },
+  "V07": { col: 1, row: 8 },
+  "V11": { col: 2, row: 8 },
+
+  "13": { col: 1, row: 10 },
+  "14": { col: 2, row: 10 },
+  "16": { col: 3, row: 10 },
+  "17": { col: 4, row: 10 },
+  "18": { col: 2, row: 11 },
+  "19": { col: 3, row: 11 },
+  "15": { col: 4, row: 11 },
+  "V10": { col: 2, row: 12 },
+  "V09": { col: 3, row: 12 },
+};
+
+const ORGANIZE_SECTIONS = [
+  { title: "Autenticação", col: 0, row: -0.35, color: { r: 0.12, g: 0.23, b: 0.37 } },
+  { title: "Fluxo Principal — Aluno", col: 0, row: 3.65, color: { r: 0.12, g: 0.23, b: 0.37 } },
+  { title: "Telas Auxiliares — Aluno", col: 0, row: 6.65, color: { r: 0.12, g: 0.23, b: 0.37 } },
+  { title: "Fluxo Administrador", col: 0, row: 9.65, color: { r: 0.73, g: 0.11, b: 0.11 } },
+];
+
+function screenKeyFromName(frameName: string): string | null {
+  const match = frameName.match(/^(V?\d{2})\s+—/i);
+  return match ? match[1].toUpperCase() : null;
+}
+
+function removeOrganizerLabels(): void {
+  const labels = figma.currentPage.findAll(node => node.getPluginData(ORGANIZE_LABEL_PLUGIN_KEY) === "true");
+  for (const label of labels) {
+    label.remove();
+  }
+}
+
+async function organizeFramesByJourney(): Promise<Report> {
+  await loadImportFonts();
+
+  const allFrames = figma.currentPage.children.filter((n): n is FrameNode => n.type === "FRAME");
+  const screenFrames = allFrames.filter(frame => {
+    const key = screenKeyFromName(frame.name);
+    return key !== null && ORGANIZE_LAYOUT[key] !== undefined;
+  });
+  const unmappedFrames = allFrames.filter(frame => {
+    const key = screenKeyFromName(frame.name);
+    return key === null || ORGANIZE_LAYOUT[key] === undefined;
+  });
+
+  const report: Report = {
+    summary: { expected: screenFrames.length, applied: 0, skippedExisting: 0, missingSources: 0, missingTargets: 0, ambiguous: 0 },
+    applied: [],
+    skippedExisting: [],
+    missingSources: [],
+    missingTargets: [],
+    ambiguous: [],
+  };
+
+  if (screenFrames.length === 0) {
+    report.missingTargets.push({
+      connectionId: 0,
+      fromFrame: "Página atual",
+      sourceName: "Organizar Frames",
+      toFrame: "",
+      detail: "Nenhum frame com nome 01/V01 encontrado",
+    });
+    report.summary.missingTargets++;
+    return report;
+  }
+
+  const baseX = Math.min(...screenFrames.map(frame => frame.x));
+  const baseY = Math.min(...screenFrames.map(frame => frame.y));
+  const maxFrameWidth = Math.max(...screenFrames.map(frame => frame.width));
+  const maxFrameHeight = Math.max(...screenFrames.map(frame => frame.height));
+  const stepX = Math.max(820, maxFrameWidth + 260);
+  const stepY = Math.max(1180, maxFrameHeight + 320);
+
+  removeOrganizerLabels();
+  for (const section of ORGANIZE_SECTIONS) {
+    const label = createLabel(section.title, baseX + section.col * stepX, baseY + section.row * stepY, 26, "Bold", section.color);
+    label.setPluginData(ORGANIZE_LABEL_PLUGIN_KEY, "true");
+    figma.currentPage.appendChild(label);
+  }
+
+  let moved = 0;
+  for (const frame of screenFrames) {
+    const key = screenKeyFromName(frame.name);
+    if (!key) continue;
+    const pos = ORGANIZE_LAYOUT[key];
+    frame.x = baseX + pos.col * stepX;
+    frame.y = baseY + pos.row * stepY;
+    report.applied.push({
+      connectionId: moved + 1,
+      fromFrame: frame.name,
+      sourceName: "Organizado por jornada",
+      toFrame: `col ${pos.col}, row ${pos.row}`,
+    });
+    report.summary.applied++;
+    moved++;
+  }
+
+  report.applied.unshift({
+    connectionId: 0,
+    fromFrame: "Organizador",
+    sourceName: `Espaçamento: ${Math.round(stepX)}px x ${Math.round(stepY)}px`,
+    toFrame: `${screenFrames.length} frames`,
+  });
+
+  const navComponents = figma.currentPage.children.filter(node =>
+    node.type === "COMPONENT" && (node.name === BOTTOM_NAV_COMPONENT_NAME || node.getPluginData(BOTTOM_NAV_PLUGIN_KEY) === "component")
+  );
+  for (const component of navComponents) {
+    if ("x" in component && "y" in component) {
+      component.x = baseX;
+      component.y = baseY - 260;
+    }
+  }
+
+  figma.currentPage.selection = screenFrames.slice(0, 1);
+  figma.viewport.scrollAndZoomIntoView(screenFrames);
+  unifyPrototypeFlows();
+
+  // Report unmapped frames for diagnostics
+  if (unmappedFrames.length > 0) {
+    for (const frame of unmappedFrames.slice(0, 20)) {
+      report.missingSources.push({
+        connectionId: 0,
+        fromFrame: frame.name,
+        sourceName: "Não mapeado",
+        toFrame: screenKeyFromName(frame.name) || "(sem key)",
+        detail: `Frame "${frame.name}" não está no mapa de organização`,
+      });
+    }
+    report.summary.missingSources = unmappedFrames.length;
+  }
+
+  return report;
+}
+
+function addPhoneChromeToVariants(): Report {
+  const report: Report = {
+    summary: { expected: 0, applied: 0, skippedExisting: 0, missingSources: 0, missingTargets: 0, ambiguous: 0 },
+    applied: [],
+    skippedExisting: [],
+    missingSources: [],
+    missingTargets: [],
+    ambiguous: [],
+  };
+
+  const allFrames = figma.currentPage.children.filter((n): n is FrameNode => n.type === "FRAME");
+  const variants = allFrames.filter(f => /^V\d{2}\s+—/i.test(f.name));
+  report.summary.expected = variants.length;
+
+  for (const v of variants) {
+    try {
+      // Find the phone-screen rectangle (the PNG image fill, 375x780-ish)
+      let phoneRect: RectangleNode | null = null;
+      const allDescendants = v.findAll(node => {
+        if (node.type !== "RECTANGLE") return false;
+        const r = node as RectangleNode;
+        if (r.width < 320 || r.width > 430 || r.height < 600 || r.height > 900) return false;
+        const fills = r.fills;
+        if (fills === figma.mixed) return false;
+        return Array.isArray(fills) && fills.some(f => f.type === "IMAGE");
+      });
+      if (allDescendants.length > 0) {
+        phoneRect = allDescendants[0] as RectangleNode;
+      }
+
+      const target: BaseNode & { cornerRadius?: number; strokes?: ReadonlyArray<Paint>; strokeWeight?: number; strokeAlign?: string; effects?: ReadonlyArray<Effect> } =
+        (phoneRect as any) || (v as any);
+
+      // Clear chrome from the outer frame if it was previously applied incorrectly
+      if (phoneRect) {
+        try {
+          v.cornerRadius = 0;
+          v.strokes = [];
+          v.strokeWeight = 0;
+          v.effects = [];
+        } catch { /* ignore */ }
+      }
+
+      // Apply phone chrome to the actual phone-screen element
+      (target as any).cornerRadius = 36;
+      (target as any).strokes = [{ type: "SOLID", color: { r: 0.10, g: 0.12, b: 0.16 } }];
+      (target as any).strokeWeight = 8;
+      (target as any).strokeAlign = "OUTSIDE";
+      (target as any).effects = [{
+        type: "DROP_SHADOW",
+        color: { r: 0, g: 0, b: 0, a: 0.18 },
+        offset: { x: 0, y: 8 },
+        radius: 24,
+        spread: 0,
+        visible: true,
+        blendMode: "NORMAL",
+      }];
+      v.setPluginData("uniachados-phone-chrome", "true");
+      report.applied.push({
+        connectionId: 0,
+        fromFrame: v.name,
+        sourceName: phoneRect ? "Moldura no PNG da tela" : "Moldura no frame (PNG não encontrado)",
+        toFrame: `${Math.round((target as any).width || v.width)}x${Math.round((target as any).height || v.height)}`,
+      });
+      report.summary.applied++;
+    } catch (e) {
+      report.missingSources.push({
+        connectionId: 0,
+        fromFrame: v.name,
+        sourceName: "Erro ao aplicar moldura",
+        toFrame: "",
+        detail: String(e),
+      });
+      report.summary.missingSources++;
+    }
+  }
+  return report;
+}
+
+function cloneVisualStyle(target: SceneNode, source: SceneNode): void {
+  const writableTarget = target as any;
+  const writableSource = source as any;
+  try { writableTarget.fills = writableSource.fills; } catch { /* ignore */ }
+  try { writableTarget.strokes = writableSource.strokes; } catch { /* ignore */ }
+  try { writableTarget.strokeWeight = writableSource.strokeWeight; } catch { /* ignore */ }
+  try { writableTarget.strokeAlign = writableSource.strokeAlign; } catch { /* ignore */ }
+  try { writableTarget.cornerRadius = writableSource.cornerRadius; } catch { /* ignore */ }
+  try { writableTarget.effects = writableSource.effects; } catch { /* ignore */ }
+  try { writableTarget.clipsContent = writableSource.clipsContent; } catch { /* ignore */ }
+}
+
+function hasText(node: SceneNode, text: string): boolean {
+  return textContains(getAllText(node), text);
+}
+
+function isStartCaptureArtifact(node: SceneNode): boolean {
+  const text = getAllText(node);
+  return textContains(text, "Start Capturing") || textContains(node.name, "Notifications alt+T");
+}
+
+function findBottomNavChild(frame: FrameNode): SceneNode | null {
+  return frame.children.find(child => isImportedBottomNav(child as SceneNode)) as SceneNode | undefined || null;
+}
+
+function findDirectPhoneChild(frame: FrameNode): FrameNode | null {
+  return frame.children.find(child => {
+    if (child.type !== "FRAME") return false;
+    if (isImportedBottomNav(child as SceneNode)) return false;
+    return child.width >= 360 && child.width <= 430 && child.height >= 740 && child.height <= 830;
+  }) as FrameNode | undefined || null;
+}
+
+function findNestedPhoneCandidate(frame: FrameNode): FrameNode | null {
+  const candidates = frame.findAll(node => {
+    if (node.type !== "FRAME") return false;
+    const candidate = node as FrameNode;
+    if (candidate === frame) return false;
+    if (isImportedBottomNav(candidate as SceneNode)) return false;
+    if (isStartCaptureArtifact(candidate as SceneNode)) return false;
+    if (candidate.width < 360 || candidate.width > 430) return false;
+    if (candidate.height < 740 || candidate.height > 830) return false;
+    const text = getAllText(candidate as SceneNode);
+    return textContains(text, "09:41") || textContains(text, "Login") || textContains(text, "Criar conta") || textContains(text, "Solicitação");
+  }) as FrameNode[];
+
+  candidates.sort((a, b) => Math.abs(a.height - 780) - Math.abs(b.height - 780));
+  return candidates[0] || null;
+}
+
+function normalizePhoneChildren(phone: FrameNode): void {
+  const children = phone.children.filter((child): child is SceneNode => child.type !== "INSTANCE" || !isImportedBottomNav(child as SceneNode));
+  const status = children.find(child => "height" in child && (child as any).height <= 40 && hasText(child, "09:41")) as SceneNode | undefined;
+  const body = children.find(child => child !== status && "height" in child && (child as any).height > 300) as SceneNode | undefined;
+
+  if (status && "x" in status && "y" in status && "height" in status) {
+    (status as any).x = 0;
+    (status as any).y = 0;
+  }
+  if (body && status && "x" in body && "y" in body && "height" in status) {
+    (body as any).x = 0;
+    (body as any).y = (status as any).height;
+  }
+}
+
+function collectDirectScreenPieces(frame: FrameNode): SceneNode[] {
+  return frame.children
+    .filter((child): child is SceneNode => {
+      if (isImportedBottomNav(child as SceneNode)) return false;
+      if (isStartCaptureArtifact(child as SceneNode)) return false;
+      if (!("width" in child) || !("height" in child)) return false;
+      const width = (child as any).width as number;
+      return width >= 320 && width <= 430;
+    })
+    .sort((a, b) => ((a as any).y || 0) - ((b as any).y || 0));
+}
+
+function wrapScreenPieces(frame: FrameNode, pieces: SceneNode[], referencePhone: FrameNode, phoneX: number, phoneY: number): FrameNode | null {
+  if (pieces.length === 0) return null;
+
+  const wrapper = figma.createFrame();
+  wrapper.name = "Container";
+  wrapper.resize(referencePhone.width, referencePhone.height);
+  wrapper.x = phoneX;
+  wrapper.y = phoneY;
+  cloneVisualStyle(wrapper as SceneNode, referencePhone as SceneNode);
+  frame.appendChild(wrapper);
+
+  let y = 0;
+  for (const piece of pieces) {
+    wrapper.appendChild(piece);
+    (piece as any).x = 0;
+    (piece as any).y = y;
+    y += (piece as any).height || 0;
+  }
+
+  normalizePhoneChildren(wrapper);
+  return wrapper;
+}
+
+async function normalizeVariantLayouts(): Promise<Report> {
+  const report: Report = {
+    summary: { expected: 0, applied: 0, skippedExisting: 0, missingSources: 0, missingTargets: 0, ambiguous: 0 },
+    applied: [],
+    skippedExisting: [],
+    missingSources: [],
+    missingTargets: [],
+    ambiguous: [],
+  };
+
+  const allFrames = figma.currentPage.children.filter((node): node is FrameNode => node.type === "FRAME");
+  const referenceFrame = findFrameByName("02 — Login", allFrames);
+  const referencePhone = referenceFrame ? findDirectPhoneChild(referenceFrame) : null;
+  const referenceNav = referenceFrame ? findBottomNavChild(referenceFrame) : null;
+  const variants = allFrames.filter(frame => /^V\d{2}\s+—/i.test(frame.name));
+  report.summary.expected = variants.length;
+
+  if (!referenceFrame || !referencePhone || !referenceNav) {
+    report.missingTargets.push({
+      connectionId: 0,
+      fromFrame: "02 — Login",
+      sourceName: "Frame de referência",
+      toFrame: "Variações",
+      detail: "Não encontrei o frame Login correto com celular e nav inferior",
+    });
+    report.summary.missingTargets++;
+    return report;
+  }
+
+  await loadImportFonts();
+  const phoneX = referencePhone.x;
+  const phoneY = referencePhone.y;
+  const navX = (referenceNav as any).x as number;
+  const navY = (referenceNav as any).y as number;
+
+  for (const frame of variants) {
+    try {
+      const nav = findBottomNavChild(frame);
+      let phone = findDirectPhoneChild(frame) || findNestedPhoneCandidate(frame);
+      let detail = "telefone reposicionado";
+
+      if (phone) {
+        if (phone.parent !== frame) {
+          frame.appendChild(phone);
+          detail = "telefone retirado de wrapper incorreto";
+        }
+        phone.x = phoneX;
+        phone.y = phoneY;
+        cloneVisualStyle(phone as SceneNode, referencePhone as SceneNode);
+        normalizePhoneChildren(phone);
+      } else {
+        const pieces = collectDirectScreenPieces(frame);
+        phone = wrapScreenPieces(frame, pieces, referencePhone, phoneX, phoneY);
+        detail = phone ? "status/body agrupados no padrão do Login" : "telefone não encontrado";
+      }
+
+      for (const child of frame.children.slice()) {
+        if (child === phone || child === nav) continue;
+        if (isImportedBottomNav(child as SceneNode)) continue;
+        if (isStartCaptureArtifact(child as SceneNode) || child.name === "Body" || child.name === "Container") {
+          child.remove();
+        }
+      }
+
+      frame.resize(referenceFrame.width, referenceFrame.height);
+      cloneVisualStyle(frame as SceneNode, referenceFrame as SceneNode);
+      frame.clipsContent = false;
+
+      if (nav && "x" in nav && "y" in nav) {
+        (nav as any).x = navX;
+        (nav as any).y = navY;
+      }
+
+      if (!phone) {
+        report.missingSources.push({
+          connectionId: 0,
+          fromFrame: frame.name,
+          sourceName: "Telefone da variação",
+          toFrame: "02 — Login",
+          detail: "Não encontrei containers de tela para normalizar",
+        });
+        report.summary.missingSources++;
+        continue;
+      }
+
+      report.applied.push({
+        connectionId: report.summary.applied + 1,
+        fromFrame: frame.name,
+        sourceName: detail,
+        toFrame: `${Math.round(referenceFrame.width)}x${Math.round(referenceFrame.height)}; phone ${Math.round(phoneX)},${Math.round(phoneY)}; nav ${Math.round(navX)},${Math.round(navY)}`,
+      });
+      report.summary.applied++;
+    } catch (error) {
+      report.missingSources.push({
+        connectionId: 0,
+        fromFrame: frame.name,
+        sourceName: "Corrigir variação",
+        toFrame: "",
+        detail: String(error),
+      });
+      report.summary.missingSources++;
+    }
+  }
+
+  figma.currentPage.selection = variants.slice(0, 1);
+  figma.viewport.scrollAndZoomIntoView(variants);
+  return report;
+}
+
+function findBackArrowInFrame(frame: FrameNode): SceneNode | null {
+  const candidates: { node: SceneNode; relX: number; relY: number; score: number }[] = [];
+
+  function walk(node: SceneNode, depth: number): void {
+    if (depth > 8) return;
+    try {
+      const abs = (node as any).absoluteBoundingBox;
+      if (abs) {
+        const relX = abs.x - frame.x;
+        const relY = abs.y - frame.y;
+        // Expanded search area: top-left 40% width, top 20% height
+        const inTopLeft = relX >= -10 && relX < frame.width * 0.40 && relY >= -10 && relY < frame.height * 0.20;
+
+        if (inTopLeft) {
+          let score = 0;
+          const nameL = node.name.toLowerCase();
+
+          // Strongest signal: explicit name
+          if (nameL.includes("arrow_back") || nameL === "←") score += 100;
+          if (nameL === "back" || nameL.includes("voltar")) score += 80;
+
+          // Text node with arrow character
+          if (node.type === "TEXT") {
+            const chars = (node as TextNode).characters.trim();
+            if (chars === "←" || chars === "arrow_back") score += 90;
+            // Material icons font often renders the back arrow as specific chars
+            if (chars === "" || chars === "\uE5C4" || chars === "\uE5E0") score += 90;
+          }
+
+          // Button-named container in top-left
+          if (nameL === "button" || nameL.includes("icon-btn") || nameL.includes("iconbutton")) score += 50;
+
+          // Generic "Icon" node in top-left is likely the back icon
+          if (nameL === "icon" && relX < frame.width * 0.20) score += 40;
+
+          // Square small clickable element in top-left
+          if ("width" in node && "height" in node) {
+            const w = (node as any).width as number;
+            const h = (node as any).height as number;
+            if (w >= 20 && w <= 72 && h >= 20 && h <= 72 && Math.abs(w - h) < 24) {
+              score += 25;
+              // Bonus if very close to the top-left corner
+              if (relX < frame.width * 0.15 && relY < frame.height * 0.12) score += 15;
+            }
+          }
+
+          if (score > 0) {
+            candidates.push({ node, relX, relY, score });
+          }
+        }
+      }
+    } catch { /* ignore */ }
+
+    if ("children" in node) {
+      for (const child of (node as ChildrenMixin & SceneNode).children) walk(child, depth + 1);
+    }
+  }
+  walk(frame, 0);
+
+  if (candidates.length === 0) return null;
+
+  // Prefer highest score, then closest to top-left
+  candidates.sort((a, b) => b.score - a.score || (a.relX + a.relY) - (b.relX + b.relY));
+  const best = candidates[0];
+
+  // Return clickable ancestor (the Button container) instead of the bare Icon
+  return findClickableAncestor(best.node, 3);
+}
+
+function connectBackArrows(): Report {
+  const report: Report = {
+    summary: { expected: 0, applied: 0, skippedExisting: 0, missingSources: 0, missingTargets: 0, ambiguous: 0 },
+    applied: [],
+    skippedExisting: [],
+    missingSources: [],
+    missingTargets: [],
+    ambiguous: [],
+  };
+
+  const allFrames = figma.currentPage.children.filter((n): n is FrameNode => n.type === "FRAME");
+  const screenFrames = allFrames.filter(isScreenFrame);
+  report.summary.expected = screenFrames.length;
+
+  // Frames where back doesn't make sense (entry points + confirmations without back arrow)
+  const skipScreens = new Set(["01", "04", "13", "09", "11", "17", "V11"]);
+
+  for (const frame of screenFrames) {
+    const key = screenKeyFromName(frame.name);
+    if (key && key.startsWith("V")) {
+      report.skippedExisting.push({
+        connectionId: 0,
+        fromFrame: frame.name,
+        sourceName: "Variação — navegação somente pela nav inferior",
+        toFrame: "",
+      });
+      report.summary.skippedExisting++;
+      continue;
+    }
+
+    if (key && skipScreens.has(key)) {
+      report.skippedExisting.push({
+        connectionId: 0,
+        fromFrame: frame.name,
+        sourceName: "Tela inicial — sem voltar",
+        toFrame: "",
+      });
+      report.summary.skippedExisting++;
+      continue;
+    }
+
+    const backNode = findBackArrowInFrame(frame);
+    if (!backNode) {
+      report.missingSources.push({
+        connectionId: 0,
+        fromFrame: frame.name,
+        sourceName: "← (botão voltar)",
+        toFrame: "",
+        detail: "Ícone arrow_back não encontrado no topo da tela",
+      });
+      report.summary.missingSources++;
+      continue;
+    }
+
+    try {
+      const reaction: any = {
+        trigger: { type: "ON_CLICK" },
+        actions: [{ type: "BACK" }],
+      };
+      (backNode as any).reactions = [reaction];
+      report.applied.push({
+        connectionId: 0,
+        fromFrame: frame.name,
+        sourceName: backNode.name || "← Voltar",
+        toFrame: "(BACK navigation)",
+      });
+      report.summary.applied++;
+    } catch (e) {
+      report.missingSources.push({
+        connectionId: 0,
+        fromFrame: frame.name,
+        sourceName: "← (botão voltar)",
+        toFrame: "",
+        detail: `Erro ao aplicar reação: ${e}`,
+      });
+      report.summary.missingSources++;
+    }
+  }
+  return report;
 }
 
 async function applyConnections(connections: ConnectionEntry[], config: PluginConfig): Promise<Report> {
@@ -547,9 +1324,9 @@ async function applyConnections(connections: ConnectionEntry[], config: PluginCo
 
   let processed = 0;
   for (const entry of connections) {
-    // Yield every 20 connections to avoid Figma timeout
-    if (processed > 0 && processed % 20 === 0) {
-      await sleep(0);
+    // Yield every 3 connections to avoid Figma timeout
+    if (processed > 0 && processed % 3 === 0) {
+      await sleep(10);
       figma.ui.postMessage({ type: "status", message: `Processando... ${processed}/${connections.length}` });
     }
     processed++;
@@ -640,24 +1417,35 @@ async function applyConnections(connections: ConnectionEntry[], config: PluginCo
 
     // Apply reaction
     if (!config.dryRun && "reactions" in targetNode) {
-      const reaction = buildReaction(toFrame, entry);
-      const reactable = targetNode as SceneNode & ReactionMixin;
-      let newReactions: Reaction[];
-      if (config.overwriteExisting) {
-        newReactions = reactable.reactions.filter((r: Reaction) => r.trigger?.type !== "ON_CLICK");
-        newReactions.push(reaction);
-      } else {
-        newReactions = [...reactable.reactions, reaction];
-      }
-      reactable.reactions = newReactions;
+      try {
+        const reaction = buildReaction(toFrame, entry);
+        const reactable = targetNode as SceneNode & ReactionMixin;
+        let newReactions: Reaction[];
+        if (config.overwriteExisting) {
+          newReactions = reactable.reactions.filter((r: Reaction) => r.trigger?.type !== "ON_CLICK");
+          newReactions.push(reaction);
+        } else {
+          newReactions = [...reactable.reactions, reaction];
+        }
+        reactable.reactions = newReactions;
 
-      report.applied.push({
-        connectionId: entry.id,
-        fromFrame: entry.fromFrame,
-        sourceName: `${entry.source.name} (${targetNode.name})`,
-        toFrame: entry.toFrame,
-      });
-      report.summary.applied++;
+        report.applied.push({
+          connectionId: entry.id,
+          fromFrame: entry.fromFrame,
+          sourceName: `${entry.source.name} (${targetNode.name})`,
+          toFrame: entry.toFrame,
+        });
+        report.summary.applied++;
+      } catch (e: any) {
+        report.missingSources.push({
+          connectionId: entry.id,
+          fromFrame: entry.fromFrame,
+          sourceName: entry.source.name,
+          toFrame: entry.toFrame,
+          detail: `Erro ao aplicar: ${e.message || e}`,
+        });
+        report.summary.missingSources++;
+      }
     } else if (config.dryRun) {
       report.applied.push({
         connectionId: entry.id,
@@ -667,6 +1455,268 @@ async function applyConnections(connections: ConnectionEntry[], config: PluginCo
       });
       report.summary.applied++;
     }
+  }
+
+  return report;
+}
+
+// ─── Bottom Nav Component Builder ───────────────────────────────────────────
+
+const BOTTOM_NAV_COMPONENT_NAME = "UniAchados — Nav Inferior Component";
+const BOTTOM_NAV_INSTANCE_NAME = "UniAchados — Nav Inferior";
+const BOTTOM_NAV_PLUGIN_KEY = "uniachados-bottom-nav";
+
+const MAIN_BOTTOM_NAV_LABELS: Record<string, string> = {
+  "01": "1. Boas-vindas",
+  "02": "2. Login",
+  "03": "3. Cadastro",
+  "04": "4. Home Aluno",
+  "05": "5. Buscar",
+  "06": "6. Filtros",
+  "07": "7. Detalhes",
+  "08": "8. Retirada",
+  "09": "9. Conf. Solicitação",
+  "10": "10. Cad. Perdido",
+  "11": "11. Conf. Cadastro",
+  "12": "12. Solicitações",
+  "13": "13. Painel Admin",
+  "14": "14. Objetos Admin",
+  "15": "15. Histórico",
+  "16": "16. Cad. Encontrado",
+  "17": "17. Conf. Encontrado",
+  "18": "18. Validar",
+  "19": "19. Encerrar",
+  "20": "20. Notificações",
+  "21": "21. Perfil",
+  "22": "22. Ajuda",
+};
+
+function isScreenFrame(frame: FrameNode): boolean {
+  return /^(\d{2}|V\d{2})\s+—/.test(frame.name);
+}
+
+function screenSortKey(frameName: string): number {
+  const mainMatch = frameName.match(/^(\d{2})\s+—/);
+  if (mainMatch) return Number(mainMatch[1]);
+  const variantMatch = frameName.match(/^V(\d{2})\s+—/i);
+  if (variantMatch) return 100 + Number(variantMatch[1]);
+  return 999;
+}
+
+function navLabelForFrame(frameName: string): string {
+  const mainMatch = frameName.match(/^(\d{2})\s+—/);
+  if (mainMatch && MAIN_BOTTOM_NAV_LABELS[mainMatch[1]]) {
+    return MAIN_BOTTOM_NAV_LABELS[mainMatch[1]];
+  }
+  const variantMatch = frameName.match(/^(V\d{2})\s+—\s+(.+)$/i);
+  if (variantMatch) {
+    return `${variantMatch[1].toUpperCase()}. ${variantMatch[2]}`;
+  }
+  return frameName;
+}
+
+function getBottomNavTargets(allFrames: FrameNode[]): BottomNavTarget[] {
+  return allFrames
+    .filter(isScreenFrame)
+    .map(frame => ({ frame, label: navLabelForFrame(frame.name), sortKey: screenSortKey(frame.name) }))
+    .sort((a, b) => a.sortKey - b.sortKey);
+}
+
+function findPhoneContainerInFrame(frame: FrameNode): FrameNode | null {
+  for (const child of frame.children) {
+    if ("width" in child && "height" in child && "children" in child) {
+      const container = child as FrameNode;
+      if (container.width >= 300 && container.width <= 430 && container.height >= 600) {
+        return container;
+      }
+    }
+  }
+  return null;
+}
+
+function isImportedBottomNav(node: SceneNode): boolean {
+  if (node.getPluginData(BOTTOM_NAV_PLUGIN_KEY) === "instance") return true;
+  if (node.name === BOTTOM_NAV_INSTANCE_NAME) return true;
+  if (!("width" in node) || !("height" in node)) return false;
+  const width = (node as any).width as number;
+  const height = (node as any).height as number;
+  if (width < 300 || height < 70 || height > 600) return false;
+  const text = getAllText(node);
+  return textContains(text, "Telas:") || textContains(text, "1. Boas-vindas");
+}
+
+function removeExistingBottomNav(frame: FrameNode): number {
+  let removed = 0;
+  // Search up to 3 levels deep to find and remove embedded "Telas:" nav blocks
+  function searchAndRemove(parent: FrameNode | GroupNode, depth: number): void {
+    if (depth > 3) return;
+    for (const child of parent.children.slice()) {
+      if (isImportedBottomNav(child as SceneNode)) {
+        child.remove();
+        removed++;
+      } else if ("children" in child && depth < 3) {
+        searchAndRemove(child as FrameNode, depth + 1);
+      }
+    }
+  }
+  searchAndRemove(frame, 0);
+
+  // Fallback: if nothing was removed, find TextNode "Telas:" and remove its nearest frame parent
+  if (removed === 0) {
+    const telasNodes = frame.findAll(node =>
+      node.type === "TEXT" && (node as TextNode).characters.includes("Telas:")
+    );
+    for (const tNode of telasNodes) {
+      let target: SceneNode | null = tNode.parent as SceneNode | null;
+      // Walk up to find a frame container that holds the nav (not the root frame itself)
+      while (target && target !== frame && target.parent !== frame) {
+        target = target.parent as SceneNode | null;
+      }
+      if (target && target !== frame && !target.removed) {
+        target.remove();
+        removed++;
+      }
+    }
+  }
+
+  return removed;
+}
+
+function removeGeneratedBottomNavComponents(): number {
+  let removed = 0;
+  const nodes = figma.currentPage.findAll(node =>
+    node.getPluginData(BOTTOM_NAV_PLUGIN_KEY) === "component" || node.name === BOTTOM_NAV_COMPONENT_NAME
+  );
+  for (const node of nodes) {
+    node.remove();
+    removed++;
+  }
+  return removed;
+}
+
+function buttonWidthForLabel(label: string): number {
+  return Math.max(72, Math.min(168, label.length * 7 + 24));
+}
+
+async function createBottomNavComponent(targets: BottomNavTarget[]): Promise<ComponentNode> {
+  await loadImportFonts();
+
+  const component = figma.createComponent();
+  component.name = BOTTOM_NAV_COMPONENT_NAME;
+  component.setPluginData(BOTTOM_NAV_PLUGIN_KEY, "component");
+  component.resize(600, 120);
+  component.clipsContent = false;
+  component.fills = [{ type: "SOLID", color: { r: 1, g: 1, b: 1 } }];
+  component.strokes = [{ type: "SOLID", color: { r: 0.86, g: 0.88, b: 0.91 }, opacity: 1 }];
+  component.strokeWeight = 1;
+  component.cornerRadius = 8;
+
+  const title = createLabel("Telas:", 18, 18, 13, "Bold", { r: 0.12, g: 0.16, b: 0.23 });
+  component.appendChild(title);
+
+  let x = 78;
+  let y = 10;
+  const gap = 8;
+  const rowHeight = 32;
+
+  for (const target of targets) {
+    const width = buttonWidthForLabel(target.label);
+    if (x + width > 582) {
+      x = 18;
+      y += rowHeight;
+    }
+
+    const button = figma.createFrame();
+    button.name = `Nav item — ${target.label}`;
+    button.setPluginData(BOTTOM_NAV_PLUGIN_KEY, "button");
+    button.resize(width, 26);
+    button.x = x;
+    button.y = y;
+    button.cornerRadius = 7;
+    button.clipsContent = false;
+    button.fills = [{ type: "SOLID", color: { r: 0.96, g: 0.98, b: 1 } }];
+    button.strokes = [{ type: "SOLID", color: { r: 0.83, g: 0.87, b: 0.93 }, opacity: 1 }];
+    button.strokeWeight = 1;
+    button.reactions = [buildImportReaction(target.frame)];
+
+    const label = createLabel(target.label, 10, 6, 12, "Regular", { r: 0.17, g: 0.22, b: 0.30 });
+    button.appendChild(label);
+    component.appendChild(button);
+    x += width + gap;
+  }
+
+  component.resize(600, y + rowHeight + 10);
+  return component;
+}
+
+async function rebuildBottomNavComponent(config: PluginConfig): Promise<Report> {
+  const allFrames = figma.currentPage.children.filter((n): n is FrameNode => n.type === "FRAME");
+  const sourceFrames = allFrames.filter(isScreenFrame).sort((a, b) => screenSortKey(a.name) - screenSortKey(b.name));
+  const targets = getBottomNavTargets(allFrames);
+  const report: Report = {
+    summary: { expected: sourceFrames.length, applied: 0, skippedExisting: 0, missingSources: 0, missingTargets: 0, ambiguous: 0 },
+    applied: [],
+    skippedExisting: [],
+    missingSources: [],
+    missingTargets: [],
+    ambiguous: [],
+  };
+
+  if (targets.length === 0) {
+    report.missingTargets.push({ connectionId: 0, fromFrame: "Página atual", sourceName: "Nav Inferior", toFrame: "", detail: "Nenhum frame 01/V01 encontrado" });
+    report.summary.missingTargets++;
+    return report;
+  }
+
+  if (config.dryRun) {
+    report.summary.applied = sourceFrames.length;
+    report.applied.push({
+      connectionId: 0,
+      fromFrame: "Página atual",
+      sourceName: `DRY RUN: recriaria 1 componente com ${targets.length} botões`,
+      toFrame: `${sourceFrames.length} frames`,
+    });
+    return report;
+  }
+
+  for (const frame of sourceFrames) {
+    removeExistingBottomNav(frame);
+  }
+  removeGeneratedBottomNavComponents();
+
+  const component = await createBottomNavComponent(targets);
+  const minX = sourceFrames.reduce((min, frame) => Math.min(min, frame.x), sourceFrames[0]?.x || 0);
+  const minY = sourceFrames.reduce((min, frame) => Math.min(min, frame.y), sourceFrames[0]?.y || 0);
+  component.x = minX;
+  component.y = minY - component.height - 80;
+
+  let index = 0;
+  for (const frame of sourceFrames) {
+    if (index > 0 && index % 5 === 0) {
+      await sleep(10);
+      figma.ui.postMessage({ type: "status", message: `Recriando nav inferior... ${index}/${sourceFrames.length}` });
+    }
+    const phone = findPhoneContainerInFrame(frame);
+    const instance = component.createInstance();
+    instance.name = BOTTOM_NAV_INSTANCE_NAME;
+    instance.setPluginData(BOTTOM_NAV_PLUGIN_KEY, "instance");
+    frame.appendChild(instance);
+
+    const navX = phone ? phone.x + Math.max(0, (phone.width - component.width) / 2) : 0;
+    const navY = phone ? phone.y + phone.height + 16 : frame.height + 16;
+    instance.x = navX;
+    instance.y = navY;
+    frame.clipsContent = false;
+    frame.resize(Math.max(frame.width, navX + component.width), Math.max(frame.height, navY + component.height + 16));
+
+    report.applied.push({
+      connectionId: index + 1,
+      fromFrame: frame.name,
+      sourceName: `Instância da nav (${targets.length} botões)`,
+      toFrame: BOTTOM_NAV_COMPONENT_NAME,
+    });
+    report.summary.applied++;
+    index++;
   }
 
   return report;
@@ -768,13 +1818,274 @@ function getFrameStructureSummary(frame: FrameNode, maxDepth: number = 4): any {
   };
 }
 
+function exportNumber(value: unknown): number {
+  const numeric = Number(value) || 0;
+  return Math.round(numeric * 100) / 100;
+}
+
+function summarizePaints(node: SceneNode): any[] | undefined {
+  if (!("fills" in node)) return undefined;
+  const fills = (node as GeometryMixin).fills;
+  if (fills === figma.mixed || !Array.isArray(fills)) return undefined;
+  return fills.slice(0, 4).map((paint: Paint) => {
+    if (paint.type === "SOLID") {
+      return {
+        type: paint.type,
+        color: paint.color,
+        opacity: paint.opacity ?? 1,
+      };
+    }
+    return { type: paint.type, opacity: "opacity" in paint ? paint.opacity ?? 1 : 1 };
+  });
+}
+
+function summarizeReactions(node: SceneNode, allFrames: FrameNode[]): any[] {
+  if (!("reactions" in node)) return [];
+  const reactions = ((node as SceneNode & ReactionMixin).reactions || []) as any[];
+  return reactions.map(reaction => ({
+    trigger: reaction.trigger?.type || null,
+    actions: (reaction.actions || []).map((action: any) => {
+      const destination = action.destinationId
+        ? allFrames.find(frame => frame.id === action.destinationId)?.name || action.destinationId
+        : undefined;
+      return {
+        type: action.type,
+        navigation: action.navigation,
+        destination,
+      };
+    }),
+  }));
+}
+
+function findNodePath(root: SceneNode, target: SceneNode): string | null {
+  if (root.id === target.id) return root.name;
+  if (!("children" in root)) return null;
+  for (const child of (root as ChildrenMixin & SceneNode).children) {
+    const childPath = findNodePath(child as SceneNode, target);
+    if (childPath) return `${root.name} > ${childPath}`;
+  }
+  return null;
+}
+
+function exportNodeTree(node: SceneNode, allFrames: FrameNode[], depth: number, maxDepth: number): any {
+  const info: any = {
+    name: node.name,
+    type: node.type,
+    x: "x" in node ? exportNumber((node as any).x) : 0,
+    y: "y" in node ? exportNumber((node as any).y) : 0,
+    w: "width" in node ? exportNumber((node as any).width) : 0,
+    h: "height" in node ? exportNumber((node as any).height) : 0,
+    visible: "visible" in node ? (node as any).visible : true,
+  };
+
+  if (node.type === "TEXT") {
+    const textNode = node as TextNode;
+    info.text = textNode.characters;
+    info.fontSize = textNode.fontSize === figma.mixed ? "mixed" : textNode.fontSize;
+  }
+
+  const fills = summarizePaints(node);
+  if (fills && fills.length > 0) info.fills = fills;
+
+  const reactions = summarizeReactions(node, allFrames);
+  if (reactions.length > 0) info.reactions = reactions;
+
+  if ("layoutMode" in node) {
+    info.autoLayout = {
+      mode: (node as any).layoutMode,
+      primaryAxisSizingMode: (node as any).primaryAxisSizingMode,
+      counterAxisSizingMode: (node as any).counterAxisSizingMode,
+      itemSpacing: (node as any).itemSpacing,
+      padding: {
+        top: (node as any).paddingTop,
+        right: (node as any).paddingRight,
+        bottom: (node as any).paddingBottom,
+        left: (node as any).paddingLeft,
+      },
+    };
+  }
+
+  if ("children" in node && depth < maxDepth) {
+    const children = (node as ChildrenMixin & SceneNode).children;
+    info.childCount = children.length;
+    info.children = children.slice(0, 80).map(child => exportNodeTree(child as SceneNode, allFrames, depth + 1, maxDepth));
+    if (children.length > 80) info.childrenTruncated = children.length - 80;
+  }
+
+  return info;
+}
+
+function collectExportDetails(frame: FrameNode, allFrames: FrameNode[]): { textNodes: any[]; clickableNodes: any[] } {
+  const textNodes: any[] = [];
+  const clickableNodes: any[] = [];
+
+  function walk(node: SceneNode, path: string, depth: number): void {
+    if (depth > 10) return;
+    const nodePath = path ? `${path} > ${node.name}` : node.name;
+    if (node.type === "TEXT") {
+      textNodes.push({
+        path: nodePath,
+        name: node.name,
+        text: (node as TextNode).characters,
+        x: "x" in node ? exportNumber((node as any).x) : 0,
+        y: "y" in node ? exportNumber((node as any).y) : 0,
+        w: "width" in node ? exportNumber((node as any).width) : 0,
+        h: "height" in node ? exportNumber((node as any).height) : 0,
+      });
+    }
+
+    const reactions = summarizeReactions(node, allFrames);
+    if (reactions.length > 0) {
+      clickableNodes.push({
+        path: nodePath,
+        name: node.name,
+        type: node.type,
+        x: "x" in node ? exportNumber((node as any).x) : 0,
+        y: "y" in node ? exportNumber((node as any).y) : 0,
+        w: "width" in node ? exportNumber((node as any).width) : 0,
+        h: "height" in node ? exportNumber((node as any).height) : 0,
+        reactions,
+      });
+    }
+
+    if ("children" in node) {
+      for (const child of (node as ChildrenMixin & SceneNode).children) {
+        walk(child as SceneNode, nodePath, depth + 1);
+      }
+    }
+  }
+
+  walk(frame, "", 0);
+  return { textNodes: textNodes.slice(0, 160), clickableNodes: clickableNodes.slice(0, 120) };
+}
+
+function exportConnectionChecks(frame: FrameNode, allFrames: FrameNode[], connections: ConnectionEntry[]): any[] {
+  return connections
+    .filter(entry => findFrameByName(entry.fromFrame, allFrames)?.id === frame.id)
+    .map(entry => {
+      const targetFrame = findFrameByName(entry.toFrame, allFrames);
+      const { node, candidates } = findSourceElementV2(frame, entry.source);
+      const sourceNode = node || candidates[0] || null;
+      return {
+        id: entry.id,
+        sourceName: entry.source.name,
+        sourceText: entry.source.textMatch,
+        sourceIcon: entry.source.iconMatch,
+        toFrame: entry.toFrame,
+        targetExists: Boolean(targetFrame),
+        sourceFound: Boolean(sourceNode),
+        sourcePath: sourceNode ? findNodePath(frame, sourceNode) : null,
+        sourceNode: sourceNode ? {
+          name: sourceNode.name,
+          type: sourceNode.type,
+          x: "x" in sourceNode ? exportNumber((sourceNode as any).x) : 0,
+          y: "y" in sourceNode ? exportNumber((sourceNode as any).y) : 0,
+          w: "width" in sourceNode ? exportNumber((sourceNode as any).width) : 0,
+          h: "height" in sourceNode ? exportNumber((sourceNode as any).height) : 0,
+          reactions: summarizeReactions(sourceNode, allFrames),
+        } : null,
+        candidateCount: candidates.length,
+      };
+    });
+}
+
+function exportStructure(scope: "selected" | "all", maxDepth: number, connections: ConnectionEntry[]): any {
+  const allFrames = figma.currentPage.children.filter((node): node is FrameNode => node.type === "FRAME");
+  const selectedFrames = figma.currentPage.selection.filter((node): node is FrameNode => node.type === "FRAME");
+  const sourceFrames = scope === "selected" && selectedFrames.length > 0
+    ? selectedFrames
+    : allFrames.filter(isScreenFrame).sort((a, b) => screenSortKey(a.name) - screenSortKey(b.name));
+
+  return {
+    meta: {
+      app: "UniAchados Figma plugin",
+      exportType: "editable-structure-diagnostic",
+      pageName: figma.currentPage.name,
+      scope,
+      selectedFramesUsed: scope === "selected" && selectedFrames.length > 0,
+      frameCount: sourceFrames.length,
+      maxDepth,
+      note: "Cole este JSON junto com o print para diagnosticar estrutura, layout e conexoes sem achatar a tela como imagem.",
+    },
+    frames: sourceFrames.map(frame => {
+      const details = collectExportDetails(frame, allFrames);
+      return {
+        id: frame.id,
+        name: frame.name,
+        x: exportNumber(frame.x),
+        y: exportNumber(frame.y),
+        w: exportNumber(frame.width),
+        h: exportNumber(frame.height),
+        clipsContent: frame.clipsContent,
+        textNodes: details.textNodes,
+        clickableNodes: details.clickableNodes,
+        expectedConnections: exportConnectionChecks(frame, allFrames, connections),
+        tree: exportNodeTree(frame, allFrames, 0, maxDepth),
+      };
+    }),
+  };
+}
+
+function sanitizeFileName(input: string): string {
+  return input
+    .replace(/[\\/:*?"<>|]/g, "-")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function bytesToBase64(bytes: Uint8Array): string {
+  let binary = "";
+  const chunkSize = 0x8000;
+  for (let i = 0; i < bytes.length; i += chunkSize) {
+    const chunk = bytes.subarray(i, i + chunkSize);
+    binary += String.fromCharCode(...Array.from(chunk));
+  }
+  return btoa(binary);
+}
+
+async function exportAllScreenshots(scale: number = 2): Promise<{ files: ScreenshotAsset[] }> {
+  const allFrames = figma.currentPage.children.filter((node): node is FrameNode => node.type === "FRAME");
+  const sourceFrames = allFrames
+    .filter(isScreenFrame)
+    .sort((a, b) => screenSortKey(a.name) - screenSortKey(b.name));
+
+  const files: ScreenshotAsset[] = [];
+
+  let index = 0;
+  for (const frame of sourceFrames) {
+    index++;
+    figma.ui.postMessage({ type: "status", message: `Exportando print... ${index}/${sourceFrames.length} (${frame.name})` });
+
+    const bytes = await frame.exportAsync({
+      format: "PNG",
+      constraint: {
+        type: "SCALE",
+        value: scale,
+      },
+    });
+
+    files.push({
+      frameName: frame.name,
+      fileName: `${sanitizeFileName(frame.name)}.png`,
+      mimeType: "image/png",
+      base64: bytesToBase64(bytes),
+    });
+
+    if (index % 3 === 0) {
+      await sleep(10);
+    }
+  }
+
+  return { files };
+}
+
 // ─── Plugin Entry Point ──────────────────────────────────────────────────────
 
 figma.showUI(__html__, { width: 520, height: 640 });
 
-figma.ui.onmessage = async (msg: { type: string; config?: PluginConfig; connections?: ConnectionEntry[]; frameName?: string; maxDepth?: number }) => {
+figma.ui.onmessage = async (msg: { type: string; config?: PluginConfig; connections?: ConnectionEntry[]; frameName?: string; maxDepth?: number; scope?: "selected" | "all" }) => {
   if (msg.type === "apply-connections") {
-    const config: PluginConfig = msg.config || { overwriteExisting: false, dryRun: false };
+    const config: PluginConfig = (msg.config as PluginConfig) || { overwriteExisting: false, dryRun: false };
     const connections: ConnectionEntry[] = msg.connections || [];
 
     if (connections.length === 0) {
@@ -784,10 +2095,55 @@ figma.ui.onmessage = async (msg: { type: string; config?: PluginConfig; connecti
 
     figma.ui.postMessage({ type: "status", message: `Processando ${connections.length} conexões...` });
     const report = await applyConnections(connections, config);
+    if (!config.dryRun) unifyPrototypeFlows();
     figma.ui.postMessage({ type: "report", report });
     figma.notify(
       `✅ ${report.summary.applied} | ⏭ ${report.summary.skippedExisting} | ❌ ${report.summary.missingSources + report.summary.missingTargets} | ⚠️ ${report.summary.ambiguous}`
     );
+  }
+
+  if (msg.type === "rebuild-bottom-nav") {
+    const config: PluginConfig = (msg.config as PluginConfig) || { overwriteExisting: true, dryRun: false };
+    figma.ui.postMessage({ type: "status", message: "Recriando nav inferior como componente único..." });
+    const report = await rebuildBottomNavComponent(config);
+    if (!config.dryRun) unifyPrototypeFlows();
+    figma.ui.postMessage({ type: "report", report });
+    figma.notify(`✅ Nav inferior recriada em ${report.summary.applied} frames`);
+  }
+
+  if (msg.type === "unify-flows") {
+    figma.ui.postMessage({ type: "status", message: "Unificando flows da página..." });
+    const report = unifyPrototypeFlows();
+    figma.ui.postMessage({ type: "report", report });
+    figma.notify(`✅ Flows unificados em 1 fluxo`);
+  }
+
+  if (msg.type === "organize-frames") {
+    figma.ui.postMessage({ type: "status", message: "Organizando frames por jornada..." });
+    const report = await organizeFramesByJourney();
+    figma.ui.postMessage({ type: "report", report });
+    figma.notify(`✅ ${report.summary.applied} frames organizados`);
+  }
+
+  if (msg.type === "fix-variant-layouts") {
+    figma.ui.postMessage({ type: "status", message: "Corrigindo variações pelo padrão da tela Login..." });
+    const report = await normalizeVariantLayouts();
+    figma.ui.postMessage({ type: "report", report });
+    figma.notify(`✅ ${report.summary.applied} variações corrigidas`);
+  }
+
+  if (msg.type === "add-phone-chrome") {
+    figma.ui.postMessage({ type: "status", message: "Adicionando moldura de celular aos variantes..." });
+    const report = addPhoneChromeToVariants();
+    figma.ui.postMessage({ type: "report", report });
+    figma.notify(`✅ ${report.summary.applied} variantes com moldura (${report.summary.skippedExisting} já tinham)`);
+  }
+
+  if (msg.type === "connect-back-arrows") {
+    figma.ui.postMessage({ type: "status", message: "Conectando setas de voltar..." });
+    const report = connectBackArrows();
+    figma.ui.postMessage({ type: "report", report });
+    figma.notify(`✅ ${report.summary.applied} setas conectadas (${report.summary.missingSources} sem ícone)`);
   }
 
   if (msg.type === "list-frames") {
@@ -869,6 +2225,40 @@ figma.ui.onmessage = async (msg: { type: string; config?: PluginConfig; connecti
           textNodes.push({ text: t.characters, nodeName: t.name });
         }
 
+        // For arrow_back: show phone container structure
+        let phoneInfo: any = null;
+        if (entry.source.iconMatch === "arrow_back" || entry.source.name === "arrow_back") {
+          for (const child of fromFrame.children) {
+            if ("width" in child && "height" in child && "children" in child) {
+              const c = child as FrameNode;
+              if (c.width >= 300 && c.width <= 430 && c.height >= 600) {
+                // Found phone container — show top children
+                const topChildren: any[] = [];
+                function scanTop(n: SceneNode, ax: number, ay: number, d: number): void {
+                  if (d > 4 || ay > 80) return;
+                  topChildren.push({
+                    name: n.name, type: n.type, depth: d,
+                    x: Math.round(ax), y: Math.round(ay),
+                    w: "width" in n ? Math.round((n as any).width) : 0,
+                    h: "height" in n ? Math.round((n as any).height) : 0,
+                    childCount: "children" in n ? (n as any).children.length : 0,
+                  });
+                  if ("children" in n) {
+                    for (const ch of (n as ChildrenMixin & SceneNode).children) {
+                      scanTop(ch as SceneNode,
+                        ax + ("x" in ch ? (ch as any).x : 0),
+                        ay + ("y" in ch ? (ch as any).y : 0), d + 1);
+                    }
+                  }
+                }
+                scanTop(c, 0, 0, 0);
+                phoneInfo = { w: c.width, h: c.height, topNodes: topChildren.slice(0, 30) };
+                break;
+              }
+            }
+          }
+        }
+
         // Topbar info
         let topbarChildren: { name: string; type: string; x: number; y: number; w: number; h: number }[] = [];
         for (const child of fromFrame.children) {
@@ -896,6 +2286,7 @@ figma.ui.onmessage = async (msg: { type: string; config?: PluginConfig; connecti
           sourceConfig: entry.source,
           frameTextNodes: textNodes.slice(0, 50),
           topbarChildren,
+          phoneInfo,
           directChildren: fromFrame.children.slice(0, 10).map((c: SceneNode) => ({
             name: c.name,
             type: c.type,
@@ -909,6 +2300,23 @@ figma.ui.onmessage = async (msg: { type: string; config?: PluginConfig; connecti
     }
 
     figma.ui.postMessage({ type: "diagnostics-result", data: diagnostics });
+  }
+
+  if (msg.type === "export-structure") {
+    const scope = msg.scope || "selected";
+    const maxDepth = msg.maxDepth || 5;
+    const connections = msg.connections || [];
+    figma.ui.postMessage({ type: "status", message: "Exportando estrutura dos frames..." });
+    const data = exportStructure(scope, maxDepth, connections);
+    figma.ui.postMessage({ type: "structure-export", data });
+    figma.notify(`✅ Estrutura exportada: ${data.frames.length} frame(s)`);
+  }
+
+  if (msg.type === "export-all-screenshots") {
+    figma.ui.postMessage({ type: "status", message: "Gerando prints de todas as telas..." });
+    const data = await exportAllScreenshots(2);
+    figma.ui.postMessage({ type: "screenshots-export", data });
+    figma.notify(`✅ Prints exportados: ${data.files.length} tela(s)`);
   }
 
   if (msg.type === "close") {

@@ -12,7 +12,7 @@ const uiOutputPath = path.join(__dirname, 'src', 'ui.html');
 const internal = fs.readFileSync(internalPath, 'utf8');
 let uiHtml = fs.readFileSync(uiTemplatePath, 'utf8');
 
-// Replace placeholder with actual JSON (only internal — bottom nav is generated in JS)
+// Replace placeholders with actual JSON (bottom nav is rebuilt in the plugin as one component)
 uiHtml = uiHtml.replace('CONNECTIONS_INTERNAL_PLACEHOLDER', internal.trim());
 
 // Write output
@@ -23,4 +23,4 @@ if (!fs.existsSync(distDir)) {
 
 fs.writeFileSync(uiOutputPath, uiHtml, 'utf8');
 const sizeKB = (fs.statSync(uiOutputPath).size / 1024).toFixed(1);
-console.log('✅ ui.html atualizado (' + sizeKB + ' KB) com ' + JSON.parse(internal).length + ' conexões internas + bottom nav gerado dinamicamente.');
+console.log('✅ ui.html atualizado (' + sizeKB + ' KB) com ' + JSON.parse(internal).length + ' conexões internas + nav inferior por componente único.');

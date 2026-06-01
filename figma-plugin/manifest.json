@@ -1,5 +1,5 @@
 {
-  "name": "Auto Prototype Connector — UniAchados",
+  "name": "UniAchados Importer + Connector",
   "id": "auto-prototype-connector-uniachados",
   "api": "1.0.0",
   "main": "dist/code.js",

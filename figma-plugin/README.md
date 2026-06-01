@@ -1,6 +1,6 @@
-# Auto Prototype Connector — UniAchados
+# UniAchados Importer + Connector
 
-Plugin local para o Figma que automatiza a criação de conexões de protótipo (interações/reactions) entre elementos clicáveis e frames de destino.
+Plugin local para o Figma que importa o protótipo HTML do UniAchados como frames organizados e automatiza conexões de protótipo entre elementos clicáveis e frames de destino.
 
 ## 📁 Estrutura do projeto
 
@@ -9,11 +9,12 @@ figma-plugin/
 ├── manifest.json          ← Manifesto do plugin Figma
 ├── package.json           ← Dependências (TypeScript + typings)
 ├── tsconfig.json          ← Configuração TypeScript
-├── build-ui.js            ← Script que injeta connections.json no ui.html
+├── build-ui.js            ← Script que injeta conexões e capturas no ui.html
 ├── src/
 │   ├── code.ts            ← Lógica principal do plugin
 │   ├── ui.html            ← Interface do plugin
-│   └── connections.json   ← Mapa de 91 conexões do protótipo
+│   ├── connections-internal.json ← Mapa de conexões internas do protótipo
+│   └── import-assets/     ← Capturas PNG e mapa das telas do protótipo HTML
 ├── dist/
 │   └── code.js            ← Arquivo compilado (gerado pelo build)
 └── README.md
@@ -36,7 +37,7 @@ node build-ui.js
 ```
 
 O comando `npm run build` compila `src/code.ts` → `dist/code.js`.  
-O comando `node build-ui.js` injeta o JSON de conexões no `ui.html`.
+O comando `node build-ui.js` injeta o JSON de conexões e as capturas do protótipo HTML no `ui.html`.
 
 ### 3. Importar no Figma Desktop
 
@@ -44,16 +45,19 @@ O comando `node build-ui.js` injeta o JSON de conexões no `ui.html`.
 2. Abra o arquivo do protótipo UniAchados.
 3. Vá em **Plugins → Development → Import plugin from manifest…**
 4. Selecione o arquivo `figma-plugin/manifest.json`.
-5. O plugin aparecerá em **Plugins → Development → Auto Prototype Connector — UniAchados**.
+5. O plugin aparecerá em **Plugins → Development → UniAchados Importer + Connector**.
 
 ### 4. Executar o plugin
 
 1. Com o arquivo do protótipo aberto, execute o plugin.
 2. Na interface que abrir:
-   - **Aba "Executar"**: Clique em **▶ Aplicar Conexões** para criar as interações.
+  - **Aba "Importar HTML"**: clique em **▶ Importar Telas + Conexões** para criar todas as telas principais e alternativas de erro no canvas.
+  - **Aba "Botões Internos"**: clique em **▶ Aplicar Botões Internos** para conectar frames já importados via HTML-to-Design.
    - **Modo Simulação (dry run)**: Marque a checkbox para testar sem alterar nada.
    - **Sobrescrever existentes**: Marque se quiser substituir conexões ON_CLICK já existentes.
 3. O relatório mostrará:
+  - ✅ Telas importadas
+  - 🔗 Hotspots conectados
    - ✅ Conexões aplicadas com sucesso
    - ⏭ Conexões preservadas (já existiam)
    - ❌ Elementos ou frames não encontrados
@@ -67,7 +71,20 @@ O comando `node build-ui.js` injeta o JSON de conexões no `ui.html`.
 
 ## ⚙️ Configuração
 
-### Arquivo `src/connections.json`
+### Importação do HTML
+
+A aba **Importar HTML** cria automaticamente:
+
+- 22 telas principais do protótipo.
+- 11 alternativas de erro.
+- Títulos acima de cada captura.
+- Organização em duas áreas: telas principais e alternativas de erro.
+- Hotspots transparentes sobre os elementos clicáveis extraídos do HTML.
+- Conexões `ON_CLICK` entre os hotspots e os frames de destino.
+
+As capturas ficam em `src/import-assets/*.png`, e o mapa de telas/hotspots fica em `src/import-assets/screens.json`.
+
+### Arquivo `src/connections-internal.json`
 
 Cada conexão tem a estrutura:
 
@@ -160,4 +177,4 @@ Após executar o plugin:
 2. **Resolver ambiguidades**: Tornar nomes mais específicos.
 3. **Testar fluxos**: Usar modo Present (▶) para validar a navegação.
 4. **Ajustar transições**: Editar duração/tipo no JSON se necessário.
-5. **Conectar variações de erro**: As conexões de V01-V11 estão incluídas, mas dependem dos nomes corretos dos frames no Figma.
+5. **Reimportar quando o HTML mudar**: gere novas capturas e atualize `src/import-assets/screens.json` antes de rodar `node build-ui.js` novamente.
